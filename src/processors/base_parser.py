@@ -134,7 +134,6 @@ class BaseComponentParser:
             first_part = parts[0]
             has_kv_separator = False
 
-            # Fast path for finding key-value separator
             if ':' in first_part or '=' in first_part:
                 in_q = None
                 for char in first_part:
@@ -154,8 +153,9 @@ class BaseComponentParser:
                 parts = parts[1:]
 
         for part in parts:
-            if not part:
+            if not part or (':' not in part and '=' not in part):
                 continue
+
             idx_colon = part.find(':')
             idx_equal = part.find('=')
 
@@ -166,24 +166,23 @@ class BaseComponentParser:
             elif idx_equal != -1:
                 split_idx = idx_equal
             else:
-                split_idx = -1
+                continue
 
-            if split_idx != -1:
-                if split_idx == idx_equal:
-                    logger.warning(
-                        f"Deprecated syntax: Use ':' instead of '=' for component options. Found in: '{part}'"
-                    )
-                k = part[:split_idx].strip()
-                v = part[split_idx+1:].strip()
-                if len(v) >= 2 and v[0] == v[-1] and (v[0] == '"' or v[0] == "'"):
-                    v = v[1:-1]
-                args_dict[k] = v
+            if split_idx == idx_equal:
+                logger.warning(
+                    f"Deprecated syntax: Use ':' instead of '=' for component options. Found in: '{part}'"
+                )
+            k = part[:split_idx].strip()
+            v = part[split_idx+1:].strip()
+            if len(v) >= 2 and v[0] == v[-1] and (v[0] == '"' or v[0] == "'"):
+                v = v[1:-1]
+            args_dict[k] = v
 
         return label, args_dict
 
     @staticmethod
     def parse_key_value_args(args_str: str) -> dict:
-        if not args_str:
+        if not args_str or (':' not in args_str and '=' not in args_str):
             return {}
         result = {}
 
@@ -293,7 +292,7 @@ class BaseComponentParser:
             parts.append(args_str[start_idx:].strip())
 
         for part in parts:
-            if not part:
+            if not part or (':' not in part and '=' not in part):
                 continue
 
             idx_colon = part.find(':')
@@ -307,18 +306,17 @@ class BaseComponentParser:
             elif idx_equal != -1:
                 split_idx = idx_equal
             else:
-                split_idx = -1
+                continue
 
-            if split_idx != -1:
-                if split_idx == idx_equal:
-                    logger.warning(
-                        f"Deprecated syntax: Use ':' instead of '=' for component options. Found in: '{part}'"
-                    )
-                k = part[:split_idx].strip()
-                v = part[split_idx+1:].strip()
-                if len(v) >= 2 and v[0] == v[-1] and (v[0] == '"' or v[0] == "'"):
-                    v = v[1:-1]
-                result[k] = v
+            if split_idx == idx_equal:
+                logger.warning(
+                    f"Deprecated syntax: Use ':' instead of '=' for component options. Found in: '{part}'"
+                )
+            k = part[:split_idx].strip()
+            v = part[split_idx+1:].strip()
+            if len(v) >= 2 and v[0] == v[-1] and (v[0] == '"' or v[0] == "'"):
+                v = v[1:-1]
+            result[k] = v
         return result
 
     def get_common_attributes(self, args: dict) -> str:
