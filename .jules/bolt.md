@@ -4,3 +4,6 @@
 ## 2026-05-01 - Optimize string parsing fast-path and regex caching
 **Learning:** When looking up if a specific substring exists in a large document (like HTML rendering), if you already have a `set` of parsed tags, use it instead of doing `O(N)` string scanning across the entire document. Additionally, even after creating a fast path for string splitting, avoid running the manual character parsing loop if the target separator (like `:` or `=`) isn't present in the component arguments.
 **Action:** Use `set` lookups whenever possible over substring scanning, and pre-filter loop execution with simple `in` operators.
+## 2026-05-03 - Batch subprocess execution for Node scripts
+**Learning:** Calling a Node.js script via `subprocess.run` inside a parsing loop (e.g. for every single `code-block` in a Markdown document) creates massive overhead due to the time it takes to spin up the Node process and load dependencies (like `highlight.js`).
+**Action:** Always batch inputs when interfacing with external processes like Node.js. Gather all data points (e.g. via `re.finditer`), send them as a single JSON array payload into one subprocess execution, and map the returned array back to the matches using a stateful iterator (like a class instance `__call__` or index state).
