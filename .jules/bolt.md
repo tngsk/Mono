@@ -7,3 +7,6 @@
 ## 2026-05-03 - Super fast paths for parameter parsing
 **Learning:** Checking for substrings using the global Python `in` operator (e.g. `':' not in content and '=' not in content`) is significantly faster than splitting, stripping, and checking parts, or iterating character by character. Adding super-fast paths to return early for strings without key-value separators (`:` or `=`) yields ~30% further speedup for parameter parsing utilities in Web Component initialization.
 **Action:** Always check if a target separator actually exists globally in a string before doing any manual looping, part splitting, or index finding.
+## 2026-05-04 - Optimize `SSEManager.broadcast` for concurrent sending
+**Learning:** In an async server broadcasting to multiple clients (queues), sequential awaiting like `for q in queues: await q.put(msg)` leads to O(N) blocking time. If queues have any latency, the later clients will suffer delays and the loop will block the event loop for longer than necessary.
+**Action:** Use `asyncio.gather` (or similar concurrency mechanisms) to send messages concurrently to all active clients (queues). This reduces the broadcast time to roughly O(1) in terms of latency per message, significantly improving throughput for large client pools.
