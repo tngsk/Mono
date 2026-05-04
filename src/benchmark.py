@@ -1,13 +1,13 @@
 import asyncio
 import time
 
-from src.server import ConnectionManager
+from src.server import SSEManager
 
-class MockConnection:
+class MockQueue:
     def __init__(self, delay=0.01):
         self.delay = delay
 
-    async def send_text(self, message):
+    async def put(self, message):
         await asyncio.sleep(self.delay)
 
 async def main():
@@ -15,9 +15,9 @@ async def main():
     delay = 0.01
     print(f"Measuring broadcast time with {num_connections} connections, {delay}s delay each...")
 
-    manager = ConnectionManager()
+    manager = SSEManager()
     for _ in range(num_connections):
-        manager.active_connections.append(MockConnection(delay))
+        manager.active_queues.append(MockQueue(delay))
 
     start_time = time.perf_counter()
     await manager.broadcast("test message")
