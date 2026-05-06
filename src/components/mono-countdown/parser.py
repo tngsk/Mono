@@ -6,7 +6,7 @@ class Parser(BaseComponentParser):
     def block_level_tags(self) -> list[str]:
         return ["mono-countdown"]
 
-    # OPTIONS: time, color
+    # OPTIONS: color, time
     PATTERN = r"@\[countdown(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
     TEMPLATE = '<mono-countdown{time_attr}{color_attr}{common_attr}></mono-countdown>'
 

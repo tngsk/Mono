@@ -2,7 +2,7 @@ import re
 from src.processors.base_parser import BaseComponentParser
 
 class Parser(BaseComponentParser):
-    # OPTIONS: name, size, color, display
+    # OPTIONS: color, display, name, size
     PATTERN = r"@\[icon(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
     TEMPLATE = '<mono-icon name="{name}"{size_attr}{color_attr}{display_attr}{common_attr}></mono-icon>'
 
