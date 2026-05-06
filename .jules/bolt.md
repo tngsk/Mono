@@ -14,3 +14,7 @@
 ## 2026-05-05 - Fast-path text filtering in Markdown processing
 **Learning:** Running regex substitutions on large strings when no matches exist is slow. Wrapping regex execution in simple Python `in` checks (e.g. `if '`' in text:`) speeds up processing by >50% for documents lacking those features.
 **Action:** Add fast-path string checks before running heavy regex or parser loops when processing document text, but ensure not to hardcode component-specific syntax into generic orchestrators.
+
+## 2026-05-06 - Optimize `_protect_code_blocks` fast-path
+**Learning:** Same as `2026-05-05`, wrapping regex execution in `if "```" in markdown_content or "~~~" in markdown_content:` and `if "`" in markdown_content:` makes `_protect_code_blocks` significantly faster for documents without those code block markers.
+**Action:** Use `in` checks to short-circuit regex execution.
