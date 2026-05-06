@@ -57,28 +57,31 @@ class MarkdownProcessor:
         """
         blocks = {}
         counter = 0
+        processed = markdown_content
 
-        def replace_fenced(match: re.Match) -> str:
-            nonlocal counter
-            placeholder = f"@@FENCED_CODE_BLOCK_{counter}@@"
-            blocks[placeholder] = match.group(0)
-            counter += 1
-            return placeholder
+        if "```" in processed or "~~~" in processed:
+            def replace_fenced(match: re.Match) -> str:
+                nonlocal counter
+                placeholder = f"@@FENCED_CODE_BLOCK_{counter}@@"
+                blocks[placeholder] = match.group(0)
+                counter += 1
+                return placeholder
 
-        # 複数行のコードブロックを保護 (``` または ~~~)
-        fenced_pattern = re.compile(r'(?s)(^[ \t]*(`{3,}|~{3,}).*?\n[ \t]*\2[ \t]*(?=\n|$))', re.MULTILINE)
-        processed = fenced_pattern.sub(replace_fenced, markdown_content)
+            # 複数行のコードブロックを保護 (``` または ~~~)
+            fenced_pattern = re.compile(r'(?s)(^[ \t]*(`{3,}|~{3,}).*?\n[ \t]*\2[ \t]*(?=\n|$))', re.MULTILINE)
+            processed = fenced_pattern.sub(replace_fenced, processed)
 
-        def replace_inline(match: re.Match) -> str:
-            nonlocal counter
-            placeholder = f"@@INLINE_CODE_BLOCK_{counter}@@"
-            blocks[placeholder] = match.group(0)
-            counter += 1
-            return placeholder
+        if "`" in processed:
+            def replace_inline(match: re.Match) -> str:
+                nonlocal counter
+                placeholder = f"@@INLINE_CODE_BLOCK_{counter}@@"
+                blocks[placeholder] = match.group(0)
+                counter += 1
+                return placeholder
 
-        # インラインのコードブロックを保護
-        inline_pattern = re.compile(r'(`+)(.*?)\1')
-        processed = inline_pattern.sub(replace_inline, processed)
+            # インラインのコードブロックを保護
+            inline_pattern = re.compile(r'(`+)(.*?)\1')
+            processed = inline_pattern.sub(replace_inline, processed)
 
         return processed, blocks
 
