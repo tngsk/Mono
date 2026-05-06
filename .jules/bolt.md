@@ -10,3 +10,7 @@
 ## 2026-05-04 - Optimize `SSEManager.broadcast` for concurrent sending
 **Learning:** In an async server broadcasting to multiple clients (queues), sequential awaiting like `for q in queues: await q.put(msg)` leads to O(N) blocking time. If queues have any latency, the later clients will suffer delays and the loop will block the event loop for longer than necessary.
 **Action:** Use `asyncio.gather` (or similar concurrency mechanisms) to send messages concurrently to all active clients (queues). This reduces the broadcast time to roughly O(1) in terms of latency per message, significantly improving throughput for large client pools.
+
+## 2026-05-05 - Fast-path text filtering in Markdown processing
+**Learning:** Running regex substitutions on large strings when no matches exist is slow. Wrapping regex execution in simple Python `in` checks (e.g. `if '`' in text:`) speeds up processing by >50% for documents lacking those features.
+**Action:** Add fast-path string checks before running heavy regex or parser loops when processing document text, but ensure not to hardcode component-specific syntax into generic orchestrators.
