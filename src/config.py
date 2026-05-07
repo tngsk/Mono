@@ -7,7 +7,7 @@ Centralized definitions for conversion configuration and error handling.
 import tomllib
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Union
 
 # ============================================================================
 # Custom Exceptions
@@ -43,8 +43,6 @@ class CSSEmbeddingError(ConversionError):
 # ============================================================================
 
 
-from typing import Union
-
 @dataclass
 class ConversionConfig:
     """変換処理の設定を保持するデータクラス"""
@@ -64,7 +62,9 @@ class ConversionConfig:
         try:
             with open("config.toml", "rb") as f:
                 config_data = tomllib.load(f)
-                self.connect_src = config_data.get("security", {}).get("connect-src", "")
+                self.connect_src = config_data.get("security", {}).get(
+                    "connect-src", ""
+                )
         except Exception:
             pass
 
@@ -76,7 +76,7 @@ class ConversionConfig:
 
     def resolve_pdf_output_file(self) -> Optional[Path]:
         """PDF出力ファイルパスを決定する"""
-        if self.pdf_output is None:
+        if self.pdf_output is None or self.pdf_output is False:
             return None
         if isinstance(self.pdf_output, bool) and self.pdf_output:
             return self.input_file.with_suffix(".pdf")

@@ -7,7 +7,6 @@ Converts Markdown content to intermediate HTML.
 import importlib
 import logging
 import re
-import sys
 
 import markdown
 import markdown.util
@@ -106,7 +105,8 @@ class MarkdownProcessor:
         pattern = re.compile(r"@@(?:FENCED|INLINE)_CODE_BLOCK_\d+@@")
 
         def replacer(match: re.Match) -> str:
-            return blocks.get(match.group(0), match.group(0))
+            res = blocks.get(match.group(0), match.group(0))
+            return res if res is not None else match.group(0)
 
         return pattern.sub(replacer, processed_content)
 
