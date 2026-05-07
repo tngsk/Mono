@@ -128,24 +128,36 @@ class MonoFlow extends MonoBaseElement {
       const toX = toRect.left - wrapperRect.left + toRect.width / 2;
       const toY = toRect.top - wrapperRect.top + toRect.height / 2;
 
-      // Determine connection points based on layout direction (LR by default)
-      // For horizontal layout: from right center to left center
-      const startX = fromX + fromRect.width / 2;
-      const startY = fromY;
+      const direction = this.getAttribute("direction") || "LR";
 
-      const endX = toX - toRect.width / 2;
-      const endY = toY;
+      let startX, startY, endX, endY, d;
 
-      // Create an S-curve path
-      const curvature = 0.5; // adjust for sharper or softer curves
-      const dx = endX - startX;
-      // const dy = endY - startY; // Not strictly needed for cubic bezier logic here
-      const control1X = startX + dx * curvature;
-      const control1Y = startY;
-      const control2X = endX - dx * curvature;
-      const control2Y = endY;
+      if (direction === "TB") {
+        // Vertical layout: from bottom center to top center
+        startX = fromX;
+        startY = fromY + fromRect.height / 2;
+        endX = toX;
+        endY = toY - toRect.height / 2;
 
-      const d = `M ${startX} ${startY} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${endX} ${endY}`;
+        // Create a vertical line
+        d = `M ${startX} ${startY} L ${endX} ${endY}`;
+      } else {
+        // Horizontal layout: from right center to left center
+        startX = fromX + fromRect.width / 2;
+        startY = fromY;
+        endX = toX - toRect.width / 2;
+        endY = toY;
+
+        // Create a horizontal S-curve path
+        const curvature = 0.5;
+        const dx = endX - startX;
+        const control1X = startX + dx * curvature;
+        const control1Y = startY;
+        const control2X = endX - dx * curvature;
+        const control2Y = endY;
+
+        d = `M ${startX} ${startY} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${endX} ${endY}`;
+      }
 
       const pathEl = document.createElementNS(
         "http://www.w3.org/2000/svg",
