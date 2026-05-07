@@ -125,3 +125,51 @@ C -> A
     json_end = html.find('</script>', json_start)
     edges = json.loads(html[json_start:json_end])
     assert len(edges) == 3
+
+def test_mono_flow_multiline_continuation_and_arrows(parser):
+    markdown = """
+@[flow](direction: Vertical)
+df（全データ）
+ → groupby("track_genre", as_index=False) でジャンルごとに分割
+ => ["popularity"] で集計対象の列を絞り込む
+ -> mean() で各グループの平均を計算
+@[/flow]
+"""
+    html = parser.process(markdown)
+
+    # Assert tag and direction
+    assert '<mono-flow direction="TB">' in html
+
+    # Extract JSON edges
+    json_start = html.find('<script type="application/json" class="flow-connections">')
+    json_start += len('<script type="application/json" class="flow-connections">')
+    json_end = html.find('</script>', json_start)
+    edges = json.loads(html[json_start:json_end])
+
+    assert len(edges) == 3
+    assert edges[0]["from"] == "df（全データ）"
+    assert edges[0]["to"] == 'groupby("track_genre", as_index=False) でジャンルごとに分割'
+
+    assert edges[1]["from"] == 'groupby("track_genre", as_index=False) でジャンルごとに分割'
+    assert edges[1]["to"] == '["popularity"] で集計対象の列を絞り込む'
+
+    assert edges[2]["from"] == '["popularity"] で集計対象の列を絞り込む'
+    assert edges[2]["to"] == 'mean() で各グループの平均を計算'
+
+def test_mono_flow_node_ordering(parser):
+    # Tests that nodes in the same layer are ordered by first occurrence rather than alphabetically
+    markdown = """
+@[flow]
+Z -> End
+A -> End
+M -> End
+@[/flow]
+"""
+    html = parser.process(markdown)
+
+    # Extract order of Z, A, M in layer 0
+    pos_z = html.find('data-id="Z"')
+    pos_a = html.find('data-id="A"')
+    pos_m = html.find('data-id="M"')
+
+    assert pos_z < pos_a < pos_m

@@ -28,46 +28,79 @@ class Parser(BaseComponentParser):
             title, specific_args = self.parse_bracket_content(bracket_content)
             common_args = self.parse_key_value_args(args_str) if args_str else {}
             args = {**specific_args, **common_args}
-            direction = args.get("direction", "LR").strip("'\"").upper()
+            direction_raw = args.get("direction", "LR").strip("'\"").upper()
+            if direction_raw in ("VERTICAL", "TB", "DOWN"):
+                direction = "TB"
+            elif direction_raw in ("HORIZONTAL", "LR", "RIGHT"):
+                direction = "LR"
+            else:
+                direction = direction_raw
 
             nodes = set()
             edges = []
+            node_order = {}
+
+            def add_node(n: str) -> str:
+                n = n.strip()
+                if n and n not in node_order:
+                    node_order[n] = len(node_order)
+                    nodes.add(n)
+                return n
 
             # Parse the content line by line
             lines = content.split('\n')
+            last_node = None
             for line in lines:
                 line = line.strip()
                 if not line or line.startswith('#'):
                     continue
 
-                # Parse: Node A -> Node B : Label
-                parts = line.split('->')
-                if len(parts) == 1:
-                    # Just a single node
-                    node = parts[0].strip()
-                    if node:
-                        nodes.add(node)
-                elif len(parts) == 2:
-                    node_a = parts[0].strip()
-                    rest = parts[1]
-                    label = ""
-                    if ':' in rest:
-                        node_b_part, label_part = rest.split(':', 1)
-                        node_b = node_b_part.strip()
-                        label = label_part.strip()
-                    else:
-                        node_b = rest.strip()
+                is_continuation = False
+                prefix_match = re.match(r'^(?:->|=>|→)\s*(.*)', line)
+                if prefix_match:
+                    is_continuation = True
+                    line = prefix_match.group(1)
 
-                    if node_a:
-                        nodes.add(node_a)
-                    if node_b:
-                        nodes.add(node_b)
-                    if node_a and node_b:
+                parts = re.split(r'\s*(?:->|=>|→)\s*', line)
+                current_line_nodes = []
+
+                for part in parts:
+                    node_name = part
+                    label = ""
+                    if ':' in node_name:
+                        node_part, label_part = node_name.split(':', 1)
+                        node_name = node_part.strip()
+                        label = label_part.strip()
+
+                    node_name = node_name.strip()
+                    current_line_nodes.append((node_name, label))
+                    if node_name:
+                        add_node(node_name)
+
+                if is_continuation and last_node and current_line_nodes and current_line_nodes[0][0]:
+                    edges.append({
+                        "from": last_node,
+                        "to": current_line_nodes[0][0],
+                        "label": current_line_nodes[0][1]
+                    })
+
+                # Connect inline nodes
+                for i in range(len(current_line_nodes) - 1):
+                    n1 = current_line_nodes[i][0]
+                    n2 = current_line_nodes[i+1][0]
+                    l2 = current_line_nodes[i+1][1]
+                    if n1 and n2:
                         edges.append({
-                            "from": node_a,
-                            "to": node_b,
-                            "label": label
+                            "from": n1,
+                            "to": n2,
+                            "label": l2
                         })
+
+                # Update last node
+                if current_line_nodes:
+                    last_valid = [n for n, l in current_line_nodes if n]
+                    if last_valid:
+                        last_node = last_valid[-1]
 
             # Calculate layers
             layers = self._calculate_layers(nodes, edges)
@@ -93,7 +126,8 @@ class Parser(BaseComponentParser):
             for layer_idx in range(max_layer + 1):
                 if layer_idx in layer_to_nodes:
                     result += f'<div class="flow-layer" data-layer="{layer_idx}">\n'
-                    for node in sorted(layer_to_nodes[layer_idx]): # Sort to maintain consistent order
+                    # Sort by original definition order to maintain logical flow and consistent visual order
+                    for node in sorted(layer_to_nodes[layer_idx], key=lambda x: node_order.get(x, 0)):
                         safe_node = html.escape(node)
                         # We use data-id to identify the node for SVG path generation
                         result += f'<div class="flow-node" data-id="{safe_node}">{safe_node}</div>\n'
