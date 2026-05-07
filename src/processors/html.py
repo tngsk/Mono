@@ -4,8 +4,8 @@ HTML Document Builder
 Generates complete HTML documents from markdown with template support.
 """
 
-import json
 import html
+import json
 import logging
 import re
 from pathlib import Path
@@ -13,14 +13,12 @@ from typing import List, Optional
 
 from src.config import ConversionError
 from src.constants import (
+    COMPONENTS_DIR,
     DEFAULT_TEMPLATE_PATH,
-    HIGHLIGHT_JS_CDN_CSS,
-    HIGHLIGHT_JS_CDN_JS,
     HTML_TABLE_STYLE_PATTERN,
     MATERIAL_SYMBOLS_URL,
-    TEMPLATES_DIR,
-    COMPONENTS_DIR,
     MONO_VERSION,
+    TEMPLATES_DIR,
 )
 
 
@@ -92,10 +90,14 @@ class HTMLDocumentBuilder:
             html_body += "\n<mono-export></mono-export>"
 
         # 使用されているコンポーネントを特定
-        used_component_dirs = self._get_used_component_dirs(found_mono_tags, should_enable_export)
+        used_component_dirs = self._get_used_component_dirs(
+            found_mono_tags, should_enable_export
+        )
 
         has_code_block = "mono-code-block" in found_mono_tags
-        highlight_js_css = self._build_highlight_js_link(html_body) if has_code_block else ""
+        highlight_js_css = (
+            self._build_highlight_js_link(html_body) if has_code_block else ""
+        )
         highlight_js = self._load_highlight_js_script() if has_code_block else ""
 
         mathjax = ""
@@ -105,11 +107,15 @@ class HTMLDocumentBuilder:
         mono_components_js = self._load_mono_components_script(used_component_dirs)
         component_templates = self._load_component_templates(used_component_dirs)
 
-        connect_src_str = " ".join(filter(None, ["'self'", "https://cdn.jsdelivr.net", connect_src]))
+        connect_src_str = " ".join(
+            filter(None, ["'self'", "https://cdn.jsdelivr.net", connect_src])
+        )
         csp_meta = f"<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self' 'unsafe-inline' data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: https://colab.research.google.com; connect-src {connect_src_str}; object-src 'none'; font-src 'self' data: https://fonts.gstatic.com; media-src 'self' data: https://actions.google.com;\">"
 
         meta_tags = []
-        meta_tags.append(f'<meta name="mono-version" data-mono-version="{MONO_VERSION}">')
+        meta_tags.append(
+            f'<meta name="mono-version" data-mono-version="{MONO_VERSION}">'
+        )
         if connect_src:
             meta_tags.append(f'<meta name="mono-api-url" content="{connect_src}">')
 
@@ -120,7 +126,9 @@ class HTMLDocumentBuilder:
         # アイコンが使われている場合はGoogle Fontsのリンクを追加
         fonts_link = ""
         if "mono-icon" in found_mono_tags:
-            fonts_link = f'\n        <link rel="stylesheet" href="{MATERIAL_SYMBOLS_URL}" />'
+            fonts_link = (
+                f'\n        <link rel="stylesheet" href="{MATERIAL_SYMBOLS_URL}" />'
+            )
 
         content_css = self._load_component_content_css(used_component_dirs)
 
@@ -131,14 +139,17 @@ class HTMLDocumentBuilder:
         doc = doc.replace("{MATHJAX}", mathjax)
 
         if content_css:
-            content_css_tag = f"{{CSS_BLOCK}}\n<style id=\"mono-components-content-css\">\n{content_css}\n</style>"
+            content_css_tag = f'{{CSS_BLOCK}}\n<style id="mono-components-content-css">\n{content_css}\n</style>'
             doc = doc.replace("{CSS_BLOCK}", content_css_tag)
 
         if asset_store:
-            safe_json = json.dumps(asset_store).replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026')
-            asset_template = (
-                f'<script type="application/json" id="mono-asset-store">{safe_json}</script>'
+            safe_json = (
+                json.dumps(asset_store)
+                .replace("<", "\\u003c")
+                .replace(">", "\\u003e")
+                .replace("&", "\\u0026")
             )
+            asset_template = f'<script type="application/json" id="mono-asset-store">{safe_json}</script>'
             lazy_load_js = self._load_lazy_load_script()
             lazy_load_script = (
                 f"\n<script>\n{lazy_load_js}\n</script>\n" if lazy_load_js else ""
@@ -210,7 +221,9 @@ class HTMLDocumentBuilder:
         tags_pattern = "|".join(re.escape(tag) for tag in excluded_tags)
 
         # 自己終了タグ（<hr /> など）
-        pattern_self_closing = re.compile(rf"<(?:{tags_pattern})[^>]*/?\s*>", re.IGNORECASE)
+        pattern_self_closing = re.compile(
+            rf"<(?:{tags_pattern})[^>]*/?\s*>", re.IGNORECASE
+        )
         html_content = pattern_self_closing.sub("", html_content)
 
         # 開閉タグ（<div>...</div> など）
@@ -226,15 +239,17 @@ class HTMLDocumentBuilder:
 
     def _build_highlight_js_link(self, html_body: str) -> str:
         """Highlight.js のCSSスタイルタグを構築（オフライン・ビルド時）"""
-        from src.constants import TEMPLATES_DIR
         import re
+
+        from src.constants import TEMPLATES_DIR
+
         # node_modules から highlight.js のスタイルを読み込む
         # constants.py doesn't have PROJECT_ROOT, but TEMPLATES_DIR is PROJECT_ROOT / "src" / "templates"
         project_root = TEMPLATES_DIR.parent.parent
         highlight_js_dir = project_root / "node_modules" / "highlight.js" / "styles"
 
         # すべてのテーマを抽出
-        themes = set(["atom-one-dark"]) # デフォルトテーマ
+        themes = set(["atom-one-dark"])  # デフォルトテーマ
 
         # html_bodyからtheme属性をすべて検索
         matches = re.finditer(r'<mono-code-block[^>]*theme="([^"]*)"', html_body)
@@ -248,20 +263,48 @@ class HTMLDocumentBuilder:
 
             if not theme_css_file.exists():
                 # CSSファイルが存在しない場合はフォールバック
-                self.logger.warning(f"Highlight.js theme '{theme}' not found. Falling back to default.")
+                self.logger.warning(
+                    f"Highlight.js theme '{theme}' not found. Falling back to default."
+                )
                 theme_css_file = highlight_js_dir / "atom-one-dark.css"
 
             try:
                 css = theme_css_file.read_text(encoding="utf-8")
 
-                # スコープを限定する。`.hljs` クラスを `mono-code-block[theme="..."] .hljs` などに置き換える
-                # 先頭が `.hljs` で始まるセレクタを置き換える
+                # Strip comments to prevent parsing errors during scoping
                 import re
-                if theme == "atom-one-dark":
-                    # デフォルトテーマのスコープ
-                    css = re.sub(r'(?<![-a-zA-Z0-9])\.hljs', r'mono-code-block:not([theme]) .hljs, mono-code-block[theme="atom-one-dark"] .hljs', css)
-                else:
-                    css = re.sub(r'(?<![-a-zA-Z0-9])\.hljs', rf'mono-code-block[theme="{theme}"] .hljs', css)
+
+                css = re.sub(r"/\*.*?\*/", "", css, flags=re.DOTALL)
+
+                # スコープを限定する。
+                # highlight.js の CSS セレクタを mono-code-block の子孫セレクタとして定義し直す。
+                def scope_rule_set(match):
+                    selectors = match.group(1).strip()
+                    properties = match.group(2)
+
+                    # @規則（@media等）は現在の実装では簡易化のためスコープ対象外とする
+                    if selectors.startswith("@") or not selectors:
+                        return match.group(0)
+
+                    scoped_parts = []
+                    for s in selectors.split(","):
+                        s = s.strip()
+                        if not s:
+                            continue
+
+                        if theme == "atom-one-dark":
+                            scoped_parts.append(f"mono-code-block:not([theme]) {s}")
+                            scoped_parts.append(
+                                f'mono-code-block[theme="atom-one-dark"] {s}'
+                            )
+                        else:
+                            scoped_parts.append(f'mono-code-block[theme="{theme}"] {s}')
+
+                    return f"\n{', '.join(scoped_parts)} {{{properties}}}\n"
+
+                # セレクタ { プロパティ } の構造にマッチさせ、セレクタ部分を置換する。
+                # 非グリーディーなマッチング (.*?) により、個別のルールセットを抽出する。
+                css = re.sub(r"([^{}]+)\{(.*?)\}", scope_rule_set, css, flags=re.DOTALL)
 
                 css_blocks.append(css)
             except Exception as e:
@@ -293,7 +336,9 @@ class HTMLDocumentBuilder:
         """MathJax は事前レンダリングされるため空文字を返す"""
         return ""
 
-    def _get_used_component_dirs(self, found_mono_tags: set, should_enable_export: bool) -> List[Path]:
+    def _get_used_component_dirs(
+        self, found_mono_tags: set, should_enable_export: bool
+    ) -> List[Path]:
         """使用されているコンポーネントのディレクトリ一覧を取得する"""
         components_dir = COMPONENTS_DIR
         if not components_dir.exists() or not components_dir.is_dir():
@@ -336,7 +381,9 @@ class HTMLDocumentBuilder:
             try:
                 js_contents.append(base_element_script_file.read_text(encoding="utf-8"))
             except Exception as e:
-                self.logger.warning(f"JS読み込みエラー ({base_element_script_file}): {e}")
+                self.logger.warning(
+                    f"JS読み込みエラー ({base_element_script_file}): {e}"
+                )
 
         # Base interactive element script
         base_script_file = TEMPLATES_DIR / "core" / "mono-interactive-element.js"
@@ -372,9 +419,7 @@ class HTMLDocumentBuilder:
                 try:
                     css_contents.append(css_file.read_text(encoding="utf-8"))
                 except Exception as e:
-                    self.logger.warning(
-                        f"content.css読み込みエラー ({css_file}): {e}"
-                    )
+                    self.logger.warning(f"content.css読み込みエラー ({css_file}): {e}")
 
         if not css_contents:
             return ""
@@ -400,9 +445,7 @@ class HTMLDocumentBuilder:
                         try:
                             css_content = css_file.read_text(encoding="utf-8")
                         except Exception as e:
-                            self.logger.warning(
-                                f"CSS読み込みエラー ({css_file}): {e}"
-                            )
+                            self.logger.warning(f"CSS読み込みエラー ({css_file}): {e}")
 
                     template_content = template_content.replace(
                         "{COMPONENTS_CSS}", css_content

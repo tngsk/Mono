@@ -14,8 +14,8 @@ import markdown.util
 
 from src.config import ConversionError
 from src.constants import (
-    MARKDOWN_EXTENSIONS,
     ALLOWED_COMPONENTS,
+    MARKDOWN_EXTENSIONS,
 )
 from src.handlers.file import FileHandler
 
@@ -41,9 +41,7 @@ class MarkdownProcessor:
                 if hasattr(module, "Parser"):
                     parser_instance = module.Parser()
                     parsers.append(parser_instance)
-                    self.logger.debug(
-                        f"パーサーをロードしました: {component_name}"
-                    )
+                    self.logger.debug(f"パーサーをロードしました: {component_name}")
             except Exception as e:
                 self.logger.warning(
                     f"パーサーのロードに失敗しました ({component_name}): {e}"
@@ -60,6 +58,7 @@ class MarkdownProcessor:
         processed = markdown_content
 
         if "```" in processed or "~~~" in processed:
+
             def replace_fenced(match: re.Match) -> str:
                 nonlocal counter
                 placeholder = f"@@FENCED_CODE_BLOCK_{counter}@@"
@@ -68,10 +67,15 @@ class MarkdownProcessor:
                 return placeholder
 
             # 複数行のコードブロックを保護 (``` または ~~~)
-            fenced_pattern = re.compile(r'(?s)(^[ \t]*(`{3,}|~{3,}).*?\n[ \t]*\2[ \t]*(?=\n|$))', re.MULTILINE)
+            # 開始フェンスと同じ長さの閉じフェンスを要求し、ネストされたブロックを正しく扱う
+            fenced_pattern = re.compile(
+                r"(?s)(^[ \t]*(?P<f>`{3,}|~{3,})[^\n]*.*?\n[ \t]*(?P=f)[ \t]*(?=\n|$))",
+                re.MULTILINE,
+            )
             processed = fenced_pattern.sub(replace_fenced, processed)
 
         if "`" in processed:
+
             def replace_inline(match: re.Match) -> str:
                 nonlocal counter
                 placeholder = f"@@INLINE_CODE_BLOCK_{counter}@@"
@@ -80,12 +84,15 @@ class MarkdownProcessor:
                 return placeholder
 
             # インラインのコードブロックを保護
-            inline_pattern = re.compile(r'(`+)(.*?)\1')
+            # バックティックの数に厳密に一致させ、前後のバックティックとの混同を避ける
+            inline_pattern = re.compile(r"(?<!`)(`+)(?!`)(.*?)(?<!`)\1(?!`)", re.DOTALL)
             processed = inline_pattern.sub(replace_inline, processed)
 
         return processed, blocks
 
-    def _restore_code_blocks(self, processed_content: str, blocks: dict[str, str]) -> str:
+    def _restore_code_blocks(
+        self, processed_content: str, blocks: dict[str, str]
+    ) -> str:
         """
         保護されたプレースホルダーを元のコードブロックに戻す。
 
@@ -96,7 +103,7 @@ class MarkdownProcessor:
         if not blocks:
             return processed_content
 
-        pattern = re.compile(r'@@(?:FENCED|INLINE)_CODE_BLOCK_\d+@@')
+        pattern = re.compile(r"@@(?:FENCED|INLINE)_CODE_BLOCK_\d+@@")
 
         def replacer(match: re.Match) -> str:
             return blocks.get(match.group(0), match.group(0))
@@ -132,7 +139,7 @@ class MarkdownProcessor:
             # Markdownパーサーにカスタムコンポーネントをブロックレベル要素として認識させる
             tags_to_add = []
             for parser in self.parsers:
-                if hasattr(parser, 'block_level_tags'):
+                if hasattr(parser, "block_level_tags"):
                     tags_to_add.extend(parser.block_level_tags)
 
             if tags_to_add:
