@@ -6,7 +6,7 @@ class Parser(BaseComponentParser):
     def block_level_tags(self) -> list[str]:
         return ["mono-poll"]
 
-    # OPTIONS: options, title
+    # OPTIONS: title="text", options="A,B,C"
     PATTERN = r"@\[poll(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
 
     def process(self, markdown_content: str) -> str:

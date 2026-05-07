@@ -43,8 +43,9 @@ def main():
                 if "# OPTIONS:" in line:
                     opt_str = line.split("# OPTIONS:")[1].strip()
                     if opt_str:
-                        options = [f"`{o.strip()}`" for o in opt_str.split(",")]
-                        options_str = ", ".join(options)
+                        opts_list = [o.strip() for o in re.split(r',\s*(?=\w+=|[\w-]+=|id=)', opt_str)]
+                        options = [f"`{o.strip()}`" for o in opts_list if o.strip()]
+                        options_str = "<br>".join(options)
                     break
 
         if not options_str:

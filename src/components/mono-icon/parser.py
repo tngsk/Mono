@@ -2,7 +2,7 @@ import re
 from src.processors.base_parser import BaseComponentParser
 
 class Parser(BaseComponentParser):
-    # OPTIONS: color, display, name, size
+    # OPTIONS: name="star|heart|...", size="16~128", color="red|#HEX", display="inline|block"
     PATTERN = r"@\[icon(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
     TEMPLATE = '<mono-icon name="{name}"{size_attr}{color_attr}{display_attr}{common_attr}></mono-icon>'
 
