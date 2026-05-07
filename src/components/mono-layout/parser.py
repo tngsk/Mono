@@ -2,7 +2,7 @@ import re
 from src.processors.base_parser import BaseComponentParser
 
 class Parser(BaseComponentParser):
-    # OPTIONS: label
+    # OPTIONS: class="text"
     ROW_PATTERN = r"@\[row(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
     STACK_PATTERN = r"@\[stack(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
     END_PATTERN = r"@\[(?:end|/row|/stack|/layout)\]"

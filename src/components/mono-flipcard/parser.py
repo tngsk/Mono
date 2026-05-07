@@ -2,7 +2,7 @@ import re
 from src.processors.base_parser import BaseComponentParser
 
 class Parser(BaseComponentParser):
-    # OPTIONS: answer, front_text, text
+    # OPTIONS: text="front text", front_text="front text", answer="back text"
     # Pattern: @[flipcard: "Front Text"](args)
     # The first group matches the text after the colon.
     # The second group matches the arguments inside parentheses.

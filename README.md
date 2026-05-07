@@ -22,30 +22,30 @@ Monoでは外部依存なしのVanilla JSによる多彩なWeb Componentsを埋�
 
 | コンポーネント | 概要 | 記述例 | オプション |
 |---|---|---|---|
-| `mono-ab-test` | A/Bテスト用のコンポーネント。2つの画像やコンテンツを並べて比較します。 | `@[ab-test](src-a: "img1.png", src-b: "img2.png")` | `src-a`, `src-b`, `title` |
+| `mono-ab-test` | A/Bテスト用のコンポーネント。2つの画像やコンテンツを並べて比較します。 | `@[ab-test](src-a: "img1.png", src-b: "img2.png")` | `src-a="url"`<br>`src-b="url"`<br>`title="text"` |
 | `mono-account` | ログインなどのアカウント管理UIを表示します。 | `@[account]()` | なし |
-| `mono-badge` | バッジを表示します。 | `@[badge: "New!"](color: "red")` | `color`, `outline`, `soft`, `text` |
-| `mono-clock` | 時計を表示します。 | `@[clock](display: "analog")` | `display`, `format` |
-| `mono-countdown` | カウントダウンタイマーを表示します。 | `@[countdown](time: "60", color: "red")` | `color`, `time` |
-| `mono-dice` | サイコロを表示し、クリックで振ることができます。 | `@[dice](number: 2, faces: 6)` | `faces`, `number` |
-| `mono-drawer` | 引き出し式のサイドメニュー（ドロワー）を表示します。ブロック要素。 | `@[drawer](position: "left", open: "false")\n...コンテンツ...\n@[/drawer]` | `label`, `open`, `position` |
-| `mono-flipcard` | クリックまたはホバーで裏返るカード。 | `@[flipcard: "Front Text"](answer: "Back Text")` | `answer`, `front_text`, `text` |
-| `mono-flow` | フローチャート（ノードとエッジ）を表示します。 | `@[flow: "フロー"](direction: "LR")<br>A -> B<br>@[/flow]` | `direction`, `label` |
-| `mono-group-assignment` | グループ分けを行うコンポーネント。 | `@[group-assignment](title: "グループ分け")` | `title` |
-| `mono-hero` | ヒーローバナー領域を表示します。ブロック要素。 | `@[hero](bg-color: "#000", text-color: "#fff")\n...コンテンツ...\n@[/hero]` | `bg-color`, `image`, `mode`, `text-color`, `title` |
-| `mono-icon` | アイコンを表示します。 | `@[icon: star](size: "24", color: "yellow")` | `color`, `display`, `name`, `size` |
-| `mono-layout` | 行（row）や列（stack）などのレイアウトを構築します。ブロック要素。 | `@[row]\n:::column\n左側コンテンツ\n:::\n:::column\n右側コンテンツ\n:::\n@[/row]` | `class` |
-| `mono-mermaid` | Mermaid記法で図表を描画し、SVGとして埋め込みます。ブロック要素。 | `@[mermaid]\ngraph TD;\nA-->B;\n@[/mermaid]` | `theme`, `title` |
-| `mono-notebook` | 入力可能なノートブック領域を表示します。 | `@[notebook](title: "メモ", placeholder: "入力してください")` | `id`, `placeholder`, `title` |
-| `mono-poll` | 投票システムを表示します。 | `@[poll](title: "好きな言語は？", options: "Python, JavaScript")` | `options`, `title` |
-| `mono-reaction` | リアクション（いいね、など）ボタンを表示します。 | `@[reaction](options: "👍, 👎")` | `label`, `options` |
-| `mono-score` | 楽譜を表示します。 | `@[score](clef: "treble", notes: "C4 D4 E4")` | `clef`, `notes`, `time`, `voices` |
-| `mono-section` | セクション領域を表示します。ブロック要素。 | `@[section](bg-color: "#f0f0f0")\n...コンテンツ...\n@[/section]` | `bg-color`, `height`, `image`, `mode`, `text-color`, `title`, `width` |
-| `mono-session-join` | セッション（同期・データ収集）へ参加するボタン等を表示します。 | `@[session-join](title: "参加する")` | `title` |
-| `mono-sound` | 効果音や音声を再生するボタンを表示します。 | `@[sound](src: "audio.mp3", label: "再生")` | `label`, `src` |
-| `mono-spacer` | 空白（スペーサー）を挿入します。 | `@[spacer](width: "10px", height: "20px")` | `height`, `width` |
-| `mono-textfield-input` | テキスト入力フィールドを表示します。 | `@[textfield](placeholder: "テキストを入力", size: "large")` | `id`, `label`, `placeholder`, `size` |
-| `mono-theme` | テーマ切り替えコンポーネント。通常はMarkdownディレクティブでテーマを設定します。 | `@[theme: dark]()` | `config`, `show-ui`, `theme_name` |
+| `mono-badge` | バッジを表示します。 | `@[badge: "New!"](color: "red")` | `color="red|blue|..."`<br>`outline="true|false"`<br>`soft="true|false"`<br>`text="text"` |
+| `mono-clock` | 時計を表示します。 | `@[clock](display: "analog")` | `display="analog|digital"`<br>`format="24h|12h"` |
+| `mono-countdown` | カウントダウンタイマーを表示します。 | `@[countdown](time: "60", color: "red")` | `time="10m|2024-12-31T23:59:59"`<br>`color="red|blue|..."` |
+| `mono-dice` | サイコロを表示し、クリックで振ることができます。 | `@[dice](number: 2, faces: 6)` | `number="1~6"`<br>`faces="4|6|8|10|12|20"` |
+| `mono-drawer` | 引き出し式のサイドメニュー（ドロワー）を表示します。ブロック要素。 | `@[drawer](position: "left", open: "false")\n...コンテンツ...\n@[/drawer]` | `position="left|right"`<br>`open="true|false"`<br>`label="text"` |
+| `mono-flipcard` | クリックまたはホバーで裏返るカード。 | `@[flipcard: "Front Text"](answer: "Back Text")` | `text="front text"`<br>`front_text="front text"`<br>`answer="back text"` |
+| `mono-flow` | フローチャート（ノードとエッジ）を表示します。 | `@[flow: "フロー"](direction: "LR")<br>A -> B<br>@[/flow]` | `direction="TB|LR"`<br>`label="text"` |
+| `mono-group-assignment` | グループ分けを行うコンポーネント。 | `@[group-assignment](title: "グループ分け")` | `title="text"` |
+| `mono-hero` | ヒーローバナー領域を表示します。ブロック要素。 | `@[hero](bg-color: "#000", text-color: "#fff")\n...コンテンツ...\n@[/hero]` | `image="url"`<br>`mode="light|dark"`<br>`bg-color="#HEX"`<br>`text-color="#HEX"`<br>`title="text"` |
+| `mono-icon` | アイコンを表示します。 | `@[icon: star](size: "24", color: "yellow")` | `name="star|heart|..."`<br>`size="16~128"`<br>`color="red|#HEX"`<br>`display="inline|block"` |
+| `mono-layout` | 行（row）や列（stack）などのレイアウトを構築します。ブロック要素。 | `@[row]\n:::column\n左側コンテンツ\n:::\n:::column\n右側コンテンツ\n:::\n@[/row]` | `class="text"` |
+| `mono-mermaid` | Mermaid記法で図表を描画し、SVGとして埋め込みます。ブロック要素。 | `@[mermaid]\ngraph TD;\nA-->B;\n@[/mermaid]` | `title="text"`<br>`theme="default|dark|forest|..."` |
+| `mono-notebook` | 入力可能なノートブック領域を表示します。 | `@[notebook](title: "メモ", placeholder: "入力してください")` | `title="text"`<br>`placeholder="text"`<br>`id="text"` |
+| `mono-poll` | 投票システムを表示します。 | `@[poll](title: "好きな言語は？", options: "Python, JavaScript")` | `title="text"`<br>`options="A,B,C"` |
+| `mono-reaction` | リアクション（いいね、など）ボタンを表示します。 | `@[reaction](options: "👍, 👎")` | `label="text"`<br>`options="👍,👎"` |
+| `mono-score` | 楽譜を表示します。 | `@[score](clef: "treble", notes: "C4 D4 E4")` | `clef="treble|bass"`<br>`notes="C4 D4 E4"`<br>`time="4/4|3/4"`<br>`voices='["C4 D4", "E4 F4"]'` |
+| `mono-section` | セクション領域を表示します。ブロック要素。 | `@[section](bg-color: "#f0f0f0")\n...コンテンツ...\n@[/section]` | `image="url"`<br>`mode="light|dark"`<br>`bg-color="#HEX"`<br>`text-color="#HEX"`<br>`height="px|vh"`<br>`width="px|vw"`<br>`title="text"` |
+| `mono-session-join` | セッション（同期・データ収集）へ参加するボタン等を表示します。 | `@[session-join](title: "参加する")` | `title="text"` |
+| `mono-sound` | 効果音や音声を再生するボタンを表示します。 | `@[sound](src: "audio.mp3", label: "再生")` | `src="url"`<br>`label="text"` |
+| `mono-spacer` | 空白（スペーサー）を挿入します。 | `@[spacer](width: "10px", height: "20px")` | `width="px|rem"`<br>`height="px|rem"` |
+| `mono-textfield-input` | テキスト入力フィールドを表示します。 | `@[textfield](placeholder: "テキストを入力", size: "large")` | `id="text"`<br>`label="text"`<br>`placeholder="text"`<br>`size="small|medium|large"` |
+| `mono-theme` | テーマ切り替えコンポーネント。通常はMarkdownディレクティブでテーマを設定します。 | `@[theme: dark]()` | `theme_name="light|dark"`<br>`show-ui="true|false"`<br>`config="json"` |
 
 #### 暗黙的・システムコンポーネント
 

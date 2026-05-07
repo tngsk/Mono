@@ -6,7 +6,7 @@ class Parser(BaseComponentParser):
     def block_level_tags(self) -> list[str]:
         return ["mono-notebook"]
 
-    # OPTIONS: placeholder, title
+    # OPTIONS: title="text", placeholder="text", id="text"
     PATTERN = r"@\[(?:notebook-input|notebook)(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
 
     def process(self, markdown_content: str) -> str:

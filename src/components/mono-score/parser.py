@@ -2,7 +2,7 @@ import re
 from src.processors.base_parser import BaseComponentParser
 
 class Parser(BaseComponentParser):
-    # OPTIONS: clef, notes, time, voices
+    # OPTIONS: clef="treble|bass", notes="C4 D4 E4", time="4/4|3/4", voices='["C4 D4", "E4 F4"]'
     PATTERN = r"@\[score(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
     TEMPLATE = '<mono-score{notes_attr}{voices_attr}{clef_attr}{time_signature_attr}{common_attr}></mono-score>'
 
