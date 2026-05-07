@@ -10,16 +10,29 @@ process.stdin.on('data', chunk => {
 process.stdin.on('end', () => {
     try {
         const data = JSON.parse(inputData);
-        const { code, language } = data;
 
-        let highlightedCode = '';
-        if (language && hljs.getLanguage(language)) {
-            highlightedCode = hljs.highlight(code, { language }).value;
+        // Handle batch processing
+        if (Array.isArray(data)) {
+            const results = data.map(item => {
+                const { code, language } = item;
+                if (language && hljs.getLanguage(language)) {
+                    return hljs.highlight(code, { language }).value;
+                } else {
+                    return hljs.highlightAuto(code).value;
+                }
+            });
+            console.log(JSON.stringify(results));
         } else {
-            highlightedCode = hljs.highlightAuto(code).value;
+            // Fallback for single item processing (backward compatibility if needed)
+            const { code, language } = data;
+            let highlightedCode = '';
+            if (language && hljs.getLanguage(language)) {
+                highlightedCode = hljs.highlight(code, { language }).value;
+            } else {
+                highlightedCode = hljs.highlightAuto(code).value;
+            }
+            console.log(highlightedCode);
         }
-
-        console.log(highlightedCode);
     } catch (e) {
         console.error(e);
         process.exit(1);
