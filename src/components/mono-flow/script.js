@@ -139,8 +139,15 @@ class MonoFlow extends MonoBaseElement {
         endX = toX;
         endY = toY - toRect.height / 2;
 
-        // Create a vertical line
-        d = `M ${startX} ${startY} L ${endX} ${endY}`;
+        // Create a vertical S-curve path
+        const curvature = 0.5;
+        const dy = endY - startY;
+        const control1X = startX;
+        const control1Y = startY + dy * curvature;
+        const control2X = endX;
+        const control2Y = endY - dy * curvature;
+
+        d = `M ${startX} ${startY} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${endX} ${endY}`;
       } else {
         // Horizontal layout: from right center to left center
         startX = fromX + fromRect.width / 2;
