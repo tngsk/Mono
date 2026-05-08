@@ -127,11 +127,14 @@ class MarkdownProcessor:
             # コンポーネントパース前にコードブロックを保護
             protected_content, blocks = self._protect_code_blocks(markdown_content)
 
-            for parser in self.parsers:
-                try:
-                    protected_content = parser.process(protected_content)
-                except Exception as e:
-                    self.logger.warning(f"コンポーネントパース処理でエラー: {e}")
+            # Fast path: If the document doesn't contain any potential component markers,
+            # we can safely skip running the 20+ regex component parsers over the entire document.
+            if "@[" in protected_content or ":::" in protected_content:
+                for parser in self.parsers:
+                    try:
+                        protected_content = parser.process(protected_content)
+                    except Exception as e:
+                        self.logger.warning(f"コンポーネントパース処理でエラー: {e}")
 
             # コードブロックを復元
             markdown_content = self._restore_code_blocks(protected_content, blocks)
