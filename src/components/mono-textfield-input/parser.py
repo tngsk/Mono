@@ -2,7 +2,7 @@ import re
 from src.processors.base_parser import BaseComponentParser
 
 class Parser(BaseComponentParser):
-    # OPTIONS: id="text", label="text", placeholder="text", size="small|medium|large"
+    # OPTIONS: label="text", id="text", placeholder="text", size="small|medium|large"
     PATTERN = r"@\[textfield(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
 
     def process(self, markdown_content: str) -> str:
