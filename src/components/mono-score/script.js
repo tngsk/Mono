@@ -89,7 +89,7 @@ class MonoScore extends MonoBaseElement {
                         if (parsedVoices.length > 1) {
                             options.stem = i % 2 === 0 ? 'up' : 'down';
                         }
-                        voicesData.push(score.voice(score.notes(voiceStr, options)));
+                        voicesData.push(score.voice(score.notes(voiceStr, options), { time: timeAttr }).setStrict(false));
                     });
                 }
             } catch (e) {
@@ -101,7 +101,7 @@ class MonoScore extends MonoBaseElement {
                 if (!notesAttr.includes(',') && notesAttr.trim().length > 0) {
                     notesAttr = notesAttr.split(/[\s]+/).filter(n => n).join(', ');
                 }
-                voicesData.push(score.voice(score.notes(notesAttr)));
+                voicesData.push(score.voice(score.notes(notesAttr), { time: timeAttr }).setStrict(false));
             } catch (e) {
                 console.error("Failed to parse notes attribute for mono-score:", e);
             }
