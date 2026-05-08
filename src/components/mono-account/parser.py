@@ -6,7 +6,7 @@ class Parser(BaseComponentParser):
     # OPTIONS:
     @property
     def pattern(self) -> re.Pattern:
-        return re.compile(r"\[@account\]\(\)")
+        return re.compile(r"@\[account\]\(\)")
 
     @property
     def component_name(self) -> str:
