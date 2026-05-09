@@ -71,13 +71,13 @@ class MonoCodeBlock extends MonoBaseElement {
     const btn = this.refs.copyButton;
     if (!btn) return;
 
-    const originalText = btn.innerHTML;
-    btn.innerHTML = "✅ Copied!";
+    const originalText = btn.textContent;
+    btn.textContent = "✅ Copied!";
     btn.classList.add("copied");
 
     // Reset after 2 seconds
     setTimeout(() => {
-      btn.innerHTML = originalText;
+      btn.textContent = originalText;
       btn.classList.remove("copied");
     }, 2000);
   }
@@ -86,11 +86,11 @@ class MonoCodeBlock extends MonoBaseElement {
     const btn = this.refs.copyButton;
     if (!btn) return;
 
-    const originalText = btn.innerHTML;
-    btn.innerHTML = "❌ Error";
+    const originalText = btn.textContent;
+    btn.textContent = "❌ Error";
 
     setTimeout(() => {
-      btn.innerHTML = originalText;
+      btn.textContent = originalText;
     }, 2000);
   }
 

@@ -49,7 +49,7 @@ class MonoScore extends MonoBaseElement {
 
             renderScore(container) {
         if (!window.Vex || !window.Vex.Flow) return;
-        container.innerHTML = '';
+        container.textContent = '';
 
         const VF = window.Vex.Flow;
         const { Factory } = VF;

@@ -66,10 +66,10 @@ class MonoABTest extends MonoBaseElement {
       }
     } else if (this.srcA) {
       const ext = this.srcA.split('.').pop().toLowerCase();
-      if (["png", "jpg", "jpeg", "gif", "webp", "svg"].includes(ext)) {
-        this.mediaType = "image";
-      } else {
+      if (["mp3", "wav", "ogg", "flac", "aac", "m4a"].includes(ext)) {
         this.mediaType = "audio";
+      } else {
+        this.mediaType = "image";
       }
     }
 

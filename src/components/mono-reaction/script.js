@@ -42,7 +42,7 @@ class MonoReaction extends MonoInteractiveElement {
     const container = this.shadowRoot.getElementById("reaction-buttons");
     if (!container) return;
 
-    container.innerHTML = "";
+    container.textContent = "";
 
     this.options.forEach((option, index) => {
       const btn = document.createElement("button");
