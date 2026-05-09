@@ -81,7 +81,7 @@ class MonoFlow extends MonoBaseElement {
     if (!svg || !wrapper) return;
 
     // Clear existing SVGs
-    svg.innerHTML = "";
+    svg.textContent = "";
 
     // Calculate wrapper bounds to make absolute coordinates relative to the wrapper
     const wrapperRect = wrapper.getBoundingClientRect();
