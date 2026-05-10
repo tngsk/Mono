@@ -17,8 +17,11 @@ class MonoSynth extends MonoBaseElement {
     this.isToneLoaded = false;
     this.isAudioStarted = false;
 
+    // Nodes mapping
+    this.nodes = {};
+
     // State
-    this.activePointers = new Map(); // For multi-touch keyboard
+    this.activePointers = new Map();
     this.animationFrameId = null;
 
     // Bindings
@@ -48,12 +51,11 @@ class MonoSynth extends MonoBaseElement {
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
     }
-    if (this.synth) {
-      this.synth.dispose();
-    }
-    if (this.analyzer) {
-      this.analyzer.dispose();
-    }
+    // Cleanup nodes
+    Object.values(this.nodes).forEach(n => {
+      if (n && n.dispose) n.dispose();
+    });
+    if (this.synth) this.synth.dispose();
   }
 
   loadToneJs() {
@@ -71,7 +73,6 @@ class MonoSynth extends MonoBaseElement {
       };
       document.head.appendChild(script);
     } else {
-      // Script is already loading, wait for it
       const checkTone = setInterval(() => {
         if (window.Tone) {
           this.isToneLoaded = true;
@@ -93,7 +94,7 @@ class MonoSynth extends MonoBaseElement {
       this.startOverlay.classList.add('hidden');
 
       this.setupSynth();
-      this.updateSynthParams(); // Apply initial knob values
+      this.updateSynthParams();
       this.drawScope();
     } catch (e) {
       console.error("Audio context start failed", e);
@@ -101,24 +102,50 @@ class MonoSynth extends MonoBaseElement {
   }
 
   setupSynth() {
-    this.analyzer = new window.Tone.Analyser('waveform', 512);
-    this.volumeNode = new window.Tone.Volume(-12).toDestination();
+    const Tone = window.Tone;
 
-    // Filter node that applies to the sampler
-    this.filter = new window.Tone.Filter(2000, "lowpass");
-    this.filter.Q.value = 1;
-    this.filter.chain(this.analyzer, this.volumeNode);
+    this.nodes.analyzer = new Tone.Analyser('waveform', 512);
+    this.nodes.volume = new Tone.Volume(-12).toDestination();
 
-    // We use a MonoSynth which combines Osc, Env, and Filter
-    this.synth = new window.Tone.MonoSynth({
+    // Core filter
+    this.nodes.filter = new Tone.Filter(2000, "lowpass");
+    this.nodes.filter.Q.value = 1;
+    this.nodes.filter.chain(this.nodes.analyzer, this.nodes.volume);
+
+    // Synth
+    // We use a MonoSynth to get Osc and Amp Env easily,
+    // but we'll bypass its internal filter and use our custom chain
+    this.synth = new Tone.MonoSynth({
       oscillator: { type: "sine" },
-      filter: { Q: 1, type: "lowpass", rolloff: -24 },
       envelope: { attack: 0.1, decay: 0.2, sustain: 0.5, release: 1 },
-      filterEnvelope: { attack: 0.1, decay: 0.2, sustain: 0.5, release: 1, baseFrequency: 200, octaves: 4 }
+      filter: { type: "lowpass", frequency: 20000 }, // Disable internal filter basically
+      filterEnvelope: { attack: 0, decay: 0, sustain: 1, release: 0, baseFrequency: 20000, octaves: 0 }
     });
-    this.synth.chain(this.analyzer, this.volumeNode);
+    this.synth.disconnect();
+    this.synth.connect(this.nodes.filter);
 
-    // Check for custom sample
+    // Additional Envelopes
+    this.nodes.pitchEnv = new Tone.Envelope(0.1, 0.2, 0, 0); // only A D
+    // Scale env 0-1 to detune amount in cents
+    this.nodes.pitchScale = new Tone.Scale(0, 0);
+    this.nodes.pitchEnv.connect(this.nodes.pitchScale);
+    this.nodes.pitchScale.connect(this.synth.oscillator.detune);
+
+    this.nodes.filtEnv = new Tone.Envelope(0.1, 0.2, 0.5, 1);
+    this.nodes.filtScale = new Tone.Scale(0, 0);
+    this.nodes.filtEnv.connect(this.nodes.filtScale);
+    this.nodes.filtScale.connect(this.nodes.filter.frequency);
+
+    // LFOs
+    this.nodes.lfo1 = new Tone.LFO(1, 0, 1).start();
+    this.nodes.lfo1Scale = new Tone.Scale(0, 0);
+    this.nodes.lfo1.connect(this.nodes.lfo1Scale);
+
+    this.nodes.lfo2 = new Tone.LFO(1, 0, 1).start();
+    this.nodes.lfo2Scale = new Tone.Scale(0, 0);
+    this.nodes.lfo2.connect(this.nodes.lfo2Scale);
+
+    // Track active sample sampler
     this.sampler = null;
     this.isSampleMode = false;
 
@@ -128,14 +155,12 @@ class MonoSynth extends MonoBaseElement {
         if (!url || typeof url !== 'string') return false;
         try {
             const parsed = new URL(url, window.location.href);
-            const protocol = parsed.protocol.toLowerCase();
-            return ['http:', 'https:', 'data:'].includes(protocol);
+            return ['http:', 'https:', 'data:'].includes(parsed.protocol.toLowerCase());
         } catch (e) {
             return false;
         }
       };
 
-      // Handle asset-store logic
       if (rawSrc.startsWith("asset-")) {
         const store = document.getElementById("mono-asset-store");
         if (store) {
@@ -145,7 +170,7 @@ class MonoSynth extends MonoBaseElement {
               rawSrc = assets[rawSrc];
             }
           } catch (e) {
-            console.error("Asset store parse error in mono-synth:", e);
+            console.error("Asset store error:", e);
           }
         }
       }
@@ -157,70 +182,110 @@ class MonoSynth extends MonoBaseElement {
           },
           release: 1,
           baseUrl: ""
-        }).connect(this.filter);
+        });
+        this.sampler.connect(this.nodes.filter);
+
+        // Connect LFOs/Envs to sampler detune if needed, but Sampler API restricts some modularity.
+        // We will just connect pitchEnv to sampler detune if available
+        this.nodes.pitchEnv.connect(this.nodes.pitchScale);
+        // Sampler lacks a direct .detune node array, so we might skip it or use a pitch shift later.
       }
     }
   }
 
-  triggerAttack(noteName) {
+  getParamValue(paramName) {
+    const knob = Array.from(this.knobs).find(k => k.dataset.param === paramName);
+    if (!knob) return null;
+    return knob.dataset.type === 'enum' ? knob.dataset.value : parseFloat(knob.dataset.value);
+  }
+
+  triggerAttack(noteIndex) {
+    if (!this.isAudioStarted) return;
+    const Tone = window.Tone;
+    const now = Tone.now();
+
+    const baseFreq = this.getParamValue("baseFreq") || 440;
+    // Note index 0 = baseFreq. index 1 = baseFreq * 2^(1/12)
+    const freq = baseFreq * Math.pow(2, noteIndex / 12);
+
     if (this.isSampleMode && this.sampler && this.sampler.loaded) {
-      this.sampler.triggerAttack(noteName, window.Tone.now());
+      this.sampler.triggerAttack(freq, now);
     } else {
-      this.synth.triggerAttack(noteName, window.Tone.now());
+      this.synth.triggerAttack(freq, now);
     }
+
+    this.nodes.pitchEnv.triggerAttack(now);
+    this.nodes.filtEnv.triggerAttack(now);
   }
 
   triggerRelease() {
+    if (!this.isAudioStarted) return;
+    const Tone = window.Tone;
+    const now = Tone.now();
+
     if (this.isSampleMode && this.sampler && this.sampler.loaded) {
-      this.sampler.triggerRelease(window.Tone.now());
+      this.sampler.triggerRelease(now);
     } else {
-      this.synth.triggerRelease(window.Tone.now());
+      this.synth.triggerRelease(now);
     }
+
+    this.nodes.pitchEnv.triggerRelease(now);
+    this.nodes.filtEnv.triggerRelease(now);
   }
 
   // --- UI Logic ---
 
   generateKeyboard() {
-    // Generate 2 octaves (C3 to B4)
-    const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-    const startOctave = 3;
-    const numOctaves = 2;
+    const numWhiteKeys = 21; // 3 octaves
+    const totalKeys = 36; // 12 * 3
 
-    for (let oct = startOctave; oct < startOctave + numOctaves; oct++) {
-      for (let i = 0; i < notes.length; i++) {
-        const note = notes[i];
-        const isBlack = note.includes('#');
-        const el = document.createElement('div');
-        el.className = `key ${isBlack ? 'key-black' : 'key-white'}`;
-        el.dataset.note = `${note}${oct}`;
+    // Pattern of white/black keys
+    // W B W B W W B W B W B W ...
+    const pattern = [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0];
 
-        // Event listeners for keys
-        const startNote = (e) => {
-          e.preventDefault();
-          if (!this.isAudioStarted) return;
-          el.classList.add('active');
-          const noteName = el.dataset.note;
-          // Trigger attack
-          this.triggerAttack(noteName);
-        };
+    let whiteIndex = 0;
 
-        const stopNote = (e) => {
-          e.preventDefault();
-          el.classList.remove('active');
-          if (!this.isAudioStarted) return;
-          this.triggerRelease();
-        };
+    for (let i = 0; i < totalKeys; i++) {
+      const isBlack = pattern[i % 12] === 1;
+      const el = document.createElement('div');
 
-        el.addEventListener('mousedown', startNote);
-        el.addEventListener('mouseup', stopNote);
-        el.addEventListener('mouseleave', stopNote);
+      el.dataset.index = i; // Represents semitones from baseFreq
 
-        el.addEventListener('touchstart', startNote, {passive: false});
-        el.addEventListener('touchend', stopNote, {passive: false});
-        el.addEventListener('touchcancel', stopNote, {passive: false});
-
-        this.keyboardInner.appendChild(el);
+      if (isBlack) {
+        el.className = 'key key-black';
+        // Calculate position based on the PREVIOUS white key
+        const whiteWidthPercent = 100 / numWhiteKeys;
+        const blackWidthPercent = whiteWidthPercent * 0.6;
+        // Position it on the line between previous white key and next white key
+        const leftPercent = (whiteIndex * whiteWidthPercent) - (blackWidthPercent / 2);
+        el.style.width = `${blackWidthPercent}%`;
+        el.style.left = `${leftPercent}%`;
+      } else {
+        el.className = 'key key-white';
+        whiteIndex++;
       }
+
+      const startNote = (e) => {
+        e.preventDefault();
+        el.classList.add('active');
+        this.triggerAttack(parseInt(el.dataset.index));
+      };
+
+      const stopNote = (e) => {
+        e.preventDefault();
+        el.classList.remove('active');
+        this.triggerRelease();
+      };
+
+      el.addEventListener('mousedown', startNote);
+      el.addEventListener('mouseup', stopNote);
+      el.addEventListener('mouseleave', stopNote);
+
+      el.addEventListener('touchstart', startNote, {passive: false});
+      el.addEventListener('touchend', stopNote, {passive: false});
+      el.addEventListener('touchcancel', stopNote, {passive: false});
+
+      this.keyboardInner.appendChild(el);
     }
   }
 
@@ -241,7 +306,7 @@ class MonoSynth extends MonoBaseElement {
         const min = parseFloat(knob.dataset.min);
         const max = parseFloat(knob.dataset.max);
         const val = parseFloat(knob.dataset.value);
-        startVal = (val - min) / (max - min); // 0 to 1
+        startVal = (val - min) / (max - min);
       }
 
       document.addEventListener('mousemove', onPointerMove);
@@ -259,23 +324,21 @@ class MonoSynth extends MonoBaseElement {
       const type = activeKnob.dataset.type;
       if (type === 'enum') {
         const options = activeKnob.dataset.options.split(',');
-        // slower change for enums
         const step = Math.floor(deltaY / 20);
         let idx = startVal + step;
         idx = Math.max(0, Math.min(options.length - 1, idx));
         activeKnob.dataset.idx = idx;
         const valStr = options[idx];
         activeKnob.dataset.value = valStr;
-        this.updateKnobDisplay(activeKnob, idx / (options.length - 1), valStr);
+        this.updateKnobDisplay(activeKnob, idx / (options.length - 1));
       } else {
         const min = parseFloat(activeKnob.dataset.min);
         const max = parseFloat(activeKnob.dataset.max);
-        let newVal = startVal + (deltaY / 150); // Sensitivity
+        let newVal = startVal + (deltaY / 150);
         newVal = Math.max(0, Math.min(1, newVal));
 
         let realVal;
         if (activeKnob.dataset.scale === 'log') {
-          // simple log scale mapping
           const logMin = Math.log(min || 0.1);
           const logMax = Math.log(max);
           realVal = Math.exp(logMin + newVal * (logMax - logMin));
@@ -284,14 +347,7 @@ class MonoSynth extends MonoBaseElement {
         }
 
         activeKnob.dataset.value = realVal;
-
-        // Format display
-        let displayVal = realVal;
-        if (realVal >= 1000) displayVal = (realVal/1000).toFixed(1) + 'k';
-        else if (realVal < 10) displayVal = realVal.toFixed(2);
-        else displayVal = Math.round(realVal);
-
-        this.updateKnobDisplay(activeKnob, newVal, displayVal);
+        this.updateKnobDisplay(activeKnob, newVal);
       }
 
       this.updateSynthParams();
@@ -306,12 +362,11 @@ class MonoSynth extends MonoBaseElement {
     };
 
     this.knobs.forEach(knob => {
-      // init display
       const type = knob.dataset.type;
       if (type === 'enum') {
         knob.dataset.idx = 0;
         knob.dataset.value = knob.dataset.options.split(',')[0];
-        this.updateKnobDisplay(knob, 0, knob.dataset.value);
+        this.updateKnobDisplay(knob, 0);
       } else {
         const min = parseFloat(knob.dataset.min);
         const max = parseFloat(knob.dataset.max);
@@ -322,9 +377,7 @@ class MonoSynth extends MonoBaseElement {
           const logMax = Math.log(max);
           norm = (Math.log(val) - logMin) / (logMax - logMin);
         }
-        let displayVal = val;
-        if (val >= 1000) displayVal = (val/1000).toFixed(1) + 'k';
-        this.updateKnobDisplay(knob, norm, displayVal);
+        this.updateKnobDisplay(knob, norm);
       }
 
       knob.addEventListener('mousedown', e => onPointerDown(e, knob));
@@ -332,67 +385,98 @@ class MonoSynth extends MonoBaseElement {
     });
   }
 
-  updateKnobDisplay(knob, normValue, labelStr) {
+  updateKnobDisplay(knob, normValue) {
     const dial = knob.querySelector('.knob-dial');
-    const valueEl = knob.parentElement.querySelector('.knob-value');
-    // Rotate from -135deg to 135deg (270deg range)
     const angle = -135 + (normValue * 270);
     dial.style.transform = `rotate(${angle}deg)`;
-    if (valueEl) valueEl.textContent = labelStr;
+  }
+
+  routeLFO(lfoScaleNode, lfoDepth, destStr) {
+    lfoScaleNode.disconnect();
+    if (destStr === "pitch") {
+      lfoScaleNode.min = -lfoDepth * 1200; // cents
+      lfoScaleNode.max = lfoDepth * 1200;
+      lfoScaleNode.connect(this.synth.oscillator.detune);
+    } else if (destStr === "filter") {
+      lfoScaleNode.min = -lfoDepth * 5000;
+      lfoScaleNode.max = lfoDepth * 5000;
+      lfoScaleNode.connect(this.nodes.filter.frequency);
+    } else if (destStr === "amp") {
+      lfoScaleNode.min = -lfoDepth * 40; // db
+      lfoScaleNode.max = 0;
+      lfoScaleNode.connect(this.nodes.volume.volume);
+    }
   }
 
   updateSynthParams() {
-    if (!this.synth || !this.volumeNode) return;
+    if (!this.synth || !this.isAudioStarted) return;
 
-    const params = {};
+    const p = {};
     this.knobs.forEach(k => {
-      params[k.dataset.param] = k.dataset.type === 'enum' ? k.dataset.value : parseFloat(k.dataset.value);
+      p[k.dataset.param] = k.dataset.type === 'enum' ? k.dataset.value : parseFloat(k.dataset.value);
     });
 
-    // Update Tone.js nodes
-    if (params.oscType === 'sample') {
+    // OSC
+    if (p.oscType === 'sample') {
       this.isSampleMode = true;
-      if (!this.sampler) {
-         console.warn("Sample mode selected but no sample provided or loaded.");
-      }
     } else {
       this.isSampleMode = false;
-      this.synth.oscillator.type = params.oscType;
+      this.synth.oscillator.type = p.oscType;
     }
 
-    if (this.filter) {
-        this.filter.frequency.value = params.filterFreq;
-        this.filter.Q.value = params.filterRes;
+    // Filter
+    this.nodes.filter.frequency.value = p.filterFreq;
+    this.nodes.filter.Q.value = p.filterRes;
+
+    // Amp Env
+    this.synth.envelope.attack = p.ampA;
+    this.synth.envelope.decay = p.ampD;
+    this.synth.envelope.sustain = p.ampS;
+    this.synth.envelope.release = p.ampR;
+
+    // Pitch Env
+    this.nodes.pitchEnv.attack = p.pitchA;
+    this.nodes.pitchEnv.decay = p.pitchD;
+    this.nodes.pitchScale.min = 0;
+    this.nodes.pitchScale.max = p.pitchEnvAmt;
+
+    // Filter Env
+    this.nodes.filtEnv.attack = p.filtA;
+    this.nodes.filtEnv.decay = p.filtD;
+    this.nodes.filtEnv.sustain = p.filtS;
+    this.nodes.filtEnv.release = p.filtR;
+    this.nodes.filtScale.min = 0;
+    this.nodes.filtScale.max = p.filtEnvAmt;
+
+    // LFO 1
+    this.nodes.lfo1.frequency.value = p.lfo1Rate;
+    this.routeLFO(this.nodes.lfo1Scale, p.lfo1Depth, p.lfo1Dest);
+
+    // LFO 2
+    this.nodes.lfo2.frequency.value = p.lfo2Rate;
+    this.routeLFO(this.nodes.lfo2Scale, p.lfo2Depth, p.lfo2Dest);
+
+    // Master
+    // Ensure LFO routing doesn't completely override master if dest != amp, but for simplicity
+    // we set the base value. Tone.js handles additive signals well.
+    if (p.lfo1Dest !== "amp" && p.lfo2Dest !== "amp") {
+      this.nodes.volume.volume.value = p.volume;
+    } else {
+        // If LFO is routed to amp, base volume is max, LFO modulates downwards
+        this.nodes.volume.volume.value = p.volume;
     }
-
-    this.synth.filter.frequency.value = params.filterFreq;
-    this.synth.filter.Q.value = params.filterRes;
-
-    this.synth.envelope.attack = params.envA;
-    this.synth.envelope.decay = params.envD;
-    this.synth.envelope.sustain = params.envS;
-    this.synth.envelope.release = params.envR;
-
-    // Keep filter envelope synced with amp envelope for simplicity
-    this.synth.filterEnvelope.attack = params.envA;
-    this.synth.filterEnvelope.decay = params.envD;
-    this.synth.filterEnvelope.sustain = params.envS;
-    this.synth.filterEnvelope.release = params.envR;
-    this.synth.filterEnvelope.baseFrequency = params.filterFreq / 4;
-
-    this.volumeNode.volume.value = params.volume;
   }
 
   drawScope() {
-    if (!this.analyzer || !this.isAudioStarted) return;
+    if (!this.nodes.analyzer || !this.isAudioStarted) return;
 
     this.animationFrameId = requestAnimationFrame(this.drawScope);
 
-    const values = this.analyzer.getValue();
+    const values = this.nodes.analyzer.getValue();
     const width = this.canvas.width;
     const height = this.canvas.height;
 
-    this.ctx.fillStyle = 'rgba(17, 17, 17, 0.4)'; // Trail effect
+    this.ctx.fillStyle = 'rgba(17, 17, 17, 0.4)';
     this.ctx.fillRect(0, 0, width, height);
 
     this.ctx.lineWidth = 2;
@@ -403,7 +487,7 @@ class MonoSynth extends MonoBaseElement {
     let x = 0;
 
     for (let i = 0; i < values.length; i++) {
-      const v = values[i]; // -1 to 1
+      const v = values[i];
       const y = (v * 0.5 + 0.5) * height;
 
       if (i === 0) {

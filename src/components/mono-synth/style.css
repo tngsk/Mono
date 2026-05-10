@@ -18,7 +18,7 @@
 /* Oscilloscope */
 .scope-container {
   width: 100%;
-  height: 120px;
+  height: 100px;
   background: #111;
   border-bottom: 2px solid #333;
 }
@@ -31,17 +31,22 @@
 /* Controls */
 .controls-container {
   display: flex;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  padding: 1rem;
-  gap: 1rem;
+  flex-direction: column;
+  padding: 0.5rem;
+  gap: 0.5rem;
   background: #222;
   color: #eee;
-  /* hide scrollbar */
+}
+
+.controls-row {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 0.5rem;
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-.controls-container::-webkit-scrollbar {
+.controls-row::-webkit-scrollbar {
   display: none;
 }
 
@@ -49,49 +54,48 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
+  gap: 0.25rem;
+  padding: 0.75rem 0.25rem 0.25rem 0.25rem;
   background: #333;
-  border-radius: 6px;
+  border-radius: 4px;
   border: 1px solid #444;
+  position: relative;
 }
 
 .group-label {
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  transform: rotate(180deg);
-  font-size: 0.7rem;
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  font-size: 0.5rem;
   letter-spacing: 1px;
   color: #aaa;
   font-weight: bold;
-  padding-right: 0.25rem;
-  border-left: 1px solid #555;
 }
 
 .knob-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 50px;
+  width: 36px;
 }
 
 .knob {
-  width: 40px;
-  height: 40px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: conic-gradient(from 225deg, #555 0%, #555 75%, #222 75%, #222 100%);
   position: relative;
   cursor: ns-resize;
   box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .knob-dial {
   position: absolute;
-  top: 4px;
-  left: 4px;
-  right: 4px;
-  bottom: 4px;
+  top: 3px;
+  left: 3px;
+  right: 3px;
+  bottom: 3px;
   border-radius: 50%;
   background: #444;
   transform: rotate(0deg); /* Updated by JS */
@@ -99,39 +103,34 @@
 
 .knob-indicator {
   position: absolute;
-  top: 2px;
+  top: 1px;
   left: 50%;
   width: 2px;
-  height: 10px;
+  height: 8px;
   background: #ff5555;
   transform: translateX(-50%);
 }
 
 .knob-label {
-  font-size: 0.65rem;
+  font-size: 0.55rem;
   color: #ccc;
   text-transform: uppercase;
-}
-
-.knob-value {
-  font-size: 0.6rem;
-  color: #999;
-  font-family: monospace;
+  text-align: center;
+  line-height: 1.1;
 }
 
 /* Keyboard */
 .keyboard-container {
   background: #1a1a1a;
   padding: 10px 10px 0 10px;
-  overflow-x: auto;
   border-top: 1px solid #333;
 }
 
 .keyboard-inner {
   display: flex;
-  height: 120px;
+  height: 100px;
   position: relative;
-  min-width: max-content;
+  width: 100%;
 }
 
 .key {
@@ -142,7 +141,7 @@
 }
 
 .key-white {
-  width: 40px;
+  flex: 1;
   height: 100%;
   background: #fffff0;
   border: 1px solid #ccc;
@@ -155,12 +154,11 @@
 }
 
 .key-black {
-  width: 24px;
+  position: absolute;
+  /* width and left will be calculated by JS based on percentages */
   height: 60%;
   background: #111;
   border-radius: 0 0 3px 3px;
-  margin-left: -12px;
-  margin-right: -12px;
   z-index: 2;
   box-shadow: inset 0 -4px 0 rgba(0,0,0,0.4);
 }
