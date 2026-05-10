@@ -13,9 +13,14 @@ from typing import List, Optional
 
 from src.config import ConversionError
 from src.constants import (
+    ALWAYS_INCLUDE_COMPONENTS,
+    CLASSES_REQUIRING_MATH,
     COMPONENTS_DIR,
+    COMPONENTS_REQUIRING_CODE_BLOCK_HIGHLIGHT,
+    COMPONENTS_REQUIRING_ICONS,
     DEFAULT_TEMPLATE_PATH,
     HTML_TABLE_STYLE_PATTERN,
+    INTERACTIVE_COMPONENTS,
     MATERIAL_SYMBOLS_URL,
     MONO_VERSION,
     TEMPLATES_DIR,
@@ -74,15 +79,7 @@ class HTMLDocumentBuilder:
         # エクスポート機能の自動判定
         has_interactive_components = any(
             tag in found_mono_tags
-            for tag in [
-                "mono-poll",
-                "mono-ab-test",
-                "mono-notebook",
-                "mono-textfield-input",
-                "mono-reaction",
-                "mono-session-join",
-                "mono-group-assignment",
-            ]
+            for tag in INTERACTIVE_COMPONENTS
         )
         should_enable_export = enable_export or has_interactive_components
 
@@ -94,14 +91,14 @@ class HTMLDocumentBuilder:
             found_mono_tags, should_enable_export
         )
 
-        has_code_block = "mono-code-block" in found_mono_tags
+        has_code_block = any(tag in found_mono_tags for tag in COMPONENTS_REQUIRING_CODE_BLOCK_HIGHLIGHT)
         highlight_js_css = (
             self._build_highlight_js_link(html_body) if has_code_block else ""
         )
         highlight_js = self._load_highlight_js_script() if has_code_block else ""
 
         mathjax = ""
-        if 'class="mono-math' in html_body:
+        if any(f'class="{cls}' in html_body for cls in CLASSES_REQUIRING_MATH):
             mathjax = self._build_mathjax_script()
 
         mono_components_js = self._load_mono_components_script(used_component_dirs)
@@ -125,7 +122,7 @@ class HTMLDocumentBuilder:
 
         # アイコンが使われている場合はGoogle Fontsのリンクを追加
         fonts_link = ""
-        if "mono-icon" in found_mono_tags:
+        if any(tag in found_mono_tags for tag in COMPONENTS_REQUIRING_ICONS):
             fonts_link = (
                 f'\n        <link rel="stylesheet" href="{MATERIAL_SYMBOLS_URL}" />'
             )
@@ -252,10 +249,11 @@ class HTMLDocumentBuilder:
         themes = set(["atom-one-dark"])  # デフォルトテーマ
 
         # html_bodyからtheme属性をすべて検索
-        matches = re.finditer(r'<mono-code-block[^>]*theme="([^"]*)"', html_body)
-        for match in matches:
-            if match.group(1):
-                themes.add(match.group(1))
+        for tag in COMPONENTS_REQUIRING_CODE_BLOCK_HIGHLIGHT:
+            matches = re.finditer(rf'<{tag}[^>]*theme="([^"]*)"', html_body)
+            for match in matches:
+                if match.group(1):
+                    themes.add(match.group(1))
 
         css_blocks = []
         for theme in themes:
@@ -292,13 +290,15 @@ class HTMLDocumentBuilder:
                         if not s:
                             continue
 
-                        if theme == "atom-one-dark":
-                            scoped_parts.append(f"mono-code-block:not([theme]) {s}")
-                            scoped_parts.append(
-                                f'mono-code-block[theme="atom-one-dark"] {s}'
-                            )
-                        else:
-                            scoped_parts.append(f'mono-code-block[theme="{theme}"] {s}')
+                        # Apply to all components that require code block highlighting
+                        for tag in COMPONENTS_REQUIRING_CODE_BLOCK_HIGHLIGHT:
+                            if theme == "atom-one-dark":
+                                scoped_parts.append(f"{tag}:not([theme]) {s}")
+                                scoped_parts.append(
+                                    f'{tag}[theme="atom-one-dark"] {s}'
+                                )
+                            else:
+                                scoped_parts.append(f'{tag}[theme="{theme}"] {s}')
 
                     return f"\n{', '.join(scoped_parts)} {{{properties}}}\n"
 
@@ -352,7 +352,7 @@ class HTMLDocumentBuilder:
             name = component_dir.name
 
             # 常に含めるコンポーネント
-            if name in ["mono-sync", "mono-brush"]:
+            if name in ALWAYS_INCLUDE_COMPONENTS:
                 used_dirs.append(component_dir)
                 continue
 

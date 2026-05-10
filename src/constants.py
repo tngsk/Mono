@@ -53,6 +53,42 @@ ALLOWED_COMPONENTS = [
 ]
 
 # ============================================================================
+# Component Behavior Configuration
+# ============================================================================
+
+# エクスポート機能（mono-export）を自動的に有効にするインタラクティブなコンポーネント
+INTERACTIVE_COMPONENTS = [
+    "mono-poll",
+    "mono-ab-test",
+    "mono-notebook",
+    "mono-textfield-input",
+    "mono-reaction",
+    "mono-session-join",
+    "mono-group-assignment",
+]
+
+# ドキュメントに常に含めるシステム/暗黙的コンポーネント
+ALWAYS_INCLUDE_COMPONENTS = [
+    "mono-sync",
+    "mono-brush",
+]
+
+# Highlight.js (CSS) を必要とするコンポーネント
+COMPONENTS_REQUIRING_CODE_BLOCK_HIGHLIGHT = [
+    "mono-code-block",
+]
+
+# アイコン用フォント（Material Symbols）を必要とするコンポーネント
+COMPONENTS_REQUIRING_ICONS = [
+    "mono-icon",
+]
+
+# MathJax (数式レンダリング) を必要とする要素のクラス名
+CLASSES_REQUIRING_MATH = [
+    "mono-math",
+]
+
+# ============================================================================
 # Highlight.js Configuration
 # ============================================================================
 
