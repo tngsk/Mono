@@ -42,6 +42,7 @@ class HTMLDocumentBuilder:
         connect_src: str = "",
         asset_store: Optional[dict] = None,
         enable_export: bool = False,
+        csp_additions: Optional[dict[str, List[str]]] = None,
     ) -> str:
         """
         テンプレートとHTML断片からドキュメントを生成
@@ -104,10 +105,36 @@ class HTMLDocumentBuilder:
         mono_components_js = self._load_mono_components_script(used_component_dirs)
         component_templates = self._load_component_templates(used_component_dirs)
 
-        connect_src_str = " ".join(
-            filter(None, ["'self'", "https://cdn.jsdelivr.net", connect_src])
-        )
-        csp_meta = f"<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self' 'unsafe-inline' data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; img-src 'self' data: https://colab.research.google.com; connect-src {connect_src_str}; object-src 'none'; font-src 'self' data: https://fonts.gstatic.com; media-src 'self' data: https://actions.google.com;\">"
+        # Base CSP Directives
+        csp_directives = {
+            "default-src": ["'self'", "'unsafe-inline'", "data:", "https://cdnjs.cloudflare.com", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
+            "worker-src": ["'self'", "blob:"],
+            "img-src": ["'self'", "data:", "https://colab.research.google.com"],
+            "connect-src": ["'self'", "https://cdn.jsdelivr.net"],
+            "object-src": ["'none'"],
+            "font-src": ["'self'", "data:", "https://fonts.gstatic.com"],
+            "media-src": ["'self'", "data:", "https://actions.google.com"],
+        }
+
+        if connect_src:
+            csp_directives["connect-src"].append(connect_src)
+
+        # Merge additional CSP directives from config
+        if csp_additions:
+            for directive, values in csp_additions.items():
+                if directive not in csp_directives:
+                    csp_directives[directive] = []
+                for val in values:
+                    if val not in csp_directives[directive]:
+                        csp_directives[directive].append(val)
+
+        csp_parts = []
+        for directive, values in csp_directives.items():
+            if values:
+                csp_parts.append(f"{directive} {' '.join(values)}")
+
+        csp_content = "; ".join(csp_parts) + ";"
+        csp_meta = f"<meta http-equiv=\"Content-Security-Policy\" content=\"{csp_content}\">"
 
         meta_tags = []
         meta_tags.append(

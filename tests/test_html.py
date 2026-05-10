@@ -83,6 +83,22 @@ class TestHTMLDocumentBuilder(unittest.TestCase):
             self.assertIn('<meta name="mono-api-url" content="https://api.example.com">', result)
 
     @patch('pathlib.Path.read_text')
+    def test_build_document_csp_additions(self, mock_read_text):
+        mock_read_text.return_value = "{CSP_META}"
+        with patch.object(self.builder, '_get_used_component_dirs', return_value=[]), \
+             patch.object(self.builder, '_load_highlight_js_script', return_value=""), \
+             patch.object(self.builder, '_build_highlight_js_link', return_value=""), \
+             patch.object(self.builder, '_load_lazy_load_script', return_value="console.log('lazy');"), \
+             patch.object(self.builder, '_load_component_templates', return_value=""), \
+             patch.object(self.builder, '_load_mono_components_script', return_value=""):
+
+            csp_additions = {"img-src": ["https://example.com"], "new-src": ["'self'"]}
+            result = self.builder.build_document(html_body="<p>test</p>", csp_additions=csp_additions)
+
+            self.assertIn("https://example.com", result)
+            self.assertIn("new-src 'self'", result)
+
+    @patch('pathlib.Path.read_text')
     def test_build_document_asset_store(self, mock_read_text):
         mock_read_text.return_value = "{BODY}{COPY_BUTTON_JS}"
         with patch.object(self.builder, '_get_used_component_dirs', return_value=[]), \
