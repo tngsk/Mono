@@ -57,14 +57,16 @@ class ConversionConfig:
     connect_src: str = ""
     enable_export: bool = False
     pdf_output: Union[Path, bool, None] = None
+    csp_additions: dict[str, List[str]] = None
 
     def __post_init__(self):
+        self.csp_additions = {}
         try:
             with open("config.toml", "rb") as f:
                 config_data = tomllib.load(f)
-                self.connect_src = config_data.get("security", {}).get(
-                    "connect-src", ""
-                )
+                security = config_data.get("security", {})
+                self.connect_src = security.get("connect-src", "")
+                self.csp_additions = security.get("csp-additions", {})
         except Exception:
             pass
 
