@@ -14,7 +14,7 @@ def load_parser():
     spec = importlib.util.spec_from_file_location("mono_synth_parser", parser_file)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    return module.MonoSynthParser()
+    return module.Parser()
 
 @pytest.fixture
 def parser():
