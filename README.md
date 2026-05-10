@@ -34,7 +34,9 @@ Monoでは外部依存なしのVanilla JSによる多彩なWeb Componentsを埋�
 | `mono-group-assignment` | グループ分けを行うコンポーネント。 | `@[group-assignment](title: "グループ分け")` | `title="text"` |
 | `mono-hero` | ヒーローバナー領域を表示します。ブロック要素。 | `@[hero](bg-color: "#000", text-color: "#fff")\n...コンテンツ...\n@[/hero]` | `title="text"`<br>`image="url"`<br>`mode="light|dark"`<br>`bg-color="#HEX"`<br>`text-color="#HEX"` |
 | `mono-icon` | アイコンを表示します。 | `@[icon: star](size: "24", color: "yellow")` | `name="star|heart|..."`<br>`size="16~128"`<br>`color="red|#HEX"`<br>`display="inline|block"` |
+| `mono-image` | 説明なし | `@[image]()` | なし |
 | `mono-layout` | 行（row）や列（stack）などのレイアウトを構築します。ブロック要素。 | `@[row]\n:::column\n左側コンテンツ\n:::\n:::column\n右側コンテンツ\n:::\n@[/row]` | `label="text"`<br>`class="text"` |
+| `mono-media-grid` | 説明なし | `@[media-grid]()` | `columns="number"`<br>`rows="number"`<br>`gap="css-size"`<br>`fit="cover|contain"` |
 | `mono-mermaid` | Mermaid記法で図表を描画し、SVGとして埋め込みます。ブロック要素。 | `@[mermaid]\ngraph TD;\nA-->B;\n@[/mermaid]` | `title="text"`<br>`theme="default|dark|forest|..."` |
 | `mono-notebook` | 入力可能なノートブック領域を表示します。 | `@[notebook](title: "メモ", placeholder: "入力してください")` | `title="text"`<br>`placeholder="text"`<br>`id="text"` |
 | `mono-poll` | 投票システムを表示します。 | `@[poll](title: "好きな言語は？", options: "Python, JavaScript")` | `title="text"`<br>`options="A,B,C"` |
@@ -44,6 +46,7 @@ Monoでは外部依存なしのVanilla JSによる多彩なWeb Componentsを埋�
 | `mono-session-join` | セッション（同期・データ収集）へ参加するボタン等を表示します。 | `@[session-join](title: "参加する")` | `title="text"` |
 | `mono-sound` | 効果音や音声を再生するボタンを表示します。 | `@[sound](src: "audio.mp3", label: "再生")` | `label="text"`<br>`src="url"` |
 | `mono-spacer` | 空白（スペーサー）を挿入します。 | `@[spacer](width: "10px", height: "20px")` | `width="px|rem"`<br>`height="px|rem"` |
+| `mono-synth` | Tone.jsを用いたシンプルなシンセサイザー。OSC, Filter, ADSR, ミニ鍵盤を備えます。 | `@[mono-synth: sample="asset-test.wav"]()` | `sample="url"` |
 | `mono-textfield-input` | テキスト入力フィールドを表示します。 | `@[textfield](placeholder: "テキストを入力", size: "large")` | `label="text"`<br>`id="text"`<br>`placeholder="text"`<br>`size="small|medium|large"` |
 | `mono-theme` | テーマ切り替えコンポーネント。通常はMarkdownディレクティブでテーマを設定します。 | `@[theme: dark]()` | `theme_name="light|dark"`<br>`show_ui="true|false"`<br>`config="json"` |
 

@@ -1,0 +1,46 @@
+import re
+from typing import Optional, Dict, Any
+
+from src.processors.base_parser import BaseComponentParser
+
+
+class Parser(BaseComponentParser):
+    @property
+    def component_name(self) -> str:
+        return "mono-synth"
+
+    @property
+    def block_level_tags(self) -> list[str]:
+        return ["mono-synth"]
+
+    # OPTIONS: sample="url"
+    def process(self, content: str) -> str:
+        # Fast path
+        if f"@[{self.component_name}" not in content:
+            return content
+
+        pattern = r'@\[mono-synth([^\]]*)\](?:\(([^)]*)\))?'
+
+        def replace(match: re.Match) -> str:
+            bracket_content = match.group(1)
+            paren_content = match.group(2)
+
+            # Combine all parsed arguments
+            # parse_bracket_content returns (label, specific_args)
+            label, args = self.parse_bracket_content(bracket_content)
+            if paren_content:
+                args.update(self.parse_key_value_args(paren_content))
+
+            # Extract specific attributes
+            sample = args.get("sample", "")
+
+            # Use common attributes to get class, id, padding, etc.
+            common_attrs = self.get_common_attributes(args)
+
+            # Add specific attributes
+            if sample:
+                common_attrs += f' sample="{sample}"'
+
+            return f'<mono-synth{common_attrs}></mono-synth>'
+
+        return re.sub(pattern, replace, content)
