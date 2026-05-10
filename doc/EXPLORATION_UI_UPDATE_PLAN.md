@@ -1,18 +1,14 @@
 # 探索型 UI エクステンション アップデート計画書 (Exploration UI Update Plan)
 
-本ドキュメントは、外部評価レポートの指摘に基づく Mono の「探索型 UI エクステンション」の実装計画を定義します。Mono を単なる読み物ではなく、「Executable Instrument（実行可能な計器）」として機能させるためのアーキテクチャアップデートを含みます。
-
-**※ 本計画書は実装の指針を示すものであり、本タスク内で実際のソースコードの変更は行いません。**
+本ドキュメントは、Mono の「探索型 UI エクステンション」の実装計画を定義します。Mono を単なる読み物ではなく、「Executable Instrument（実行可能な計器）」として機能させるためのアーキテクチャアップデートを含みます。
 
 ## 1. 概要
 
-外部識者から指摘された「Disorientation（迷子症状）」リスクに対応しつつ、「Mono らしさ（現象の探索を主眼とする）」を維持するため、以下の3つの UI コンポーネントの追加・改修を行います。
+「Disorientation（迷子症状）」リスクに対応しつつ、「Mono らしさ（現象の探索を主眼とする）」を維持するため、以下の3つの UI コンポーネントの追加・改修を行います。
 
 *   **`mono-scroll-range`**: スクロール位置を変数化し（Scrollytelling）、能動的な探査を可能にする機能。既存の `mono-sync` コンポーネントに統合します。
 *   **`mono-hud`**: 常に画面の最前面に固定され、現在の実験状態・変数を表示するステータスバー。既存の `mono-drawer` を拡張（HUD モードの追加）することで実現します。
 *   **`mono-section-map`**: 現在位置を視覚化する空間的ランドマーク。右端に表示されるシンプルなナビゲーション（マイクロインタラクション）として新規実装します。
-
-なお、提案されていた `mono-step-guide` (Disclosure) については、「学習者を誘導しすぎる」リスクを鑑み、本フェーズでは**実装を見送ります**。
 
 ---
 
@@ -57,20 +53,8 @@
     *   極力シンプルで軽量な実装を心がけます。
 
 ---
-
-## 3. 開発ガイドライン (AGENTS.md) の更新
-
-パフォーマンスの低下と熱スロットリングを防ぐため、`AGENTS.md` に以下のルールを追加します。
-
-*   **追加内容:**
-    ```markdown
-    * **Performance & Scroll Events:** To prevent thermal throttling on BYOD environments (especially low-spec smartphones) when handling continuous UI updates, never attach unthrottled functions directly to the `scroll` or `resize` events. Any logic that computes scroll ranges (e.g., `mono-scroll-range` functionality) or triggers animations based on scroll position must be wrapped in `requestAnimationFrame` or a robust throttle mechanism.
-    ```
-
----
-
-## 4. 依存関係と制約事項
+## 3. 依存関係と制約事項
 
 *   実装はすべて Vanilla JS で行い、外部ライブラリ（jQuery, React など）は使用しません。
 *   既存の Mono アーキテクチャの制約（30MB制限、オフライン動作可能）を遵守します。
-*   各コンポーネントのテスト (`uv run pytest`) が通過することを確認した上でコミットします（実装フェーズにて実施）。
+*   各コンポーネントのテスト (`uv run pytest`) が通過することを確認した上でコミットします
