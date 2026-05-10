@@ -1,138 +1,65 @@
-# Mono アーキテクチャおよび開発仕様書
+# Mono Architecture and System Overview
 
-本書は、Markdownから単一自己完結型HTML（画像・CSS等埋め込み）を生成するCLIツール「Mono」の全体設計、変換処理フロー、および拡張（エクステンション・コンポーネント）開発のための仕様をまとめたものです。
+This document outlines the core architecture, design principles, processing flow, and server capabilities of the Mono project. Mono is a build system that parses Markdown files and generates domain-specific, interactive, monolithic HTML files.
 
-## 1. 全体像とCLIの振る舞い
+## 1. Core Principles and UX/UI Design
 
-Monoは、依存関係を持たずにローカルで共有・閲覧可能な単一HTMLファイルを生成することを目的としています。内部的にはPython製の変換ツールとして動作し、各種Webコンポーネント（Vanilla JS）をMarkdown文書に埋め込むことが可能です。
+*   **Target Environment:** User browsers across various devices.
+*   **Core Value:** Zero-dependency portability, immediate feedback, and precise media synchronization control.
+*   **Fundamental Rule:** The minimal HTML text and explanatory images must be displayed and guaranteed even in offline environments to prevent information loss.
+*   **Configuration Strategy:** "One-file portability" is a requirement for the output HTML, not the input. Settings are isolated in external files (e.g., `config.toml`) rather than embedded in Markdown frontmatter, preventing the mixing of external dependencies.
+*   **UX/UI Design:**
+    *   **Typography & Style:** Prioritizes participant readability using a DaisyUI-inspired CSS variable theme system (`themes.toml`).
+    *   **Visual Feedback:** Provides immediate visual responses (e.g., color changes, checkmarks) to user inputs.
+    *   **Accessibility:** Maintains semantic HTML structures and ensures full keyboard navigability.
 
-### 1.1. CLIコマンドオプション
+## 2. Layered Architecture
 
-エントリーポイントは `src/main.py` であり、以下のオプションをサポートします。特にPDF出力機能など、抜け落ちやすい機能に注意してください。
+To ensure maintainability and extendability, Mono adopts a layered module architecture:
 
-*   `input_file`: (必須) 入力となるMarkdownファイルのパス。
-*   `-o, --output`: 出力HTMLファイルのパス。省略時は `{入力ファイル名}.html` となります。
-*   `-c, --css`: 埋め込むカスタムCSSファイルのパス（複数指定可能）。
-*   `-v, --verbose`: 詳細なログを出力します。
-*   `-t, --template`: カスタムHTMLテンプレートファイルのパス。
-*   `-e, --excluded-tags`: 出力HTMLから除外（削除）するHTMLタグ名（複数指定可能）。
-*   `--force`: デフォルトの出力サイズ制限（30MB）をバイパスして強制的に保存します。
-*   `--export`: 外部エクスポートモジュール（`mono-export`）を強制的に有効にします。
-*   `--pdf [OUTPUT_FILE]`: 出力されたHTMLからPDFを生成します。パスを指定しない場合は `{入力ファイル名}.pdf` として保存されます。Playwrightを利用して描画状態をPDF化します。
+1.  **Interface Layer (`src/main.py`, `config.py`)**: Handles CLI input/output and configuration parsing.
+2.  **Processing Layer (`src/processors/`)**: Orchestrates the conversion process (`MarkdownProcessor`, `HTMLDocumentBuilder`, `PDFProcessor`).
+3.  **Embedding Layer (`src/embedders/`)**: Responsible for embedding media as Base64 (`MediaEmbedder`) and injecting dynamic themes and CSS (`CSSEmbedder`).
+4.  **Data I/O Layer (`src/handlers/`)**: Manages file read/write operations and MIME type resolution.
+5.  **Component Templates Layer (`src/components/`)**: Manages Web Components (HTML/JS/CSS). The build process dynamically scans these and packs them into a single file ("Component-Based Split" architecture).
 
----
+### Dependency Minimalism
 
-## 2. 変換処理フロー
+*   **Parser:** `markdown` (Python) - standard and highly extensible.
+*   **DOM Manipulation:** Python's standard `re` (regex) - ensures high-speed, memory-efficient stream-like replacement without heavy dependencies like `BeautifulSoup4`.
+*   **Frontend Runtime:** Vanilla JS / Web Components without heavy frameworks. All JS/CSS are packed inline into the final HTML during conversion.
+*   **Optional Heavy Dependencies:** Tools like Playwright (for PDF export) or Node.js (for math/syntax highlighting) are isolated. The system degrades gracefully if they are unavailable.
 
-Markdownファイルから単一HTMLへの変換は、主に `src/converter.py` の `MarkdownToHTMLConverter` クラスによってオーケストレーションされます。変換処理は以下のステップで進行します。
+## 3. Conversion Processing Flow
 
-1.  **Markdownの読み込み**: `FileHandler` を使用して入力ファイルを読み込みます。
-2.  **Markdown → HTMLの中間変換 (`MarkdownProcessor`)**:
-    *   コードブロックを保護（プレースホルダーへの置換）。
-    *   `src/components/*/parser.py` をホワイトリスト(`ALLOWED_COMPONENTS`)ベースで安全にロードし、カスタムディレクティブを評価・置換。
-    *   Python-Markdownによる標準Markdown処理、および `src/extensions/` の拡張処理を適用。
-    *   コードブロックの復元。
-3.  **CSSの読み込み (`CSSEmbedder`)**: `--css` で指定された外部CSSファイルを読み込みます。
-4.  **メディアの埋め込み (`MediaEmbedder`)**: 中間HTML内の画像（`<img>`）やその他のメディアリソースを抽出し、Base64エンコードしてインライン化します。
-5.  **HTMLドキュメントの生成 (`HTMLDocumentBuilder`)**:
-    *   HTMLボディからタイトルを抽出。
-    *   `src/templates/core/base.html` （またはカスタムテンプレート）をベースに、ヘッダー、ボディ、使用されているWebコンポーネントのスクリプト（`script.js`）およびスタイル（`style.css`）を注入し、完全なHTML構造を構築。
-6.  **CSSの埋め込み (`CSSEmbedder`)**: 構築されたHTMLドキュメント内に、Step 3で読み込んだCSSや、テーマのCSSを注入します。
-7.  **出力とファイルサイズ検証**: HTMLを出力ファイルとして保存。20MB超過で警告、30MB超過で（`--force` がなければ）エラー終了します。
-8.  **PDFの出力 (オプション) (`PDFProcessor`)**: `--pdf` が指定されている場合、生成したHTMLを読み込み、PDF形式で書き出します。
+The conversion from Markdown to a single HTML file is orchestrated by `MarkdownToHTMLConverter` in `src/converter.py`:
 
----
+1.  **Read Markdown:** `FileHandler` reads the input file.
+2.  **Markdown to HTML Conversion (`MarkdownProcessor`)**:
+    *   Protects code blocks.
+    *   Safely loads allowed component parsers (`src/components/*/parser.py`) to evaluate and replace custom directives.
+    *   Applies standard Python-Markdown processing and custom extensions (`src/extensions/`).
+    *   Restores code blocks.
+3.  **Load CSS (`CSSEmbedder`)**: Reads external CSS files specified via `--css`.
+4.  **Embed Media (`MediaEmbedder`)**: Extracts images and media resources, converts them to Base64, and inlines them.
+5.  **Build HTML Document (`HTMLDocumentBuilder`)**: Assembles the final structure using templates (e.g., `base.html`), injecting headers, bodies, scripts, and styles.
+6.  **Embed CSS (`CSSEmbedder`)**: Injects themes and user CSS into the assembled document.
+7.  **Validate Output:** Checks file size (warns at >20MB, halts at >30MB unless `--force` is used) and saves the HTML.
+8.  **Optional PDF Generation (`PDFProcessor`)**: Generates a PDF via Playwright if requested.
 
-## 3. エクステンション開発ガイドライン
+## 4. Server Architecture (FastAPI + SSE)
 
-Python-Markdownの標準的な処理に介入・拡張を行いたい場合は、`src/extensions/` にモジュールを追加します。
+Mono provides a built-in server (`server.py`) for real-time synchronization and data collection.
 
-### 3.1. エクステンションの追加方法
+*   **Execution:** `uv run server.py` (Defaults to `http://0.0.0.0:8000`).
+*   **Endpoints:**
+    *   `/api/sync/stream` & `/api/sync`: Server-Sent Events (SSE) for real-time state sync (e.g., scrolling positions via `mono-sync`).
+    *   `/api/data` (POST): Receives event data (votes, reactions) from components and saves them to `data.jsonl`.
+*   **Security:** Configured via `config.toml` under `[security]`. It includes CORS policies and a `max-upload-size` (default 1MB) to prevent DoS attacks.
+*   **Concurrency:** File writes are serialized using an `asyncio.Queue` and a background worker task to prevent race conditions.
 
-1.  `src/extensions/` に新しいPythonファイルを作成します（例: `my_extension.py`）。
-2.  `markdown.extensions.Extension` を継承したクラスを作成し、`extendMarkdown` メソッドを実装して、プリプロセッサ、インラインプロセッサ、ツリープロセッサ、またはポストプロセッサを登録します。
-3.  モジュールの末尾に `def makeExtension(**kwargs):` 関数を定義し、拡張クラスのインスタンスを返すようにします。
-4.  作成したエクステンションが有効になるよう、`src/constants.py` などの `MARKDOWN_EXTENSIONS` リストに追加（または動的にロード）されるように構成します。
+### Server-Integrated Components
 
----
-
-## 4. コンポーネント開発ガイドライン
-
-カスタムMarkdown記法で記述できるUI要素（Webコンポーネント）を追加する場合、`src/components/` 配下にディレクトリを作成します。
-
-### 4.1. ディレクトリ構造と必須ファイル
-
-コンポーネントのディレクトリ名はケバブケース（例: `mono-my-component`）とし、以下のファイルを含めます。
-
-*   `parser.py`: MarkdownからHTMLタグ（コンポーネントのタグ）への置換ロジック。
-*   `script.js`: Vanilla JSによるWeb Componentsの実装（Shadow DOMまたはLight DOMへのアクセス）。
-*   `style.css`: コンポーネント固有のスタイル（通常は `:host` セレクタを用いてShadow DOM内のスタイルを定義）。
-*   `template.html`: Shadow DOM内に展開されるHTMLテンプレート。
-
-※これらのアセットは、`HTMLDocumentBuilder` によって使用されているコンポーネントのみが自動的に抽出され、最終的なHTMLに注入されます。
-
-### 4.2. Markdownディレクティブの統一フォーマット
-
-コンポーネントを呼び出す際のMarkdownディレクティブは、パーサーの統一性と予測可能性を高めるため、以下のフォーマットを標準（推奨）とします。
-
-**インラインまたは空要素のコンポーネント:**
-```markdown
-@[component-name: label](key: "value", key2: "value2")
-```
-
-**ブロックレベルのコンポーネント (コンテンツを囲む場合):**
-ブロックレベルの場合は、明確な終了タグを用いる形式を標準とします。`@[end]` 等の曖昧な閉じタグは避け、コンポーネント名を含む閉じタグを使用してください。
-
-```markdown
-@[component-name: label](key: "value")
-ここに内部のMarkdownコンテンツやHTMLを記述します。
-@[/component-name]
-```
-
-#### `parser.py` の実装例 (ブロックレベルの場合)
-`src/processors/base_parser.py` の `BaseComponentParser` を継承して実装します。
-
-```python
-import re
-from src.processors.base_parser import BaseComponentParser
-import html
-
-class Parser(BaseComponentParser):
-    START_PATTERN = r"@\[my-component(?:\:\s*([^\]]*))?\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
-    END_PATTERN = r"@\[/my-component\]"
-
-    @property
-    def block_level_tags(self) -> list[str]:
-        return ["mono-my-component"]
-
-    def process(self, markdown_content: str) -> str:
-        # 開始タグの処理
-        pattern = re.compile(self.START_PATTERN)
-        def start_replacer(match: re.Match) -> str:
-            label = match.group(1)
-            args_str = match.group(2)
-            args = self.parse_key_value_args(args_str)
-            # ... 属性の構築 ...
-            return f'<mono-my-component markdown="1">'
-
-        result = pattern.sub(start_replacer, markdown_content)
-
-        # 終了タグの処理
-        end_pattern = re.compile(self.END_PATTERN)
-        result = end_pattern.sub('</mono-my-component>', result)
-
-        return result
-```
-
-### 4.3. 暗黙的コンポーネントについて
-
-一部のコンポーネントは、明示的なMarkdownディレクティブを持たず、システムの特定の条件やPython-Markdown側の置換ロジックによって自動的に組み込まれる「暗黙的コンポーネント」として実装されています。
-
-**暗黙的コンポーネントのリスト:**
-*   `mono-brush`
-*   `mono-code-block`
-*   `mono-export`
-*   `mono-sync`
-
-**⚠️ 注意: 将来的な廃止予定**
-これらの暗黙的コンポーネントは、設計の一貫性を保つため、将来的に現在の暗黙的な注入方式から廃止、または明示的なシステムアーキテクチャへと移行される予定です。新規開発においては、明示的なディレクティブを持つ通常のコンポーネントとして設計することを推奨します。
+*   **`mono-sync`**: The core hub component. It detects the host's scroll position and broadcasts it via SSE to participants. It also acts as an intermediary, capturing events from other components (like `mono-poll`) and sending them to `/api/data`.
+*   **`mono-export`**: A floating utility to manually download `localStorage` data as JSON or sync it directly to `/api/data`. Enabled via `--export`.
+*   **Interactive Components (e.g., `mono-poll`, `mono-reaction`, `mono-notebook`, `mono-session-join`)**: These emit events upon user interaction. If the server is offline, they gracefully degrade by falling back to `localStorage`.

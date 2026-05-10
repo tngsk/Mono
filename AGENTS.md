@@ -96,3 +96,7 @@
 * **Keyboard Navigability:** Components must be entirely operable via keyboard. Ensure a natural Tab order. For modal or fullscreen components (`mono-drawer`, `mono-hero`), implement a "focus trap" within the Shadow DOM and ensure they can be dismissed via the Escape (`Esc`) key.
 * **Color Independence:** Do not convey meaning using color alone. State changes (like success, warning, error) must be accompanied by text labels, distinct icons, or semantic ARIA attributes.
 * **Semantic Attributes:** Expose abstract status attributes (e.g., `status="success"`) on components and rely on the active global theme (CSS variables) to handle the specific visual coloring.
+
+## Core Principles & Restrictions
+* **Core File Protection:** You **MUST NOT** edit core files (such as `src/processors/html.py`, `src/converter.py`, `src/main.py`) without explicit permission from the user. Architectural changes must be discussed and approved first.
+* **Loose Coupling:** Component implementations must be loosely coupled. Clear separation of responsibilities must be maintained between parsing (Python), logic (JavaScript), and styling (CSS).
