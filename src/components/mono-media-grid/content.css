@@ -1,0 +1,41 @@
+mono-media-grid {
+    display: block;
+}
+
+/* Base styles for media inside the grid */
+mono-media-grid img,
+mono-media-grid video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    object-position: center;
+    aspect-ratio: 1 / 1;
+}
+
+/* Markdown wraps images in <p> tags with <br> inside.
+   We want the images to become grid items but we can't easily break them out of the <p>
+   using pure CSS without `display: contents`, which makes the `<p>` disappear and its children
+   become grid items. But then the `<br>` tags also become grid items and take up cells!
+   So we hide the `<br>` tags specifically inside this structure. */
+mono-media-grid > p {
+    display: contents;
+}
+mono-media-grid > p > br {
+    display: none;
+}
+
+/* Handle fit variations */
+mono-media-grid[data-fit="cover"] img,
+mono-media-grid[data-fit="cover"] video,
+mono-media-grid:not([data-fit]) img,
+mono-media-grid:not([data-fit]) video {
+    object-fit: cover;
+}
+
+mono-media-grid[data-fit="contain"] img,
+mono-media-grid[data-fit="contain"] video {
+    object-fit: contain;
+    background-color: var(--surface-2); /* Background for container if aspect ratios don't match */
+}
