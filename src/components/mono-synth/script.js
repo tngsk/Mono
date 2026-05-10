@@ -476,29 +476,49 @@ class MonoSynth extends MonoBaseElement {
     const width = this.canvas.width;
     const height = this.canvas.height;
 
-    this.ctx.fillStyle = 'rgba(17, 17, 17, 0.4)';
+    // Background Primary (#1A1C1E)
+    this.ctx.fillStyle = '#1A1C1E';
     this.ctx.fillRect(0, 0, width, height);
 
     this.ctx.lineWidth = 2;
-    this.ctx.strokeStyle = '#55ff55';
+    this.ctx.strokeStyle = '#B8422E'; // Tertiary
     this.ctx.beginPath();
 
-    const sliceWidth = width * 1.0 / values.length;
+    // Zero-crossing trigger logic for stabilization
+    let startIndex = 0;
+    // Look for a positive zero-crossing in the first half of the buffer
+    for (let i = 0; i < values.length / 2; i++) {
+        if (values[i] < 0 && values[i + 1] >= 0) {
+            startIndex = i;
+            break;
+        }
+    }
+
+    // Determine how many samples to draw (one period could be calculated based on freq, but we use a fixed window size relative to buffer)
+    // To make it look "zoomed in" and stable, we draw from the start index up to the width.
+    // If the frequency is high, it shows many waves.
+    const samplesToDraw = values.length - startIndex;
+    const sliceWidth = width * 1.0 / samplesToDraw;
+
     let x = 0;
+    let drewLine = false;
 
-    for (let i = 0; i < values.length; i++) {
+    for (let i = startIndex; i < values.length; i++) {
       const v = values[i];
-      const y = (v * 0.5 + 0.5) * height;
+      const y = (v * -0.5 + 0.5) * height; // Inverted visually so positive is up
 
-      if (i === 0) {
+      if (!drewLine) {
         this.ctx.moveTo(x, y);
+        drewLine = true;
       } else {
         this.ctx.lineTo(x, y);
       }
       x += sliceWidth;
     }
 
-    this.ctx.stroke();
+    if (drewLine) {
+        this.ctx.stroke();
+    }
   }
 }
 
