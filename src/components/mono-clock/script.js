@@ -8,10 +8,23 @@ class MonoClock extends MonoBaseElement {
         this.mountTemplate('mono-clock-template');
 
         this.clockElement = this.shadowRoot.querySelector('.clock-display');
+        this.analogClockElement = this.shadowRoot.querySelector('.analog-clock');
+        this.hourHand = this.shadowRoot.querySelector('.hour-hand');
+        this.minuteHand = this.shadowRoot.querySelector('.minute-hand');
+        this.secondHand = this.shadowRoot.querySelector('.second-hand');
 
-        const display = this.getAttribute('display');
-        if (display && display !== "block" && display !== "inline") {
-            this.style.display = display;
+        const displayType = this.getAttribute('display');
+        this.isAnalog = displayType === 'analog';
+
+        if (this.isAnalog) {
+            this.clockElement.classList.add('hidden');
+            this.analogClockElement.classList.remove('hidden');
+        } else {
+            this.analogClockElement.classList.add('hidden');
+            this.clockElement.classList.remove('hidden');
+            if (displayType && displayType !== "block" && displayType !== "inline" && displayType !== "digital") {
+                this.style.display = displayType;
+            }
         }
 
         this.format = this.getAttribute('format') || 'HH:mm:ss';
@@ -28,25 +41,43 @@ class MonoClock extends MonoBaseElement {
     }
 
     updateClock() {
-        if (!this.clockElement) return;
-
         const now = new Date();
-        const tokens = {
-            'YYYY': now.getFullYear(),
-            'YY': String(now.getFullYear()).slice(-2),
-            'MM': String(now.getMonth() + 1).padStart(2, '0'),
-            'DD': String(now.getDate()).padStart(2, '0'),
-            'HH': String(now.getHours()).padStart(2, '0'),
-            'mm': String(now.getMinutes()).padStart(2, '0'),
-            'ss': String(now.getSeconds()).padStart(2, '0')
-        };
 
-        let output = this.format;
-        for (const [key, value] of Object.entries(tokens)) {
-            output = output.replace(new RegExp(key, 'g'), value);
+        if (this.isAnalog) {
+            if (!this.hourHand || !this.minuteHand || !this.secondHand) return;
+
+            const seconds = now.getSeconds();
+            const minutes = now.getMinutes();
+            const hours = now.getHours();
+
+            const secondDegrees = (seconds / 60) * 360;
+            const minuteDegrees = ((minutes + seconds / 60) / 60) * 360;
+            const hourDegrees = ((hours % 12 + minutes / 60) / 12) * 360;
+
+            this.secondHand.style.transform = `rotate(${secondDegrees}deg)`;
+            this.minuteHand.style.transform = `rotate(${minuteDegrees}deg)`;
+            this.hourHand.style.transform = `rotate(${hourDegrees}deg)`;
+
+        } else {
+            if (!this.clockElement) return;
+
+            const tokens = {
+                'YYYY': now.getFullYear(),
+                'YY': String(now.getFullYear()).slice(-2),
+                'MM': String(now.getMonth() + 1).padStart(2, '0'),
+                'DD': String(now.getDate()).padStart(2, '0'),
+                'HH': String(now.getHours()).padStart(2, '0'),
+                'mm': String(now.getMinutes()).padStart(2, '0'),
+                'ss': String(now.getSeconds()).padStart(2, '0')
+            };
+
+            let output = this.format;
+            for (const [key, value] of Object.entries(tokens)) {
+                output = output.replace(new RegExp(key, 'g'), value);
+            }
+
+            this.clockElement.textContent = output;
         }
-
-        this.clockElement.textContent = output;
     }
 }
 

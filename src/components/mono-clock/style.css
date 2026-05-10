@@ -22,3 +22,54 @@
     user-select: none;
     -webkit-user-select: none;
 }
+
+.clock-display.hidden {
+    display: none;
+}
+
+.analog-clock {
+    width: 2em;
+    height: 2em;
+    display: inline-block;
+}
+
+.analog-clock.hidden {
+    display: none;
+}
+
+.analog-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.clock-face {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 4;
+}
+
+.hour-hand {
+    stroke: currentColor;
+    stroke-width: 6;
+    stroke-linecap: round;
+    transform-origin: 50px 50px;
+}
+
+.minute-hand {
+    stroke: currentColor;
+    stroke-width: 4;
+    stroke-linecap: round;
+    transform-origin: 50px 50px;
+}
+
+.second-hand {
+    stroke: var(--color-error, red);
+    stroke-width: 2;
+    stroke-linecap: round;
+    transform-origin: 50px 50px;
+}
+
+.center-dot {
+    fill: currentColor;
+}
