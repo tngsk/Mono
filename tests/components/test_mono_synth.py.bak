@@ -1,0 +1,27 @@
+import pytest
+from src.components.mono_synth.parser import MonoSynthParser
+
+def test_mono_synth_parser_basic():
+    parser = MonoSynthParser()
+    content = "@[mono-synth]"
+    result = parser.parse(content)
+    assert result == "<mono-synth></mono-synth>"
+
+def test_mono_synth_parser_with_sample():
+    parser = MonoSynthParser()
+    content = '@[mono-synth: sample="asset-mysample.wav"]'
+    result = parser.parse(content)
+    assert 'sample="asset-mysample.wav"' in result
+
+def test_mono_synth_parser_with_common_args():
+    parser = MonoSynthParser()
+    content = '@[mono-synth](class: "my-synth", padding: "10px")'
+    result = parser.parse(content)
+    assert 'class="my-synth"' in result
+    assert 'style="padding: 10px;"' in result
+
+def test_mono_synth_parser_fast_path():
+    parser = MonoSynthParser()
+    content = "This is a text without mono-synth."
+    result = parser.parse(content)
+    assert result is None

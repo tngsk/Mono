@@ -50,6 +50,7 @@ ALLOWED_COMPONENTS = [
     "mono-spacer",
     "mono-textfield-input",
     "mono-theme",
+    "mono-synth",
 ]
 
 # ============================================================================
@@ -65,6 +66,7 @@ INTERACTIVE_COMPONENTS = [
     "mono-reaction",
     "mono-session-join",
     "mono-group-assignment",
+    "mono-synth",
 ]
 
 # ドキュメントに常に含めるシステム/暗黙的コンポーネント
