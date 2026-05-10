@@ -102,6 +102,12 @@ class MonoSynth extends MonoBaseElement {
 
   setupSynth() {
     this.analyzer = new window.Tone.Analyser('waveform', 512);
+    this.volumeNode = new window.Tone.Volume(-12).toDestination();
+
+    // Filter node that applies to the sampler
+    this.filter = new window.Tone.Filter(2000, "lowpass");
+    this.filter.Q.value = 1;
+    this.filter.chain(this.analyzer, this.volumeNode);
 
     // We use a MonoSynth which combines Osc, Env, and Filter
     this.synth = new window.Tone.MonoSynth({
@@ -109,19 +115,66 @@ class MonoSynth extends MonoBaseElement {
       filter: { Q: 1, type: "lowpass", rolloff: -24 },
       envelope: { attack: 0.1, decay: 0.2, sustain: 0.5, release: 1 },
       filterEnvelope: { attack: 0.1, decay: 0.2, sustain: 0.5, release: 1, baseFrequency: 200, octaves: 4 }
-    }).chain(this.analyzer, window.Tone.Destination);
-
-    // Master volume routing
-    this.volumeNode = new window.Tone.Volume(-12).toDestination();
-    this.synth.disconnect();
+    });
     this.synth.chain(this.analyzer, this.volumeNode);
 
     // Check for custom sample
-    const sampleUrl = this.getAttribute('sample');
-    if (sampleUrl) {
-      // We'll set up a Sampler parallel to the MonoSynth if needed,
-      // but for simplicity, we'll keep it as a MonoSynth unless specifically asked to switch
-      console.log("Sample URL provided:", sampleUrl);
+    this.sampler = null;
+    this.isSampleMode = false;
+
+    let rawSrc = this.getAttribute('sample');
+    if (rawSrc) {
+      const isValidUrl = (url) => {
+        if (!url || typeof url !== 'string') return false;
+        try {
+            const parsed = new URL(url, window.location.href);
+            const protocol = parsed.protocol.toLowerCase();
+            return ['http:', 'https:', 'data:'].includes(protocol);
+        } catch (e) {
+            return false;
+        }
+      };
+
+      // Handle asset-store logic
+      if (rawSrc.startsWith("asset-")) {
+        const store = document.getElementById("mono-asset-store");
+        if (store) {
+          try {
+            const assets = JSON.parse(store.textContent);
+            if (assets[rawSrc] && isValidUrl(assets[rawSrc])) {
+              rawSrc = assets[rawSrc];
+            }
+          } catch (e) {
+            console.error("Asset store parse error in mono-synth:", e);
+          }
+        }
+      }
+
+      if (isValidUrl(rawSrc)) {
+        this.sampler = new window.Tone.Sampler({
+          urls: {
+            C4: rawSrc
+          },
+          release: 1,
+          baseUrl: ""
+        }).connect(this.filter);
+      }
+    }
+  }
+
+  triggerAttack(noteName) {
+    if (this.isSampleMode && this.sampler && this.sampler.loaded) {
+      this.sampler.triggerAttack(noteName, window.Tone.now());
+    } else {
+      this.synth.triggerAttack(noteName, window.Tone.now());
+    }
+  }
+
+  triggerRelease() {
+    if (this.isSampleMode && this.sampler && this.sampler.loaded) {
+      this.sampler.triggerRelease(window.Tone.now());
+    } else {
+      this.synth.triggerRelease(window.Tone.now());
     }
   }
 
@@ -148,14 +201,14 @@ class MonoSynth extends MonoBaseElement {
           el.classList.add('active');
           const noteName = el.dataset.note;
           // Trigger attack
-          this.synth.triggerAttack(noteName, window.Tone.now());
+          this.triggerAttack(noteName);
         };
 
         const stopNote = (e) => {
           e.preventDefault();
           el.classList.remove('active');
           if (!this.isAudioStarted) return;
-          this.synth.triggerRelease(window.Tone.now());
+          this.triggerRelease();
         };
 
         el.addEventListener('mousedown', startNote);
@@ -297,8 +350,19 @@ class MonoSynth extends MonoBaseElement {
     });
 
     // Update Tone.js nodes
-    if (params.oscType !== 'sample') {
+    if (params.oscType === 'sample') {
+      this.isSampleMode = true;
+      if (!this.sampler) {
+         console.warn("Sample mode selected but no sample provided or loaded.");
+      }
+    } else {
+      this.isSampleMode = false;
       this.synth.oscillator.type = params.oscType;
+    }
+
+    if (this.filter) {
+        this.filter.frequency.value = params.filterFreq;
+        this.filter.Q.value = params.filterRes;
     }
 
     this.synth.filter.frequency.value = params.filterFreq;
