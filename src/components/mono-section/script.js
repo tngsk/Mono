@@ -42,8 +42,13 @@ class MonoSection extends MonoBaseElement {
         // Apply height
         const height = this.getAttribute('height');
         if (height) {
-            this.style.setProperty('--section-height', height);
-            container.style.minHeight = height;
+            if (!isNaN(height)) {
+                this.style.setProperty('--section-height', height + "px");
+                container.style.minHeight = height + "px";
+            } else {
+                this.style.setProperty('--section-height', height);
+                container.style.minHeight = height;
+            }
         }
     }
 }

@@ -10,10 +10,18 @@ class MonoSpacer extends MonoBaseElement {
         const height = this.getAttribute("height");
 
         if (width) {
-            this.style.width = width;
+            if (!isNaN(width)) {
+                this.style.width = width + "px";
+            } else {
+                this.style.width = width;
+            }
         }
         if (height) {
-            this.style.height = height;
+            if (!isNaN(height)) {
+                this.style.height = height + "px";
+            } else {
+                this.style.height = height;
+            }
         }
     }
 }
