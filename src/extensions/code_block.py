@@ -13,6 +13,9 @@ logger = logging.getLogger("markdown_converter")
 
 class CodeBlockPostprocessor(Postprocessor):
     def run(self, text):
+        if "<pre" not in text:
+            return text
+
         # Match <pre> tags which might contain attributes from extensions like attr_list
         pattern = re.compile(
             r"(<pre(?:\s+[^>]+)?><code(?:\s+[^>]+)?>(.*?)</code></pre>)", re.DOTALL
