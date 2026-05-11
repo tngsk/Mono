@@ -16,7 +16,11 @@ class MonoIcon extends MonoBaseElement {
         // Apply styles based on attributes
         const size = this.getAttribute('size');
         if (size) {
-            this.style.fontSize = size;
+            if (!isNaN(size)) {
+                this.style.fontSize = size + "px";
+            } else {
+                this.style.fontSize = size;
+            }
         }
 
         const color = this.getAttribute('color');
