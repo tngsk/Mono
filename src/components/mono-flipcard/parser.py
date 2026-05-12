@@ -2,6 +2,7 @@ import re
 from src.processors.base_parser import BaseComponentParser
 
 class Parser(BaseComponentParser):
+    FAST_PATH_MARKERS = ("@[flipcard",)
     # OPTIONS: front_text="text", answer="text"
     # Pattern: @[flipcard: "Front Text"](args)
     # The first group matches the text after the colon.

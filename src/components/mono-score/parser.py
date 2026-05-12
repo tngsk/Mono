@@ -2,6 +2,7 @@ import re
 from src.processors.base_parser import BaseComponentParser
 
 class Parser(BaseComponentParser):
+    FAST_PATH_MARKERS = ("@[score",)
     # OPTIONS: notes="C4 D4 E4", clef="treble|bass", time="4/4|3/4", voices='["C4 D4", "E4 F4"]'
     PATTERN = r"@\[score(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
     TEMPLATE = '<mono-score{notes_attr}{voices_attr}{clef_attr}{time_signature_attr}{common_attr}></mono-score>'

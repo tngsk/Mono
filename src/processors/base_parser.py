@@ -7,6 +7,8 @@ logger = logging.getLogger("markdown_converter")
 class BaseComponentParser:
     """コンポーネント用Markdownパーサーの基底クラス"""
 
+    FAST_PATH_MARKERS = ()
+
     def __init__(self):
         self.counter = 0
 

@@ -5,6 +5,7 @@ from src.processors.base_parser import BaseComponentParser
 
 
 class Parser(BaseComponentParser):
+    FAST_PATH_MARKERS = ("<mono-synth", "@[mono-synth",)
     @property
     def component_name(self) -> str:
         return "mono-synth"
@@ -15,10 +16,6 @@ class Parser(BaseComponentParser):
 
     # OPTIONS: sample="url"
     def process(self, content: str) -> str:
-        # Fast path
-        if f"@[{self.component_name}" not in content:
-            return content
-
         pattern = r'@\[mono-synth([^\]]*)\](?:\(([^)]*)\))?'
 
         def replace(match: re.Match) -> str:
