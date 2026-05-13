@@ -6,7 +6,5 @@ cors-allowed-origins = [
     "null"
 ]
 
-# Configure additional Content-Security-Policy directives
-# [security.csp-additions]
-# media-src = ["https://example.com"]
-# img-src = ["https://images.example.com"]
+[security.csp-additions]
+img-src = ["https://placehold.co"]
