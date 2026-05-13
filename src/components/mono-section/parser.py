@@ -3,6 +3,7 @@ from src.processors.base_parser import BaseComponentParser
 import html
 
 class Parser(BaseComponentParser):
+    FAST_PATH_MARKERS = ("@[section",)
     # OPTIONS: title="text", image="url", mode="light|dark", bg-color="#HEX", text-color="#HEX", height="px|vh", width="px|vw"
     # Match @[section: title](key: value, ...) or @[section](key: value, ...)
     START_PATTERN = r"@\[section(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"

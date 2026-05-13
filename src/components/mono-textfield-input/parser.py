@@ -2,6 +2,7 @@ import re
 from src.processors.base_parser import BaseComponentParser
 
 class Parser(BaseComponentParser):
+    FAST_PATH_MARKERS = ("@[textfield",)
     # OPTIONS: label="text", id="text", placeholder="text", size="small|medium|large"
     PATTERN = r"@\[textfield(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
 

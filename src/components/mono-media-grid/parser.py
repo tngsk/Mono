@@ -2,6 +2,7 @@ import re
 from src.processors.base_parser import BaseComponentParser
 
 class Parser(BaseComponentParser):
+    FAST_PATH_MARKERS = ("@[media-grid",)
     # OPTIONS: columns="number", rows="number", gap="css-size", fit="cover|contain"
     PATTERN = r"@\[media-grid(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
     END_PATTERN = r"@\[(?:/media-grid)\]"

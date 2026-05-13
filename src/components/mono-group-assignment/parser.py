@@ -2,6 +2,7 @@ import re
 from src.processors.base_parser import BaseComponentParser
 
 class Parser(BaseComponentParser):
+    FAST_PATH_MARKERS = ("@[group-assignment",)
     @property
     def block_level_tags(self) -> list[str]:
         return ["mono-group-assignment"]

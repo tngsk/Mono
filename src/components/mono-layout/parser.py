@@ -2,6 +2,7 @@ import re
 from src.processors.base_parser import BaseComponentParser
 
 class Parser(BaseComponentParser):
+    FAST_PATH_MARKERS = ("@[row", "@[stack", ":::")
     # OPTIONS: label="text", class="text"
     ROW_PATTERN = r"@\[row(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
     STACK_PATTERN = r"@\[stack(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"

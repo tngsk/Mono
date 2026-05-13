@@ -2,6 +2,7 @@ import re
 from src.processors.base_parser import BaseComponentParser
 
 class Parser(BaseComponentParser):
+    FAST_PATH_MARKERS = ("@[drawer",)
     # OPTIONS: label="text", position="left|right", open="true|false"
     # Fixed to allow nested brackets if needed, but standard is just stop at ']'
     # Actually standard pattern in base_parser is usually r"@\[type(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"

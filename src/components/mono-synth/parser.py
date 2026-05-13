@@ -5,6 +5,7 @@ from src.processors.base_parser import BaseComponentParser
 
 
 class Parser(BaseComponentParser):
+    FAST_PATH_MARKERS = ("@[mono-synth",)
     @property
     def component_name(self) -> str:
         return "mono-synth"
