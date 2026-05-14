@@ -34,9 +34,9 @@ Monoでは外部依存なしのVanilla JSによる多彩なWeb Componentsを埋�
 | `mono-group-assignment` | グループ分けを行うコンポーネント。 | `@[group-assignment](title: "グループ分け")` | `title="text"` |
 | `mono-hero` | ヒーローバナー領域を表示します。ブロック要素。 | `@[hero](bg-color: "#000", text-color: "#fff")\n...コンテンツ...\n@[/hero]` | `title="text"`<br>`image="url"`<br>`mode="light|dark"`<br>`bg-color="#HEX"`<br>`text-color="#HEX"` |
 | `mono-icon` | アイコンを表示します。 | `@[icon: star](size: "24", color: "yellow")` | `name="star|heart|..."`<br>`size="16~128"`<br>`color="red|#HEX"`<br>`display="inline|block"` |
-| `mono-image` | 説明なし | `@[image]()` | なし |
+| `mono-image` | 画像を表示します。 | `@[image]()` | `src="url"`<br>`alt="text"`<br>`width="size"`<br>`height="size"` |
 | `mono-layout` | 行（row）や列（stack）などのレイアウトを構築します。ブロック要素。 | `@[row]\n:::column\n左側コンテンツ\n:::\n:::column\n右側コンテンツ\n:::\n@[/row]` | `label="text"`<br>`class="text"` |
-| `mono-media-grid` | 説明なし | `@[media-grid]()` | `columns="number"`<br>`rows="number"`<br>`gap="css-size"`<br>`fit="cover|contain"` |
+| `mono-media-grid` | 複数のメディアをグリッド状に配置して表示します。ブロック要素。 | `@[media-grid]()\n...コンテンツ...\n@[/media-grid]` | `columns="number"`<br>`rows="number"`<br>`gap="css-size"`<br>`fit="cover|contain"` |
 | `mono-mermaid` | Mermaid記法で図表を描画し、SVGとして埋め込みます。ブロック要素。 | `@[mermaid]\ngraph TD;\nA-->B;\n@[/mermaid]` | `title="text"`<br>`theme="default|dark|forest|..."` |
 | `mono-notebook` | 入力可能なノートブック領域を表示します。 | `@[notebook](title: "メモ", placeholder: "入力してください")` | `title="text"`<br>`placeholder="text"`<br>`id="text"` |
 | `mono-poll` | 投票システムを表示します。 | `@[poll](title: "好きな言語は？", options: "Python, JavaScript")` | `title="text"`<br>`options="A,B,C"` |
