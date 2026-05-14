@@ -1,6 +1,5 @@
 import sys
 import os
-import pytest
 import importlib.util
 from playwright.sync_api import sync_playwright
 

@@ -1,3 +1,7 @@
 ## 2026-05-08 - Optimized Markdown Parsing Fast Path
 **Learning:** Python's `re.compile()` has an internal LRU cache, meaning micro-optimizations like moving regex compilation to class attributes offer negligible performance benefits (saving only ~1ms over 100 iterations). However, algorithmically bypassing the parsing loop entirely using a simple string `in` check (`if "@[" in content or ":::" in content:`) provides a massive performance boost (dropping processing time from ~320ms to ~27ms) when components are absent.
 **Action:** When optimizing string parsing pipelines, prioritize algorithmic fast-paths that allow the application to skip expensive operations entirely, rather than attempting to micro-optimize the expensive operations themselves.
+
+## 2026-05-14 - Optimized component parsing pipeline with fast-path algorithmic check
+**Learning:** In a monolith builder processing large Markdown documents, evaluating 30+ complex regexes for every component across the entire document is extremely slow. By implementing an algorithmic fast-path check using a simple Python `in` operator (e.g. `if "@[badge" not in markdown_content:`), we can skip the expensive regex execution entirely for components that are absent.
+**Action:** When working on parser components, always provide an upfront `FAST_PATH_MARKERS` tuple containing literal strings that MUST be present for the pattern to match, allowing the orchestrator to bypass unnecessary processing efficiently.

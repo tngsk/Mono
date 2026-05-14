@@ -132,6 +132,12 @@ class MarkdownProcessor:
             if "@[" in protected_content or ":::" in protected_content:
                 for parser in self.parsers:
                     try:
+                        # Fast path check to skip components that are not present
+                        markers = getattr(parser, "FAST_PATH_MARKERS", None)
+                        if markers:
+                            if not any(marker in protected_content for marker in markers):
+                                continue
+
                         protected_content = parser.process(protected_content)
                     except Exception as e:
                         self.logger.warning(f"コンポーネントパース処理でエラー: {e}")

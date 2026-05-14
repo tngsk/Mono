@@ -11,6 +11,42 @@ class BaseComponentParser:
         self.counter = 0
 
     @property
+    def FAST_PATH_MARKERS(self) -> tuple[str, ...]:
+        """
+        Derive fast path markers automatically from PATTERN attributes to skip expensive regex.
+        """
+        markers = []
+        for attr in dir(self.__class__):
+            if attr.endswith('PATTERN'):
+                val = getattr(self.__class__, attr)
+                if isinstance(val, str):
+                    if val.startswith(r"@\["):
+                        import re
+                        m = re.match(r"@\\\[([a-zA-Z0-9-]+)", val)
+                        if m:
+                            markers.append(f"@[{m.group(1)}")
+                    elif val.startswith(r":::"):
+                        import re
+                        m = re.match(r":::([a-zA-Z0-9-]+)", val)
+                        if m:
+                            markers.append(f":::{m.group(1)}")
+
+        if hasattr(self, 'pattern') and callable(self.pattern):
+            try:
+                pat = self.pattern()
+                if hasattr(pat, 'pattern'):
+                    val = pat.pattern
+                    if val.startswith(r"@\["):
+                        import re
+                        m = re.match(r"@\\\[([a-zA-Z0-9-]+)", val)
+                        if m:
+                            markers.append(f"@[{m.group(1)}")
+            except Exception:
+                pass
+
+        return tuple(set(markers))
+
+    @property
     def block_level_tags(self) -> list[str]:
         """
         このパーサーが生成するブロックレベル要素のタグ名リストを返す。

@@ -1,4 +1,3 @@
-import pytest
 from markdown import markdown
 from src.extensions.math import MathExtension
 

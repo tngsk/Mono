@@ -1,6 +1,5 @@
 import json
 import logging
-from typing import cast
 from unittest.mock import AsyncMock, patch
 
 import pytest
