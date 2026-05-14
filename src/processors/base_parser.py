@@ -31,9 +31,11 @@ class BaseComponentParser:
                         if m:
                             markers.append(f":::{m.group(1)}")
 
-        if hasattr(self, 'pattern') and callable(self.pattern):
+        if hasattr(self, 'pattern'):
             try:
-                pat = self.pattern()
+                pat = self.pattern
+                if callable(pat):
+                    pat = pat()
                 if hasattr(pat, 'pattern'):
                     val = pat.pattern
                     if val.startswith(r"@\["):

@@ -12,6 +12,8 @@ class Parser(BaseComponentParser):
     def block_level_tags(self) -> list[str]:
         return ["mono-synth"]
 
+    FAST_PATH_MARKERS = ("@[mono-synth",)
+
     # OPTIONS: sample="url"
     def process(self, content: str) -> str:
         # Fast path

@@ -8,6 +8,7 @@ class Parser(BaseComponentParser):
 
     # OPTIONS: title="text", placeholder="text", id="text"
     PATTERN = r"@\[(?:notebook-input|notebook)(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
+    FAST_PATH_MARKERS = ("@[notebook-input", "@[notebook")
 
     def process(self, markdown_content: str) -> str:
         pattern = re.compile(self.PATTERN)
