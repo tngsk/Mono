@@ -54,9 +54,9 @@ class MonoClock extends MonoBaseElement {
             const minuteDegrees = ((minutes + seconds / 60) / 60) * 360;
             const hourDegrees = ((hours % 12 + minutes / 60) / 12) * 360;
 
-            this.secondHand.style.transform = `rotate(${secondDegrees}deg)`;
-            this.minuteHand.style.transform = `rotate(${minuteDegrees}deg)`;
-            this.hourHand.style.transform = `rotate(${hourDegrees}deg)`;
+            this.secondHand.setAttribute('transform', `rotate(${secondDegrees} 50 50)`);
+            this.minuteHand.setAttribute('transform', `rotate(${minuteDegrees} 50 50)`);
+            this.hourHand.setAttribute('transform', `rotate(${hourDegrees} 50 50)`);
 
         } else {
             if (!this.clockElement) return;
