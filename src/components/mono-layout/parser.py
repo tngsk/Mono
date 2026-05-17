@@ -9,12 +9,17 @@ class Parser(BaseComponentParser):
 
     def process(self, markdown_content: str) -> str:
         # Pattern to match the innermost layout
-        # (?:(?!@\[(?:hstack|vstack)).)*? ensures we don't match across nested layouts
-        LAYOUT_PATTERN = r"(?s)@\[(hstack|vstack)(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?((?:(?!@\[(?:hstack|vstack)).)*?)@\[(?:end|/(?:layout|hstack|vstack))\]"
+        # (?:(?!@\[(?:hstack|vstack|row|stack)).)*? ensures we don't match across nested layouts
+        LAYOUT_PATTERN = r"(?s)@\[(hstack|vstack|row|stack)(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?((?:(?!@\[(?:hstack|vstack|row|stack)).)*?)@\[(?:end|/(?:layout|hstack|vstack|row|stack))\]"
         pattern = re.compile(LAYOUT_PATTERN, re.IGNORECASE)
 
         def replacer(match: re.Match) -> str:
             type_name = match.group(1).lower()
+            if type_name == "row":
+                type_name = "hstack"
+            elif type_name == "stack":
+                type_name = "vstack"
+
             bracket_content = match.group(2)
             args_str = match.group(3)
             inner_content = match.group(4)

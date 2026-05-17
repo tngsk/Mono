@@ -7,21 +7,23 @@ class Parser(BaseComponentParser):
         return ["mono-theme"]
 
     # OPTIONS: theme_name="light|dark", show_ui="true|false", config="json"
-    # Pattern to match @[theme: THEME_NAME]()
-    PATTERN = r"@\[theme:\s*([^\]]+)\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
+    # Pattern to match @[theme: THEME_NAME]() or @[theme]()
+    PATTERN = r"@\[theme(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
 
     def process(self, markdown_content: str) -> str:
         pattern = re.compile(self.PATTERN)
         def replacer(match: re.Match) -> str:
-            bracket_content = match.group(1)
-
-            args_str = match.group(2)
+            bracket_content = match.group(1) or ""
+            args_str = match.group(2) or ""
 
             theme_name, specific_args = self.parse_bracket_content(bracket_content)
 
+            if not theme_name:
+                theme_name = "light"
+
             common_args = self.parse_key_value_args(args_str)
 
-            args = {**specific_args, **common_args} if args_str else {}
+            args = {**specific_args, **common_args}
 
             show_ui = args.get('show_ui', 'false').lower() == 'true'
             config_file = args.get('config', '')
