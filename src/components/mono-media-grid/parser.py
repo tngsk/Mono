@@ -2,7 +2,7 @@ import re
 from src.processors.base_parser import BaseComponentParser
 
 class Parser(BaseComponentParser):
-    # OPTIONS: columns="number", rows="number", gap="css-size", fit="cover|contain"
+    # OPTIONS: label="text", columns="number", rows="number", gap="css-size", fit="cover|contain"
     PATTERN = r"@\[media-grid(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
     END_PATTERN = r"@\[(?:/media-grid)\]"
 
