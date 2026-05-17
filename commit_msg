@@ -1,0 +1,6 @@
+⚡ Bolt: Optimize mono-brush drawing performance with requestAnimationFrame
+
+💡 What: Decoupled pointer events (`mousemove`, `touchmove`) from the synchronous `draw` operations by batching coordinates in an array and flushing them during the browser's `requestAnimationFrame` lifecycle. Touch support handlers were also updated to properly pass synthetic events and avoid `draw` errors. The missing stroke segments are properly flushed on `mouseUp`.
+🎯 Why: Frequent, unthrottled DOM/Canvas drawing attached directly to high-frequency pointer/touch events blocks the main thread, leading to visual jank, layout thrashing, and high CPU usage in complex HTML elements underneath.
+📊 Impact: Considerably smooths drawing lines under heavy load and prevents the main thread from blocking.
+🔬 Measurement: Can be verified by activating brush mode and dragging quickly; visual jank and frame drops will be reduced in performance profiler.
