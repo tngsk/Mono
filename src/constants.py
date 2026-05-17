@@ -53,6 +53,7 @@ ALLOWED_COMPONENTS = [
     "mono-textfield-input",
     "mono-theme",
     "mono-synth",
+    "mono-link",
 ]
 
 # ============================================================================
