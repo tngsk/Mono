@@ -111,3 +111,16 @@ def test_mono_score_parser_with_voices():
     result = parser.process(markdown)
     assert 'voices="[&quot;C#5/q, B4&quot;, &quot;C#4/h&quot;]"' in result
     assert 'clef="treble"' in result
+
+
+def test_mono_score_no_options():
+    parser = Parser()
+    markdown = '@[score]()'
+    html = parser.process(markdown)
+    assert isinstance(html, str)
+
+def test_mono_score_all_options():
+    parser = Parser()
+    markdown = '@[score: "Label"](notes: "test", clef: "test", time: "test", voices: "test")'
+    html = parser.process(markdown)
+    assert isinstance(html, str)

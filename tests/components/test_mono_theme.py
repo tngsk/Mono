@@ -26,5 +26,16 @@ class TestThemeParser(unittest.TestCase):
         html = self.parser.process(markdown)
         self.assertIn('<mono-theme theme="corporate" show-ui="true" config=""></mono-theme>', html)
 
+
+    def test_mono_theme_no_options(self):
+        markdown = '@[theme]()'
+        html = self.parser.process(markdown)
+        self.assertTrue(isinstance(html, str))
+
+    def test_mono_theme_all_options(self):
+        markdown = '@[theme: "Label"](theme_name: "test", show_ui: "test", config: "test")'
+        html = self.parser.process(markdown)
+        self.assertTrue(isinstance(html, str))
+
 if __name__ == '__main__':
     unittest.main()

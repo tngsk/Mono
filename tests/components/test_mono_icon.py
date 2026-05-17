@@ -19,3 +19,14 @@ def test_mono_icon_basic(parser):
     markdown = '@[icon: "home"](size: "md")'
     html = parser.process(markdown)
     assert '<mono-icon name="home" size="md"' in html
+
+
+def test_mono_icon_no_options(parser):
+    markdown = '@[icon]()'
+    html = parser.process(markdown)
+    assert isinstance(html, str)
+
+def test_mono_icon_all_options(parser):
+    markdown = '@[icon: "Label"](name: "test", size: "test", color: "test", display: "test")'
+    html = parser.process(markdown)
+    assert isinstance(html, str)

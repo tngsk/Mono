@@ -1,3 +1,6 @@
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 import importlib.util
 import os
 import sys
@@ -35,3 +38,16 @@ def test_mono_drawer_parser():
     markdown = '@[drawer](label: Sidebar, position: bottom)\nWorld\n@[/drawer]'
     html = parser.process(markdown)
     assert '<mono-drawer label="Sidebar" position="bottom" markdown="1">' in html
+
+
+def test_mono_drawer_no_options():
+    parser = Parser()
+    markdown = '@[drawer]()'
+    html = parser.process(markdown)
+    assert isinstance(html, str)
+
+def test_mono_drawer_all_options():
+    parser = Parser()
+    markdown = '@[drawer: "Label"](label: "test", position: "test", open: "test")'
+    html = parser.process(markdown)
+    assert isinstance(html, str)

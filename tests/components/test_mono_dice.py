@@ -49,3 +49,13 @@ def test_dice_inline(parser):
 
 def test_block_level_tags(parser):
     assert "mono-dice" in parser.block_level_tags
+
+def test_mono_dice_no_options(parser):
+    markdown = '@[dice]()'
+    html = parser.process(markdown)
+    assert isinstance(html, str)
+
+def test_mono_dice_all_options(parser):
+    markdown = '@[dice: "Label"](number: "test", faces: "test")'
+    html = parser.process(markdown)
+    assert isinstance(html, str)

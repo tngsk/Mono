@@ -19,3 +19,14 @@ def test_mono_notebook_basic(parser):
     markdown = '@[notebook: "test"]()'
     html = parser.process(markdown)
     assert '<mono-notebook' in html
+
+
+def test_mono_notebook_no_options(parser):
+    markdown = '@[notebook]()'
+    html = parser.process(markdown)
+    assert isinstance(html, str)
+
+def test_mono_notebook_all_options(parser):
+    markdown = '@[notebook: "Label"](title: "test", placeholder: "test", id: "test")'
+    html = parser.process(markdown)
+    assert isinstance(html, str)

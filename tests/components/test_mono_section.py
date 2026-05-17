@@ -53,5 +53,11 @@ class TestMonoSectionParser(unittest.TestCase):
         self.assertIn("Content", html)
         self.assertIn("</mono-section>", html)
 
+
+    def test_mono_section_no_options(self):
+        markdown = '@[section]()'
+        html = self.parser.process(markdown)
+        self.assertTrue(isinstance(html, str))
+
 if __name__ == '__main__':
     unittest.main()

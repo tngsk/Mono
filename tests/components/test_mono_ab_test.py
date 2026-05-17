@@ -19,3 +19,14 @@ def test_mono_ab_test_basic(parser):
     markdown = '@[ab-test: "A/B Title"](src-a: "a.html", src-b: "b.html")'
     html = parser.process(markdown)
     assert '<mono-ab-test' in html
+
+
+def test_mono_ab_test_no_options(parser):
+    markdown = '@[ab-test]()'
+    html = parser.process(markdown)
+    assert isinstance(html, str)
+
+def test_mono_ab_test_all_options(parser):
+    markdown = '@[ab-test: "Label"](src-a: "test", src-b: "test", title: "test")'
+    html = parser.process(markdown)
+    assert isinstance(html, str)
