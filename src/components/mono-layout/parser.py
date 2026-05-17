@@ -3,22 +3,22 @@ from src.processors.base_parser import BaseComponentParser
 
 class Parser(BaseComponentParser):
     # OPTIONS: label="text", class="text"
-    ROW_PATTERN = r"@\[row(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
-    STACK_PATTERN = r"@\[stack(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
-    END_PATTERN = r"@\[(?:end|/row|/stack|/layout)\]"
-    COLUMN_START_PATTERN = r":::column"
-    COLUMN_END_PATTERN = r":::(?!\S)"
-
     @property
     def block_level_tags(self) -> list[str]:
         return ["mono-layout"]
 
     def process(self, markdown_content: str) -> str:
-        # row
-        pattern = re.compile(self.ROW_PATTERN)
-        def row_replacer(match: re.Match) -> str:
-            bracket_content = match.group(1)
-            args_str = match.group(2)
+        # Pattern to match the innermost layout
+        # (?:(?!@\[(?:hstack|vstack)).)*? ensures we don't match across nested layouts
+        LAYOUT_PATTERN = r"(?s)@\[(hstack|vstack)(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?((?:(?!@\[(?:hstack|vstack)).)*?)@\[(?:end|/(?:layout|hstack|vstack))\]"
+        pattern = re.compile(LAYOUT_PATTERN, re.IGNORECASE)
+
+        def replacer(match: re.Match) -> str:
+            type_name = match.group(1).lower()
+            bracket_content = match.group(2)
+            args_str = match.group(3)
+            inner_content = match.group(4)
+
             label, specific_args = self.parse_bracket_content(bracket_content)
             common_args = self.parse_key_value_args(args_str)
             args = {**specific_args, **common_args}
@@ -27,39 +27,31 @@ class Parser(BaseComponentParser):
             if 'class' in args:
                 classes = args['class']
 
+            attr = f' type="{type_name}"'
             if classes:
-                return f'<mono-layout type="row" class="{classes}" markdown="1"{self.get_common_attributes(args)}>'
-            return f'<mono-layout type="row" markdown="1"{self.get_common_attributes(args)}>'
-        result = pattern.sub(row_replacer, markdown_content)
+                attr += f' class="{classes}"'
 
-        # stack
-        pattern = re.compile(self.STACK_PATTERN)
-        def stack_replacer(match: re.Match) -> str:
-            bracket_content = match.group(1)
-            args_str = match.group(2)
-            label, specific_args = self.parse_bracket_content(bracket_content)
-            common_args = self.parse_key_value_args(args_str)
-            args = {**specific_args, **common_args}
+            common_attr = self.get_common_attributes(args)
+            if common_attr:
+                attr += common_attr
 
-            classes = label.strip() if label else ""
-            if 'class' in args:
-                classes = args['class']
+            # Split by `:::`
+            parts = re.split(r'\n?\s*:::\s*\n?', inner_content)
 
-            if classes:
-                return f'<mono-layout type="stack" class="{classes}" markdown="1"{self.get_common_attributes(args)}>'
-            return f'<mono-layout type="stack" markdown="1"{self.get_common_attributes(args)}>'
-        result = pattern.sub(stack_replacer, result)
+            items = []
+            for p in parts:
+                p = p.strip()
+                if p:
+                    items.append(f'<div class="column" markdown="1">\n{p}\n</div>')
 
-        # end
-        pattern = re.compile(self.END_PATTERN)
-        result = pattern.sub('</mono-layout>', result)
+            inner_html = "\n".join(items)
 
-        # column start
-        pattern = re.compile(self.COLUMN_START_PATTERN)
-        result = pattern.sub('<div class="column" markdown="1">', result)
+            return f'<mono-layout{attr} markdown="1">\n{inner_html}\n</mono-layout>'
 
-        # column end
-        pattern = re.compile(self.COLUMN_END_PATTERN)
-        result = pattern.sub('</div>', result)
+        # Process from inside out
+        prev_content = None
+        while prev_content != markdown_content:
+            prev_content = markdown_content
+            markdown_content = pattern.sub(replacer, markdown_content)
 
-        return result
+        return markdown_content

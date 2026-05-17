@@ -18,15 +18,15 @@ The `mono-poll` component is used to create a polling interface with multiple op
 ### Multiple Polls with Layout
 Side-by-side polling questions.
 
-@[row]
-:::column
+@[hstack]
+:::
 @[poll: "Morning Person?", options: "Yes, No"]
 :::
 @[spacer: width: 30px]
-:::column
+:::
 @[poll: "Coffee or Tea?", options: "Coffee, Tea, Neither"]
 :::
-@[/row]
+@[/hstack]
 
 ### Poll inside a Drawer
 A hidden feedback poll that users can open.

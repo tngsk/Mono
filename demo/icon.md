@@ -31,17 +31,17 @@ Enjoy the experience!
 ### Icon Grid Layout
 Displaying a grid of icons.
 
-@[row]
-:::column
+@[hstack]
+:::
 @[icon: "thumb_up", size: 32px, color: green]
 :::
-:::column
+:::
 @[icon: "thumb_down", size: 32px, color: red]
 :::
-:::column
+:::
 @[icon: "favorite", size: 32px, color: pink]
 :::
-@[/row]
+@[/hstack]
 
 ## Additional Examples
 @[icon: "star", size: "48px", color: "blue", display: "block"]

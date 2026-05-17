@@ -20,12 +20,12 @@ Compare two remote images.
 ### Combined with Layout and Spacer
 Using row layout to display two A/B tests side-by-side with a spacer in between.
 
-@[row]
-:::column
+@[hstack]
+:::
 @[ab-test: Test 1, src-a: test.svg, src-b: test_xml.svg]
 :::
 @[spacer: width: 20px]
-:::column
+:::
 @[ab-test: Test 2, src-a: test_xml.svg, src-b: test.svg]
 :::
-@[/row]
+@[/hstack]

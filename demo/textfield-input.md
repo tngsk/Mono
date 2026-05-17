@@ -18,17 +18,17 @@ The `mono-textfield-input` component is used to create a single-line text input 
 ### Combined with Layout for a Form
 Creating a simple form layout.
 
-@[row]
-:::column
+@[hstack]
+:::
 **First Name:**
 @[textfield: "First Name", size: 20]
 :::
 @[spacer: width: 20px]
-:::column
+:::
 **Last Name:**
 @[textfield: "Last Name", size: 20]
 :::
-@[/row]
+@[/hstack]
 
 ### Textfield within a Drawer
 Hiding the input inside a sliding drawer.

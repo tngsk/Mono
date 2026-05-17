@@ -5,21 +5,21 @@ The `mono-layout` component is used to create flexbox-based layouts such as rows
 ## Usage
 **Row Syntax:**
 ```markdown
-@[row: <classes>]
+@[hstack: <classes>]
 ...content...
-@[/row]
+@[/hstack]
 ```
 
 **Stack Syntax:**
 ```markdown
-@[stack: <classes>]
+@[vstack: <classes>]
 ...content...
-@[/stack]
+@[/vstack]
 ```
 
 **Column Layout:**
 ```markdown
-:::column
+:::
 ...
 :::
 ```
@@ -27,73 +27,73 @@ The `mono-layout` component is used to create flexbox-based layouts such as rows
 ## Simple Demos
 
 ### Two-Column Row
-@[row]
-:::column
+@[hstack]
+:::
 **Column 1**
 Content for the first column.
 :::
-:::column
+:::
 **Column 2**
 Content for the second column.
 :::
-@[/row]
+@[/hstack]
 
 ### Stack Layout
-@[stack]
-:::column
+@[vstack]
+:::
 **Top Section**
 Content at the top.
 :::
-:::column
+:::
 **Bottom Section**
 Content at the bottom.
 :::
-@[/stack]
+@[/vstack]
 
 ## Advanced Demos
 
 ### Complex Dashboard Layout
 Combining rows, stacks, and components.
 
-@[row]
-:::column
-@[stack]
-:::column
+@[hstack]
+:::
+@[vstack]
+:::
 **Current Time**
 @[clock]
 :::
-:::column
+:::
 **Quick Actions**
 @[icon: "home"] @[icon: "settings"]
 :::
-@[/stack]
+@[/vstack]
 :::
 @[spacer: width: 20px]
-:::column
+:::
 **Feedback**
 @[poll: "How's the layout?", options: "Great, Needs Work"]
 :::
-@[/row]
+@[/hstack]
 
 ### Media Gallery
 Using a row to display multiple interactive media components side by side.
 
-@[row]
-:::column
+@[hstack]
+:::
 @[ab-test: "Design A vs B", src-a: test.svg, src-b: test_xml.svg]
 :::
 @[spacer: width: 10px]
-:::column
+:::
 @[ab-test: "Design C vs D", src-a: test.svg, src-b: test_xml.svg]
 :::
-@[/row]
+@[/hstack]
 
 ## Additional Examples
-@[row](class: "gap-lg start")
-:::column
+@[hstack](class: "gap-lg start")
+:::
 Col 1
 :::
-:::column
+:::
 Col 2
 :::
-@[end]
+@[/hstack]
