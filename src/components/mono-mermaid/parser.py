@@ -74,7 +74,7 @@ class Parser(BaseComponentParser):
 
                 # npx must be used to call mmdc from node_modules securely
                 # Suppress output to avoid spamming the console
-                cmd = ["npx", "mmdc", "-i", str(input_file), "-o", str(output_file)]
+                cmd = ["npx", "mmdc", "-i", str(input_file), "-o", str(output_file), "-b", "transparent"]
                 if theme and theme != "default":
                     cmd.extend(["-t", theme])
 

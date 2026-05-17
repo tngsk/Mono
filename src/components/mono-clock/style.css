@@ -53,21 +53,18 @@
     stroke: currentColor;
     stroke-width: 6;
     stroke-linecap: round;
-    transform-origin: 50px 50px;
 }
 
 .minute-hand {
     stroke: currentColor;
     stroke-width: 4;
     stroke-linecap: round;
-    transform-origin: 50px 50px;
 }
 
 .second-hand {
     stroke: var(--color-error, red);
     stroke-width: 2;
     stroke-linecap: round;
-    transform-origin: 50px 50px;
 }
 
 .center-dot {
