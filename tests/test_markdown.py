@@ -169,27 +169,29 @@ class TestMarkdownProcessor(unittest.TestCase):
 
     def test_preprocess_layout(self):
         md_content = (
-            "@[row: center gap-md]\n"
-            ":::column\n"
+            "@[hstack: center gap-md]\n"
+            ":::\n"
             "A\n"
             ":::\n"
-            "@[stack]\n"
-            ":::column\n"
+            "@[vstack]\n"
+            ":::\n"
             "B\n"
             ":::\n"
-            "@[/stack]\n"
-            "@[/row]"
+            "@[/vstack]\n"
+            "@[/hstack]"
         )
         expected_html = (
-            '<mono-layout type="row" class="center gap-md" markdown="1">\n'
+            '<mono-layout type="hstack" class="center gap-md" markdown="1">\n'
             '<div class="column" markdown="1">\n'
             "A\n"
             "</div>\n"
-            '<mono-layout type="stack" markdown="1">\n'
+            '<div class="column" markdown="1">\n'
+            '<mono-layout type="vstack" markdown="1">\n'
             '<div class="column" markdown="1">\n'
             "B\n"
             "</div>\n"
             "</mono-layout>\n"
+            "</div>\n"
             "</mono-layout>"
         )
         result = self._get_parser("mono-layout").process(md_content)

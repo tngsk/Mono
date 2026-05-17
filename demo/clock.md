@@ -29,14 +29,14 @@ Start your work now!
 ### Clock Side-by-Side
 Showing multiple clocks in a row.
 
-@[row]
-:::column
+@[hstack]
+:::
 **Local Time**
 @[clock]
 :::
 @[spacer: width: 50px]
-:::column
+:::
 **Server Time**
 @[clock]
 :::
-@[/row]
+@[/hstack]
