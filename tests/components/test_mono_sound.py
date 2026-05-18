@@ -19,3 +19,14 @@ def test_mono_sound_basic(parser):
     markdown = '@[sound](src: "test.mp3")'
     html = parser.process(markdown)
     assert 'src="test.mp3"' in html
+
+
+def test_mono_sound_no_options(parser):
+    markdown = '@[sound]()'
+    html = parser.process(markdown)
+    assert isinstance(html, str)
+
+def test_mono_sound_all_options(parser):
+    markdown = '@[sound: "Label"](label: "test", src: "test")'
+    html = parser.process(markdown)
+    assert isinstance(html, str)

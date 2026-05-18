@@ -17,3 +17,16 @@ def test_link_parser():
 
     # Test card style defaults
     assert 'card-style="full"' in result
+
+
+def test_mono_link_no_options():
+    parser = Parser()
+    markdown = '@[link]()'
+    html = parser.process(markdown)
+    assert isinstance(html, str)
+
+def test_mono_link_all_options():
+    parser = Parser()
+    markdown = '@[link: "Label"](url: "test", style: "test")'
+    html = parser.process(markdown)
+    assert isinstance(html, str)

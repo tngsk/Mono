@@ -19,3 +19,14 @@ def test_mono_spacer_basic(parser):
     markdown = '@[spacer: "lg"]()'
     html = parser.process(markdown)
     assert '<mono-spacer' in html
+
+
+def test_mono_spacer_no_options(parser):
+    markdown = '@[spacer]()'
+    html = parser.process(markdown)
+    assert isinstance(html, str)
+
+def test_mono_spacer_all_options(parser):
+    markdown = '@[spacer: "Label"](width: "test", height: "test")'
+    html = parser.process(markdown)
+    assert isinstance(html, str)

@@ -173,3 +173,14 @@ M -> End
     pos_m = html.find('data-id="M"')
 
     assert pos_z < pos_a < pos_m
+
+
+def test_mono_flow_no_options(parser):
+    markdown = '@[flow]()'
+    html = parser.process(markdown)
+    assert isinstance(html, str)
+
+def test_mono_flow_all_options(parser):
+    markdown = '@[flow: "Label"](title: "test", direction: "test")'
+    html = parser.process(markdown)
+    assert isinstance(html, str)

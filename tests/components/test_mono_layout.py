@@ -18,3 +18,14 @@ def parser():
 def test_mono_layout_basic(parser):
     # This is a basic rendering test for mono-layout
     assert True
+
+
+def test_mono_layout_no_options(parser):
+    markdown = '@[layout]()'
+    html = parser.process(markdown)
+    assert isinstance(html, str)
+
+def test_mono_layout_all_options(parser):
+    markdown = '@[layout: "Label"](label: "test", class: "test")'
+    html = parser.process(markdown)
+    assert isinstance(html, str)

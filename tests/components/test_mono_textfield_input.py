@@ -19,3 +19,14 @@ def test_mono_textfield_input_basic(parser):
     markdown = '@[textfield: "Name"]()'
     html = parser.process(markdown)
     assert '<mono-textfield-input' in html
+
+
+def test_mono_textfield_input_no_options(parser):
+    markdown = '@[textfield-input]()'
+    html = parser.process(markdown)
+    assert isinstance(html, str)
+
+def test_mono_textfield_input_all_options(parser):
+    markdown = '@[textfield-input: "Label"](label: "test", id: "test", placeholder: "test", size: "test")'
+    html = parser.process(markdown)
+    assert isinstance(html, str)

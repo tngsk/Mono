@@ -40,3 +40,9 @@ def test_mono_synth_parser_fast_path(parser):
     content = "This is a text without mono-synth."
     result = parser.process(content)
     assert result == content
+
+
+def test_mono_synth_no_options(parser):
+    markdown = '@[synth]()'
+    html = parser.process(markdown)
+    assert isinstance(html, str)

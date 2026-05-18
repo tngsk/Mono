@@ -19,3 +19,14 @@ def test_mono_clock_basic(parser):
     markdown = '@[clock](format: "HH:mm")'
     html = parser.process(markdown)
     assert '<mono-clock format="HH:mm">' in html
+
+
+def test_mono_clock_no_options(parser):
+    markdown = '@[clock]()'
+    html = parser.process(markdown)
+    assert isinstance(html, str)
+
+def test_mono_clock_all_options(parser):
+    markdown = '@[clock: "Label"](display: "test", format: "test")'
+    html = parser.process(markdown)
+    assert isinstance(html, str)

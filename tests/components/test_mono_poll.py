@@ -19,3 +19,14 @@ def test_mono_poll_basic(parser):
     markdown = '@[poll: "Question"](options: "A,B")'
     html = parser.process(markdown)
     assert '<mono-poll' in html
+
+
+def test_mono_poll_no_options(parser):
+    markdown = '@[poll]()'
+    html = parser.process(markdown)
+    assert isinstance(html, str)
+
+def test_mono_poll_all_options(parser):
+    markdown = '@[poll: "Label"](title: "test", options: "test")'
+    html = parser.process(markdown)
+    assert isinstance(html, str)
