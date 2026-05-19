@@ -1,0 +1,10 @@
+mono-layout > .column {
+    flex: 1;
+    min-width: 0;
+}
+mono-layout > p {
+    display: contents;
+}
+mono-layout > p > br {
+    display: none;
+}
