@@ -28,6 +28,10 @@ class Parser(BaseComponentParser):
             title, specific_args = self.parse_bracket_content(bracket_content)
             common_args = self.parse_key_value_args(args_str) if args_str else {}
             args = {**specific_args, **common_args}
+
+            if 'title' in args:
+                title = args['title']
+
             direction_raw = args.get("direction", "LR").strip("'\"").upper()
             if direction_raw in ("VERTICAL", "TB", "DOWN"):
                 direction = "TB"
