@@ -43,8 +43,14 @@ def main():
                 if "# OPTIONS:" in line:
                     opt_str = line.split("# OPTIONS:")[1].strip()
                     if opt_str:
-                        opts_list = [o.strip() for o in re.split(r',\s*(?=\w+=|[\w-]+=|id=)', opt_str)]
-                        options = [f"`{o.strip()}`" for o in opts_list if o.strip()]
+                        opts_list = [o.strip() for o in re.split(r',\s*(?=\w+[:=]|[\w-]+[:=]|id[:=])', opt_str)]
+                        options = []
+                        for o in opts_list:
+                            o = o.strip()
+                            if o:
+                                # Convert key="value" to key: "value" if present
+                                o = re.sub(r'^([\w-]+)\s*=\s*(.*)$', r'\1: \2', o)
+                                options.append(f"`{o}`")
                         options_str = "<br>".join(options)
                     break
 

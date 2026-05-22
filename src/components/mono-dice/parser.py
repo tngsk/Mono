@@ -2,7 +2,7 @@ import re
 from src.processors.base_parser import BaseComponentParser
 
 class Parser(BaseComponentParser):
-    # OPTIONS: number="1~6", faces="4|6|8|10|12|20"
+    # OPTIONS: number: "1~6", faces: "4|6|8|10|12|20"
     PATTERN = r"@\[dice(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
 
     @property

@@ -2,7 +2,7 @@ import re
 from src.processors.base_parser import BaseComponentParser
 
 class Parser(BaseComponentParser):
-    # OPTIONS: label="text", class="text"
+    # OPTIONS: label: "text", class: "text"
     @property
     def block_level_tags(self) -> list[str]:
         return ["mono-layout"]

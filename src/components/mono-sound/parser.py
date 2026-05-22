@@ -6,7 +6,7 @@ class Parser(BaseComponentParser):
     def block_level_tags(self) -> list[str]:
         return ["mono-sound"]
 
-    # OPTIONS: label="text", src="url"
+    # OPTIONS: label: "text", src: "url"
     PATTERN = r"@\[sound(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
 
     def process(self, markdown_content: str) -> str:
