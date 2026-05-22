@@ -31,6 +31,9 @@ class Parser(BaseComponentParser):
             common_args = self.parse_key_value_args(args_str) if args_str else {}
             args = {**specific_args, **common_args}
 
+            if 'title' in args:
+                title = args['title']
+
             theme = args.get("theme", "default")
             svg_content = self._generate_svg(content, theme)
             if not svg_content:
