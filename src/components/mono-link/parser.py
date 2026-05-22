@@ -7,7 +7,7 @@ from src.processors.base_parser import BaseComponentParser
 logger = logging.getLogger(__name__)
 
 class Parser(BaseComponentParser):
-    # OPTIONS: url="url", style="full|small|card"
+    # OPTIONS: url: "url", style: "full|small|card"
     PATTERN = r"@\[link(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
     FAST_PATH_MARKERS = ("@[link",)
 

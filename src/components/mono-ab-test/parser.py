@@ -6,7 +6,7 @@ class Parser(BaseComponentParser):
     def block_level_tags(self) -> list[str]:
         return ["mono-ab-test"]
 
-    # OPTIONS: src-a="url", src-b="url", title="text"
+    # OPTIONS: src-a: "url", src-b: "url", title: "text"
     PATTERN = r"@\[ab-test(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
 
     def process(self, markdown_content: str) -> str:
