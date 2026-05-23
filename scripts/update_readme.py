@@ -43,7 +43,8 @@ def main():
                 if "# OPTIONS:" in line:
                     opt_str = line.split("# OPTIONS:")[1].strip()
                     if opt_str:
-                        opts_list = [o.strip() for o in re.split(r',\s*(?=\w+=|[\w-]+=|id=)', opt_str)]
+                        # Safely split by comma using regex lookahead for word characters followed by a colon
+                        opts_list = [o.strip() for o in re.split(r',\s*(?=[\w-]+:)', opt_str)]
                         options = [f"`{o.strip()}`" for o in opts_list if o.strip()]
                         options_str = "<br>".join(options)
                     break

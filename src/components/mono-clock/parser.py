@@ -6,7 +6,7 @@ class Parser(BaseComponentParser):
     def block_level_tags(self) -> list[str]:
         return ["mono-clock"]
 
-    # OPTIONS: display="analog|digital", format="24h|12h"
+    # OPTIONS: display: "analog|digital", format: "24h|12h"
     PATTERN = r"@\[clock(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
     TEMPLATE = '<mono-clock{format_attr}{display_attr}{common_attr}></mono-clock>'
 

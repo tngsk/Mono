@@ -5,7 +5,7 @@ from src.processors.base_parser import BaseComponentParser
 from collections import defaultdict, deque
 
 class Parser(BaseComponentParser):
-    # OPTIONS: title="text", direction="TB|LR"
+    # OPTIONS: title: "text", direction: "TB|LR"
     START_PATTERN = r"@\[flow(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
     END_PATTERN = r"@\[/flow\]"
 

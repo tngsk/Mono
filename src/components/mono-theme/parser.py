@@ -6,7 +6,7 @@ class Parser(BaseComponentParser):
     def block_level_tags(self) -> list[str]:
         return ["mono-theme"]
 
-    # OPTIONS: theme_name="light|dark", show_ui="true|false", config="json"
+    # OPTIONS: theme_name: "light|dark", show_ui: "true|false", config: "json"
     # Pattern to match @[theme: THEME_NAME]()
     PATTERN = r"@\[theme:\s*([^\]]+)\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
 
