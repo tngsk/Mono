@@ -9,6 +9,7 @@ import json
 import logging
 import re
 from pathlib import Path
+from html.parser import HTMLParser
 from typing import List, Optional
 
 from src.config import ConversionError
@@ -238,25 +239,77 @@ class HTMLDocumentBuilder:
         if not excluded_tags:
             return html_content
 
-        # 最適化: すべての除外タグを1つの正規表現で処理する
-        tags_pattern = "|".join(re.escape(tag) for tag in excluded_tags)
+        class SafeTagRemovalParser(HTMLParser):
+            VOID_ELEMENTS = {
+                "area", "base", "br", "col", "embed", "hr", "img", "input",
+                "link", "meta", "param", "source", "track", "wbr"
+            }
 
-        # 自己終了タグ（<hr /> など）
-        pattern_self_closing = re.compile(
-            rf"<(?:{tags_pattern})[^>]*/?\s*>", re.IGNORECASE
-        )
-        html_content = pattern_self_closing.sub("", html_content)
+            def __init__(self, excluded_tags):
+                super().__init__(convert_charrefs=False)
+                self.excluded_tags = set(tag.lower() for tag in excluded_tags)
+                self.exclude_stack = []
+                self.output = []
 
-        # 開閉タグ（<div>...</div> など）
-        # 後方参照 (\1) を使って、開始タグと終了タグが一致するようにする
-        pattern_paired = re.compile(
-            rf"<({tags_pattern})[^>]*>.*?</\1>", re.IGNORECASE | re.DOTALL
-        )
-        html_content = pattern_paired.sub("", html_content)
+            def handle_starttag(self, tag, attrs):
+                is_excluded = tag in self.excluded_tags
+                is_void = tag in self.VOID_ELEMENTS
 
-        self.logger.debug(f"除外タグの一括削除処理を実行: {excluded_tags}")
+                if is_excluded and not is_void:
+                    self.exclude_stack.append(tag)
 
-        return html_content
+                if not self.exclude_stack and not (is_excluded and is_void):
+                    attr_str = "".join([f' {k}="{v}"' if v is not None else f' {k}' for k, v in attrs])
+                    self.output.append(f"<{tag}{attr_str}>")
+
+            def handle_endtag(self, tag):
+                if self.exclude_stack and tag == self.exclude_stack[-1]:
+                    self.exclude_stack.pop()
+                elif not self.exclude_stack:
+                    self.output.append(f"</{tag}>")
+
+            def handle_startendtag(self, tag, attrs):
+                if tag in self.excluded_tags:
+                    return
+
+                if not self.exclude_stack:
+                    attr_str = "".join([f' {k}="{v}"' if v is not None else f' {k}' for k, v in attrs])
+                    self.output.append(f"<{tag}{attr_str} />")
+
+            def handle_data(self, data):
+                if not self.exclude_stack:
+                    self.output.append(data)
+
+            def handle_entityref(self, name):
+                if not self.exclude_stack:
+                    self.output.append(f"&{name};")
+
+            def handle_charref(self, name):
+                if not self.exclude_stack:
+                    self.output.append(f"&#{name};")
+
+            def handle_comment(self, data):
+                if not self.exclude_stack:
+                    self.output.append(f"<!--{data}-->")
+
+            def handle_decl(self, decl):
+                if not self.exclude_stack:
+                    self.output.append(f"<!{decl}>")
+
+            def handle_pi(self, data):
+                if not self.exclude_stack:
+                    self.output.append(f"<?{data}>")
+
+            def get_output(self):
+                return "".join(self.output)
+
+        parser = SafeTagRemovalParser(excluded_tags)
+        parser.feed(html_content)
+        result = parser.get_output()
+
+        self.logger.debug(f"除外タグの一括削除処理を実行 (ASTベース): {excluded_tags}")
+
+        return result
 
     def _build_highlight_js_link(self, html_body: str) -> str:
         """Highlight.js のCSSスタイルタグを構築（オフライン・ビルド時）"""
