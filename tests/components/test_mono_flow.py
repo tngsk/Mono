@@ -176,11 +176,11 @@ M -> End
 
 
 def test_mono_flow_no_options(parser):
-    markdown = '@[flow]()'
+    markdown = '@[flow]()\n@[/flow]'
     html = parser.process(markdown)
     assert isinstance(html, str)
 
 def test_mono_flow_all_options(parser):
-    markdown = '@[flow: "Label"](title: "test", direction: "test")'
+    markdown = '@[flow: "Label"](title: "test", direction: "test")\n@[/flow]'
     html = parser.process(markdown)
     assert isinstance(html, str)
