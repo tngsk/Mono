@@ -13,18 +13,15 @@ from typing import List, Optional
 
 from src.config import ConversionError
 from src.constants import (
-    ALWAYS_INCLUDE_COMPONENTS,
     CLASSES_REQUIRING_MATH,
     COMPONENTS_DIR,
-    COMPONENTS_REQUIRING_CODE_BLOCK_HIGHLIGHT,
-    COMPONENTS_REQUIRING_ICONS,
     DEFAULT_TEMPLATE_PATH,
     HTML_TABLE_STYLE_PATTERN,
-    INTERACTIVE_COMPONENTS,
     MATERIAL_SYMBOLS_URL,
     MONO_VERSION,
     TEMPLATES_DIR,
 )
+from src import registry
 
 
 class HTMLDocumentBuilder:
@@ -80,7 +77,7 @@ class HTMLDocumentBuilder:
         # エクスポート機能の自動判定
         has_interactive_components = any(
             tag in found_mono_tags
-            for tag in INTERACTIVE_COMPONENTS
+            for tag in registry.get_interactive_components()
         )
         should_enable_export = enable_export or has_interactive_components
 
@@ -92,7 +89,7 @@ class HTMLDocumentBuilder:
             found_mono_tags, should_enable_export
         )
 
-        has_code_block = any(tag in found_mono_tags for tag in COMPONENTS_REQUIRING_CODE_BLOCK_HIGHLIGHT)
+        has_code_block = any(tag in found_mono_tags for tag in registry.get_components_requiring_code_block_highlight())
         highlight_js_css = (
             self._build_highlight_js_link(html_body) if has_code_block else ""
         )
@@ -149,7 +146,7 @@ class HTMLDocumentBuilder:
 
         # アイコンが使われている場合はGoogle Fontsのリンクを追加
         fonts_link = ""
-        if any(tag in found_mono_tags for tag in COMPONENTS_REQUIRING_ICONS):
+        if any(tag in found_mono_tags for tag in registry.get_components_requiring_icons()):
             fonts_link = (
                 f'\n        <link rel="stylesheet" href="{MATERIAL_SYMBOLS_URL}" />'
             )
@@ -276,7 +273,7 @@ class HTMLDocumentBuilder:
         themes = set(["atom-one-dark"])  # デフォルトテーマ
 
         # html_bodyからtheme属性をすべて検索
-        for tag in COMPONENTS_REQUIRING_CODE_BLOCK_HIGHLIGHT:
+        for tag in registry.get_components_requiring_code_block_highlight():
             matches = re.finditer(rf'<{tag}[^>]*theme="([^"]*)"', html_body)
             for match in matches:
                 if match.group(1):
@@ -318,7 +315,7 @@ class HTMLDocumentBuilder:
                             continue
 
                         # Apply to all components that require code block highlighting
-                        for tag in COMPONENTS_REQUIRING_CODE_BLOCK_HIGHLIGHT:
+                        for tag in registry.get_components_requiring_code_block_highlight():
                             if theme == "atom-one-dark":
                                 scoped_parts.append(f"{tag}:not([theme]) {s}")
                                 scoped_parts.append(
@@ -379,7 +376,7 @@ class HTMLDocumentBuilder:
             name = component_dir.name
 
             # 常に含めるコンポーネント
-            if name in ALWAYS_INCLUDE_COMPONENTS:
+            if name in registry.get_always_include_components():
                 used_dirs.append(component_dir)
                 continue
 
