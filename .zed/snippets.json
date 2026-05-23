@@ -1,0 +1,18 @@
+{
+  "markdown": {
+    "Mono: Textfield with UUID": {
+      "prefix": "textfield",
+      "body": [
+        "@[textfield: ${1:Label}](id: \"${UUID}\")"
+      ],
+      "description": "Insert a Mono textfield input with an auto-generated UUID"
+    },
+    "Mono: Notebook with UUID": {
+      "prefix": "notebook",
+      "body": [
+        "@[notebook: ${1:Title}](id: \"${UUID}\")"
+      ],
+      "description": "Insert a Mono notebook input with an auto-generated UUID"
+    }
+  }
+}
