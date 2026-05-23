@@ -136,13 +136,18 @@ class BaseComponentParser:
 
             if ':' in first_part or '=' in first_part:
                 in_q = None
-                for char in first_part:
+                for i, char in enumerate(first_part):
                     if in_q:
                         if char == in_q:
                             in_q = None
                     elif char in "\"'":
                         in_q = char
-                    elif char in (':', '='):
+                    elif char == '=':
+                        has_kv_separator = True
+                        break
+                    elif char == ':':
+                        if i + 2 < len(first_part) and first_part[i+1:i+3] == '//':
+                            continue
                         has_kv_separator = True
                         break
 
@@ -156,19 +161,33 @@ class BaseComponentParser:
             if not part or (':' not in part and '=' not in part):
                 continue
 
-            idx_colon = part.find(':')
-            idx_equal = part.find('=')
+            search_start = 0
+            split_idx = -1
+            while True:
+                idx_colon = part.find(':', search_start)
+                idx_equal = part.find('=', search_start)
 
-            if idx_colon != -1 and idx_equal != -1:
-                split_idx = min(idx_colon, idx_equal)
-            elif idx_colon != -1:
-                split_idx = idx_colon
-            elif idx_equal != -1:
-                split_idx = idx_equal
-            else:
+                if idx_colon == -1 and idx_equal == -1:
+                    break
+
+                if idx_colon != -1 and idx_equal != -1:
+                    curr_split = min(idx_colon, idx_equal)
+                elif idx_colon != -1:
+                    curr_split = idx_colon
+                else:
+                    curr_split = idx_equal
+
+                if part[curr_split] == ':':
+                    if curr_split + 2 < len(part) and part[curr_split+1:curr_split+3] == '//':
+                        search_start = curr_split + 1
+                        continue
+                split_idx = curr_split
+                break
+
+            if split_idx == -1:
                 continue
 
-            if split_idx == idx_equal:
+            if part[split_idx] == '=':
                 logger.warning(
                     f"Deprecated syntax: Use ':' instead of '=' for component options. Found in: '{part}'"
                 )
@@ -196,21 +215,31 @@ class BaseComponentParser:
                 if not part:
                     continue
 
-                idx_colon = part.find(':')
-                idx_equal = part.find('=')
+                search_start = 0
+                split_idx = -1
+                while True:
+                    idx_colon = part.find(':', search_start)
+                    idx_equal = part.find('=', search_start)
 
-                # Find the earliest occurrence
-                if idx_colon != -1 and idx_equal != -1:
-                    split_idx = min(idx_colon, idx_equal)
-                elif idx_colon != -1:
-                    split_idx = idx_colon
-                elif idx_equal != -1:
-                    split_idx = idx_equal
-                else:
-                    split_idx = -1
+                    if idx_colon == -1 and idx_equal == -1:
+                        break
+
+                    if idx_colon != -1 and idx_equal != -1:
+                        curr_split = min(idx_colon, idx_equal)
+                    elif idx_colon != -1:
+                        curr_split = idx_colon
+                    else:
+                        curr_split = idx_equal
+
+                    if part[curr_split] == ':':
+                        if curr_split + 2 < len(part) and part[curr_split+1:curr_split+3] == '//':
+                            search_start = curr_split + 1
+                            continue
+                    split_idx = curr_split
+                    break
 
                 if split_idx != -1:
-                    if split_idx == idx_equal:
+                    if part[split_idx] == '=':
                         logger.warning(
                             f"Deprecated syntax: Use ':' instead of '=' for component options. Found in: '{part}'"
                         )
@@ -295,20 +324,33 @@ class BaseComponentParser:
             if not part or (':' not in part and '=' not in part):
                 continue
 
-            idx_colon = part.find(':')
-            idx_equal = part.find('=')
+            search_start = 0
+            split_idx = -1
+            while True:
+                idx_colon = part.find(':', search_start)
+                idx_equal = part.find('=', search_start)
 
-            # Find the earliest occurrence
-            if idx_colon != -1 and idx_equal != -1:
-                split_idx = min(idx_colon, idx_equal)
-            elif idx_colon != -1:
-                split_idx = idx_colon
-            elif idx_equal != -1:
-                split_idx = idx_equal
-            else:
+                if idx_colon == -1 and idx_equal == -1:
+                    break
+
+                if idx_colon != -1 and idx_equal != -1:
+                    curr_split = min(idx_colon, idx_equal)
+                elif idx_colon != -1:
+                    curr_split = idx_colon
+                else:
+                    curr_split = idx_equal
+
+                if part[curr_split] == ':':
+                    if curr_split + 2 < len(part) and part[curr_split+1:curr_split+3] == '//':
+                        search_start = curr_split + 1
+                        continue
+                split_idx = curr_split
+                break
+
+            if split_idx == -1:
                 continue
 
-            if split_idx == idx_equal:
+            if part[split_idx] == '=':
                 logger.warning(
                     f"Deprecated syntax: Use ':' instead of '=' for component options. Found in: '{part}'"
                 )
