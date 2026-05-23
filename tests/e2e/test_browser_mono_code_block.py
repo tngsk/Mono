@@ -41,6 +41,20 @@ def test_code_block_rendering(code_block_markdown, tmp_path):
         context = browser.new_context(permissions=['clipboard-read', 'clipboard-write'])
         page = context.new_page()
 
+        # Mock IntersectionObserver in case of lazy loading issues
+        page.add_init_script("""
+            window.IntersectionObserver = class IntersectionObserver {
+                constructor(callback) {
+                    this.callback = callback;
+                }
+                observe(element) {
+                    this.callback([{ isIntersecting: true, target: element }]);
+                }
+                unobserve() {}
+                disconnect() {}
+            };
+        """)
+
         page.goto(f"file://{output_html_path.absolute()}")
 
         # Check if code blocks exist

@@ -39,6 +39,20 @@ def test_rendering_no_console_errors(temp_markdown_file, tmp_path):
         browser = p.chromium.launch()
         page = browser.new_page()
 
+        # Mock IntersectionObserver to immediately trigger intersection for lazy loading
+        page.add_init_script("""
+            window.IntersectionObserver = class IntersectionObserver {
+                constructor(callback) {
+                    this.callback = callback;
+                }
+                observe(element) {
+                    this.callback([{ isIntersecting: true, target: element }]);
+                }
+                unobserve() {}
+                disconnect() {}
+            };
+        """)
+
         errors = []
         page.on("console", lambda msg: errors.append(msg.text) if msg.type == "error" else None)
         page.on("pageerror", lambda exc: errors.append(str(exc)))
@@ -70,6 +84,20 @@ def test_lazy_loaded_image_rendered(temp_markdown_file, tmp_path):
     with sync_playwright() as p:
         browser = p.chromium.launch()
         page = browser.new_page()
+
+        # Mock IntersectionObserver to immediately trigger intersection for lazy loading
+        page.add_init_script("""
+            window.IntersectionObserver = class IntersectionObserver {
+                constructor(callback) {
+                    this.callback = callback;
+                }
+                observe(element) {
+                    this.callback([{ isIntersecting: true, target: element }]);
+                }
+                unobserve() {}
+                disconnect() {}
+            };
+        """)
 
         page.goto(f"file://{output_html_path.absolute()}")
 
