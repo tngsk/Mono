@@ -13,10 +13,10 @@ import markdown.util
 
 from src.config import ConversionError
 from src.constants import (
-    ALLOWED_COMPONENTS,
     MARKDOWN_EXTENSIONS,
 )
 from src.handlers.file import FileHandler
+from src import registry
 
 
 class MarkdownProcessor:
@@ -29,11 +29,20 @@ class MarkdownProcessor:
 
     def _load_component_parsers(self):
         """
-        明示的に許可されたコンポーネントのみをインポートしてインスタンス化し、リストで返す
+        レジストリから取得したコンポーネントをインポートしてインスタンス化し、リストで返す
         """
         parsers = []
 
-        for component_name in ALLOWED_COMPONENTS:
+        from src.constants import COMPONENTS_DIR
+
+        for component_name in registry.get_all_components():
+            component_dir = COMPONENTS_DIR / component_name
+            parser_file = component_dir / "parser.py"
+
+            if not parser_file.exists():
+                # Some system components (e.g. mono-export, mono-brush) don't have a parser
+                continue
+
             module_name = f"src.components.{component_name}.parser"
             try:
                 module = importlib.import_module(module_name)
