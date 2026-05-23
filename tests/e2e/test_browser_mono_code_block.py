@@ -1,3 +1,6 @@
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 import pytest
 from pathlib import Path
 from playwright.sync_api import sync_playwright
@@ -37,6 +40,20 @@ def test_code_block_rendering(code_block_markdown, tmp_path):
         # Grant clipboard-read permissions
         context = browser.new_context(permissions=['clipboard-read', 'clipboard-write'])
         page = context.new_page()
+
+        # Mock IntersectionObserver in case of lazy loading issues
+        page.add_init_script("""
+            window.IntersectionObserver = class IntersectionObserver {
+                constructor(callback) {
+                    this.callback = callback;
+                }
+                observe(element) {
+                    this.callback([{ isIntersecting: true, target: element }]);
+                }
+                unobserve() {}
+                disconnect() {}
+            };
+        """)
 
         page.goto(f"file://{output_html_path.absolute()}")
 

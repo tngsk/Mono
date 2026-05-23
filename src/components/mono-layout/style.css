@@ -5,8 +5,8 @@
     box-sizing: border-box;
 }
 /* 方向制御 */
-:host([type="row"]) .layout-wrapper { flex-direction: row; flex-wrap: wrap; }
-:host([type="stack"]) .layout-wrapper { flex-direction: column; }
+:host([type="hstack"]) .layout-wrapper { flex-direction: row; flex-wrap: wrap; }
+:host([type="vstack"]) .layout-wrapper { flex-direction: column; }
 
 /* モディファイア対応 (CSS変数で管理) */
 .layout-wrapper.center { justify-content: center; align-items: center; }
@@ -18,5 +18,5 @@
 
 /* モバイルフォールバック */
 @media (max-width: 768px) {
-    :host([type="row"]) .layout-wrapper { flex-direction: column; }
+    :host([type="hstack"]) .layout-wrapper { flex-direction: column; }
 }

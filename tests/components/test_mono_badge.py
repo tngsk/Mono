@@ -36,5 +36,11 @@ class TestMonoBadgeParser(unittest.TestCase):
         self.assertIn('color="accent"', html)
         self.assertIn('outline=""', html)
 
+
+    def test_mono_badge_no_options(self):
+        markdown = '@[badge]()'
+        html = self.parser.process(markdown)
+        self.assertTrue(isinstance(html, str))
+
 if __name__ == '__main__':
     unittest.main()

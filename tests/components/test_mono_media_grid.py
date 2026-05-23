@@ -30,3 +30,14 @@ def test_mono_media_grid_with_class(parser):
     content = "@[media-grid](class=\"my-gallery\")\ncontent\n@[/media-grid]"
     result = parser.process(content)
     assert '<mono-media-grid markdown="1" class="my-gallery">' in result
+
+
+def test_mono_media_grid_no_options(parser):
+    markdown = '@[media-grid]()'
+    html = parser.process(markdown)
+    assert isinstance(html, str)
+
+def test_mono_media_grid_all_options(parser):
+    markdown = '@[media-grid: "Label"](label: "test", columns: "test", rows: "test", gap: "test", fit: "test")'
+    html = parser.process(markdown)
+    assert isinstance(html, str)

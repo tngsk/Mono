@@ -36,29 +36,6 @@ class MarkdownToHTMLConverter:
         self.pdf_processor = PDFProcessor(logger)
         self.stats = ConversionStats()
 
-    def _ensure_node_dependencies(self) -> None:
-        """必要なNode.js依存関係がインストールされているか確認し、なければインストールする"""
-        import subprocess
-        root_dir = Path(__file__).parent.parent
-        package_json = root_dir / "package.json"
-        node_modules = root_dir / "node_modules"
-
-        if package_json.exists() and not node_modules.exists():
-            self.logger.info("Node.jsの依存パッケージが見つかりません。自動的にインストールします...")
-            try:
-                subprocess.run(
-                    ["npm", "install", "--no-audit", "--no-fund"],
-                    cwd=root_dir,
-                    check=True,
-                    capture_output=True,
-                    text=True
-                )
-                self.logger.info("✓ Node.js依存パッケージのインストールが完了しました")
-            except subprocess.CalledProcessError as e:
-                self.logger.warning(f"⚠️ npm install に失敗しました。一部機能（数式、ハイライト等）が動作しない可能性があります。\\n{e.stderr}")
-            except FileNotFoundError:
-                self.logger.warning("⚠️ npm コマンドが見つかりません。Node.jsがインストールされていない場合、一部機能が動作しない可能性があります。")
-
     def convert(self) -> bool:
         """
         変換処理の実行
@@ -67,8 +44,6 @@ class MarkdownToHTMLConverter:
             成功時True、失敗時False
         """
         try:
-            self._ensure_node_dependencies()
-
             self.logger.info(f"変換開始: {self.config.input_file}")
 
             # 除外タグを出力

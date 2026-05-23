@@ -1,0 +1,7 @@
+{
+  "name": "mono-sync",
+  "interactive": false,
+  "always_include": true,
+  "requires_code_block_highlight": false,
+  "requires_icons": false
+}

@@ -31,6 +31,9 @@ class Parser(BaseComponentParser):
             common_args = self.parse_key_value_args(args_str) if args_str else {}
             args = {**specific_args, **common_args}
 
+            if 'title' in args:
+                title = args['title']
+
             theme = args.get("theme", "default")
             svg_content = self._generate_svg(content, theme)
             if not svg_content:
@@ -74,7 +77,7 @@ class Parser(BaseComponentParser):
 
                 # npx must be used to call mmdc from node_modules securely
                 # Suppress output to avoid spamming the console
-                cmd = ["npx", "mmdc", "-i", str(input_file), "-o", str(output_file)]
+                cmd = ["npx", "mmdc", "-i", str(input_file), "-o", str(output_file), "-b", "transparent"]
                 if theme and theme != "default":
                     cmd.extend(["-t", theme])
 

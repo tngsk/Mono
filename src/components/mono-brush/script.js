@@ -6,6 +6,7 @@ class MonoBrush extends MonoBaseElement {
     this.hue = 0;
     this.lastX = 0;
     this.lastY = 0;
+    this.points = [];
     this.animationFrameId = null;
     this.resizeTimeout = null;
   }
@@ -140,29 +141,70 @@ class MonoBrush extends MonoBaseElement {
   handleMouseMove(e) {
     // Handle drawing
     if (this.isDrawing && this.isDrawingModeActive) {
-      e.preventDefault(); // Prevent text selection/scrolling while drawing
+      if (e.cancelable) e.preventDefault(); // Prevent text selection/scrolling while drawing
       const pos = this.getPointerPosition(e.clientX, e.clientY);
-      this.draw(pos.x, pos.y);
+      this.points.push(pos);
+
+      if (!this.animationFrameId) {
+        this.animationFrameId = requestAnimationFrame(() => {
+          this.drawPoints();
+          this.animationFrameId = null;
+        });
+      }
     }
   }
 
   handleMouseDown(e) {
     if (this.isDrawingModeActive) {
       this.isDrawing = true;
+      this.points = [];
       const pos = this.getPointerPosition(e.clientX, e.clientY);
       this.lastX = pos.x;
       this.lastY = pos.y;
-      this.draw(pos.x, pos.y); // Draw a dot
+      this.points.push(pos);
+
+      if (!this.animationFrameId) {
+        this.animationFrameId = requestAnimationFrame(() => {
+          this.drawPoints();
+          this.animationFrameId = null;
+        });
+      }
     }
   }
 
   handleMouseUp() {
+    if (this.isDrawing && this.points.length > 0) {
+       this.drawPoints();
+    }
     this.isDrawing = false;
+    this.points = [];
+  }
+
+  drawPoints() {
+    if (this.points.length === 0) return;
+
+    this.ctx.beginPath();
+    this.ctx.moveTo(this.lastX, this.lastY);
+
+    for (const point of this.points) {
+        this.ctx.lineTo(point.x, point.y);
+        this.lastX = point.x;
+        this.lastY = point.y;
+    }
+    this.points = [];
+
+    this.ctx.strokeStyle = `hsl(${this.hue}, 100%, 60%)`;
+    this.ctx.lineWidth = 12;
+    this.ctx.lineCap = "round";
+    this.ctx.lineJoin = "round";
+    this.ctx.stroke();
+
+    this.hue = (this.hue + 0.25) % 360; // Slowly cycle hue
   }
 
   handleTouchStart(e) {
     if (this.isDrawingModeActive) {
-      e.preventDefault();
+      if (e.cancelable) e.preventDefault();
       const touch = e.touches[0];
       this.handleMouseDown({ clientX: touch.clientX, clientY: touch.clientY });
     }
@@ -170,32 +212,18 @@ class MonoBrush extends MonoBaseElement {
 
   handleTouchMove(e) {
     if (this.isDrawing && this.isDrawingModeActive) {
-      e.preventDefault();
+      if (e.cancelable) e.preventDefault();
       const touch = e.touches[0];
       this.handleMouseMove({
         clientX: touch.clientX,
         clientY: touch.clientY,
+        cancelable: false,
         preventDefault: () => {},
       });
     }
   }
 
-  draw(x, y) {
-    if (!this.isDrawing) return;
 
-    this.ctx.beginPath();
-    this.ctx.moveTo(this.lastX, this.lastY);
-    this.ctx.lineTo(x, y);
-    this.ctx.strokeStyle = `hsl(${this.hue}, 100%, 60%)`;
-    this.ctx.lineWidth = 12;
-    this.ctx.lineCap = "round";
-    this.ctx.lineJoin = "round";
-    this.ctx.stroke();
-
-    this.lastX = x;
-    this.lastY = y;
-    this.hue = (this.hue + 0.25) % 360; // Slowly cycle hue
-  }
 }
 
 if (!customElements.get("mono-brush")) {

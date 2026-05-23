@@ -1,3 +1,6 @@
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 import pytest
 from unittest.mock import patch, MagicMock
 import importlib.util
@@ -107,3 +110,9 @@ def test_mermaid_subprocess_error(mock_run, parser):
 
     result = parser._generate_svg("graph TD;")
     assert result == ""
+
+
+def test_mono_mermaid_no_options(parser):
+    markdown = '@[mermaid]()'
+    html = parser.process(markdown)
+    assert isinstance(html, str)

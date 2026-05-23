@@ -2,6 +2,14 @@
 
 Markdownファイルを、画像（Base64）やCSSが埋め込まれた**単一の自己完結型HTMLファイル**に変換するCLIツールです。ローカルでの配布や共有に最適です。
 
+## セットアップ
+
+初回利用前に、以下のコマンドで必要な依存関係（Node.jsパッケージやPlaywrightブラウザなど）をインストールしてください。
+
+```bash
+make setup
+```
+
 ## 特徴
 
 - **アクセシビリティ (a11y)**: WAI-ARIA対応、キーボード操作のサポート、およびロールベース設計に基づいたWeb Componentsを提供し、多様な環境での利用を想定しています。
@@ -35,8 +43,9 @@ Monoでは外部依存なしのVanilla JSによる多彩なWeb Componentsを埋�
 | `mono-hero` | ヒーローバナー領域を表示します。ブロック要素。 | `@[hero](bg-color: "#000", text-color: "#fff")\n...コンテンツ...\n@[/hero]` | `title: "text"`<br>`image: "url"`<br>`mode: "light|dark"`<br>`bg-color: "#HEX"`<br>`text-color: "#HEX"` |
 | `mono-icon` | アイコンを表示します。 | `@[icon: star](size: "24", color: "yellow")` | `name: "star|heart|..."`<br>`size: "16~128"`<br>`color: "red|#HEX"`<br>`display: "inline|block"` |
 | `mono-image` | 画像を表示します。 | `@[image]()` | `src: "url"`<br>`alt: "text"`<br>`width: "size"`<br>`height: "size"` |
-| `mono-layout` | 行（row）や列（stack）などのレイアウトを構築します。ブロック要素。 | `@[row]\n:::column\n左側コンテンツ\n:::\n:::column\n右側コンテンツ\n:::\n@[/row]` | `label: "text"`<br>`class: "text"` |
-| `mono-media-grid` | 複数のメディアをグリッド状に配置して表示します。ブロック要素。 | `@[media-grid]()\n...コンテンツ...\n@[/media-grid]` | `columns: "number"`<br>`rows: "number"`<br>`gap: "css-size"`<br>`fit: "cover|contain"` |
+| `mono-layout` | 横並び（hstack）や縦並び（vstack）のレイアウトを構築します。ブロック要素。 | `@[hstack]\n:::\n左側コンテンツ\n:::\n右側コンテンツ\n@[/hstack]` | `label: "text"`<br>`class: "text"` |
+| `mono-link` | リンクカードを表示します。 | `@[link]()` | `url: "url"`<br>`style: "full|small|card"` |
+| `mono-media-grid` | 複数のメディアをグリッド状に配置して表示します。ブロック要素。 | `@[media-grid]()\n...コンテンツ...\n@[/media-grid]` | `label: "text"`<br>`columns: "number"`<br>`rows: "number"`<br>`gap: "css-size"`<br>`fit: "cover|contain"` |
 | `mono-mermaid` | Mermaid記法で図表を描画し、SVGとして埋め込みます。ブロック要素。 | `@[mermaid]\ngraph TD;\nA-->B;\n@[/mermaid]` | `title: "text"`<br>`theme: "default|dark|forest|..."` |
 | `mono-notebook` | 入力可能なノートブック領域を表示します。 | `@[notebook](title: "メモ", placeholder: "入力してください")` | `title: "text"`<br>`placeholder: "text"`<br>`id: "text"` |
 | `mono-poll` | 投票システムを表示します。 | `@[poll](title: "好きな言語は？", options: "Python, JavaScript")` | `title: "text"`<br>`options: "A,B,C"` |
@@ -46,9 +55,9 @@ Monoでは外部依存なしのVanilla JSによる多彩なWeb Componentsを埋�
 | `mono-session-join` | セッション（同期・データ収集）へ参加するボタン等を表示します。 | `@[session-join](title: "参加する")` | `title: "text"` |
 | `mono-sound` | 効果音や音声を再生するボタンを表示します。 | `@[sound](src: "audio.mp3", label: "再生")` | `label: "text"`<br>`src: "url"` |
 | `mono-spacer` | 空白（スペーサー）を挿入します。 | `@[spacer](width: "10px", height: "20px")` | `width: "px|rem"`<br>`height: "px|rem"` |
-| `mono-synth` | Tone.jsを用いたシンプルなシンセサイザー。OSC, Filter, ADSR, ミニ鍵盤を備えます。 | `@[mono-synth: sample="asset-test.wav"]()` | `sample: "url"` |
+| `mono-synth` | Tone.jsを用いたシンプルなシンセサイザー。OSC, Filter, ADSR, ミニ鍵盤を備えます。 | `@[mono-synth: sample="asset-test.wav"]()` | `sample: "url"`<br>`label: "text"` |
 | `mono-textfield-input` | テキスト入力フィールドを表示します。 | `@[textfield](placeholder: "テキストを入力", size: "large")` | `label: "text"`<br>`id: "text"`<br>`placeholder: "text"`<br>`size: "small|medium|large"` |
-| `mono-theme` | テーマ切り替えコンポーネント。通常はMarkdownディレクティブでテーマを設定します。 | `@[theme: dark]()` | `theme_name: "light|dark"`<br>`show_ui: "true|false"`<br>`config: "json"` |
+| `mono-theme` | テーマ切り替えコンポーネント。通常はMarkdownディレクティブでテーマを設定します。 | `@[theme: dark]()` | `theme_name: "light|dark"`<br>`show_ui: "true|false"`<br>`config: "json"`<br>`font_size: "16px"` |
 
 #### 暗黙的・システムコンポーネント
 

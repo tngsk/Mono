@@ -19,3 +19,14 @@ def test_mono_session_join_basic(parser):
     markdown = '@[session-join: "Room 1"]()'
     html = parser.process(markdown)
     assert '<mono-session-join' in html
+
+
+def test_mono_session_join_no_options(parser):
+    markdown = '@[session-join]()'
+    html = parser.process(markdown)
+    assert isinstance(html, str)
+
+def test_mono_session_join_all_options(parser):
+    markdown = '@[session-join: "Label"](title: "test")'
+    html = parser.process(markdown)
+    assert isinstance(html, str)

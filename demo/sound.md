@@ -20,17 +20,17 @@ or
 ### Combined with Layout and Reaction
 A grid of sounds with reactions below.
 
-@[row]
-:::column
+@[hstack]
+:::
 @[sound: Drum Roll, src: https://actions.google.com/sounds/v1/cartoon/drum_roll.ogg]
 @[reaction: options: "Wow!, Next"]
 :::
 @[spacer: width: 20px]
-:::column
+:::
 @[sound: Applause, src: https://actions.google.com/sounds/v1/crowds/light_applause.ogg]
 @[reaction: options: "👏, 👎"]
 :::
-@[/row]
+@[/hstack]
 
 ## Additional Examples
 @[sound: "Alert", src: "https://actions.google.com/sounds/v1/alarms/beep_short.ogg"]

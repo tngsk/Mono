@@ -18,15 +18,15 @@ The `mono-notebook-input` component is used to create a multi-line notebook-styl
 ### Notebook in a Row Layout
 Two separate notebooks side-by-side.
 
-@[row]
-:::column
+@[hstack]
+:::
 @[notebook: "Pros", placeholder: "List the pros..."](id: pros-1)
 :::
 @[spacer: width: 20px]
-:::column
+:::
 @[notebook: "Cons", placeholder: "List the cons..."](id: cons-1)
 :::
-@[/row]
+@[/hstack]
 
 ### Notebook grouped with Poll
 Gather input and take notes on the same topic.

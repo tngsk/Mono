@@ -34,14 +34,14 @@ A hero section showcasing an image and a session join button.
 Using row layouts inside a hero section.
 
 @[hero: Dashboard]
-@[row]
-:::column
+@[hstack]
+:::
 @[clock]
 :::
-:::column
+:::
 @[icon: "dashboard", size: 64px]
 :::
-@[/row]
+@[/hstack]
 @[/hero]
 
 ## Additional Examples

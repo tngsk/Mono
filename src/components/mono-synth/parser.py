@@ -13,7 +13,7 @@ class Parser(BaseComponentParser):
     def block_level_tags(self) -> list[str]:
         return ["mono-synth"]
 
-    # OPTIONS: sample: "url"
+    # OPTIONS: sample: "url", label: "text"
     def process(self, content: str) -> str:
         # Fast path
         if f"@[{self.component_name}" not in content:

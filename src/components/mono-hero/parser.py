@@ -23,6 +23,9 @@ class Parser(BaseComponentParser):
             common_args = self.parse_key_value_args(args_str)
             args = {**specific_args, **common_args}
 
+            if "title" in args:
+                title = args["title"]
+
             attrs = ['markdown="1"']
 
             if 'image' in args:

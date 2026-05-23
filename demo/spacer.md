@@ -22,19 +22,19 @@ Content Below
 ### Formatting a Form Layout
 Using spacers to align inputs nicely within a row.
 
-@[row]
-:::column
+@[hstack]
+:::
 **Name:**
 @[spacer: width: 10px]
 @[textfield: "Enter Name"]
 :::
 @[spacer: width: 40px]
-:::column
+:::
 **Email:**
 @[spacer: width: 10px]
 @[textfield: "Enter Email"]
 :::
-@[/row]
+@[/hstack]
 
 ### Spacing around a Hero Element
 Adding breathing room around a major component.

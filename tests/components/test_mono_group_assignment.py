@@ -19,3 +19,14 @@ def test_mono_group_assignment_basic(parser):
     markdown = '@[group-assignment](groups: 3)'
     html = parser.process(markdown)
     assert '<mono-group-assignment' in html
+
+
+def test_mono_group_assignment_no_options(parser):
+    markdown = '@[group-assignment]()'
+    html = parser.process(markdown)
+    assert isinstance(html, str)
+
+def test_mono_group_assignment_all_options(parser):
+    markdown = '@[group-assignment: "Label"](title: "test")'
+    html = parser.process(markdown)
+    assert isinstance(html, str)

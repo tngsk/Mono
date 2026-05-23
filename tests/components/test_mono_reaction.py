@@ -19,3 +19,14 @@ def test_mono_reaction_basic(parser):
     markdown = '@[reaction: "👍"]()'
     html = parser.process(markdown)
     assert '<mono-reaction' in html
+
+
+def test_mono_reaction_no_options(parser):
+    markdown = '@[reaction]()'
+    html = parser.process(markdown)
+    assert isinstance(html, str)
+
+def test_mono_reaction_all_options(parser):
+    markdown = '@[reaction: "Label"](label: "test", options: "test")'
+    html = parser.process(markdown)
+    assert isinstance(html, str)
