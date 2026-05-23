@@ -142,22 +142,27 @@ class TestHTMLDocumentBuilder(unittest.TestCase):
         self.assertEqual(self.builder._remove_table_inline_styles(html_input), expected)
 
     def test_remove_excluded_tags(self):
-        html_input = '<div><p>Text</p></div><hr /><hr>'
-
-        # The existing code first removes `<tag...>` (the opening or self-closing tag)
-        # leaving `<p>Text</p></div>`. The paired regex then won't match `<div>...</div>`.
-        # So we should test what it actually does with the current implementation.
-        html_input_paired = '<div><p>Text</p></div>'
+        # Basic paired tag exclusion
+        html_input_paired = '<div><p>Text</p></div><p>Outside</p>'
         result1 = self.builder._remove_excluded_tags(html_input_paired, ["div"])
-        self.assertEqual(result1, '<p>Text</p></div>')
+        self.assertEqual(result1, '<p>Outside</p>')
 
-        # Test self-closing tag
-        result2 = self.builder._remove_excluded_tags(html_input, ["hr"])
+        # Test void (self-closing) tag exclusion
+        html_input_void = '<div><p>Text</p><hr /><hr></div>'
+        result2 = self.builder._remove_excluded_tags(html_input_void, ["hr"])
         self.assertEqual(result2, '<div><p>Text</p></div>')
 
+        # Test nested tag exclusion (ensures the AST parsing doesn't break)
+        html_input_nested = '<div><p>Keep this</p><div class="exclude">Exclude me <hr> and this <div>nested</div> text.</div><p>Also keep this</p><hr /></div>'
+        result3 = self.builder._remove_excluded_tags(html_input_nested, ["div"])
+        self.assertEqual(result3, '')
+
+        result4 = self.builder._remove_excluded_tags(html_input_nested, ["hr"])
+        self.assertEqual(result4, '<div><p>Keep this</p><div class="exclude">Exclude me  and this <div>nested</div> text.</div><p>Also keep this</p></div>')
+
         # Test no exclusions
-        result3 = self.builder._remove_excluded_tags(html_input, None)
-        self.assertEqual(result3, html_input)
+        result5 = self.builder._remove_excluded_tags(html_input_paired, None)
+        self.assertEqual(result5, html_input_paired)
 
     def test_build_highlight_js_link(self):
         html_body = '<mono-code-block theme="github"></mono-code-block>'
