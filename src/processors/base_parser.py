@@ -142,7 +142,9 @@ class BaseComponentParser:
                             in_q = None
                     elif char in "\"'":
                         in_q = char
-                    elif char in (':', '='):
+                    elif char == '=':
+                        raise ValueError(f"Parse error: Use ':' instead of '=' for component options. Found in: '{first_part}'")
+                    elif char == ':':
                         has_kv_separator = True
                         break
 
@@ -169,8 +171,8 @@ class BaseComponentParser:
                 continue
 
             if split_idx == idx_equal:
-                logger.warning(
-                    f"Deprecated syntax: Use ':' instead of '=' for component options. Found in: '{part}'"
+                raise ValueError(
+                    f"Parse error: Use ':' instead of '=' for component options. Found in: '{part}'"
                 )
             k = part[:split_idx].strip()
             v = part[split_idx+1:].strip()
@@ -211,8 +213,8 @@ class BaseComponentParser:
 
                 if split_idx != -1:
                     if split_idx == idx_equal:
-                        logger.warning(
-                            f"Deprecated syntax: Use ':' instead of '=' for component options. Found in: '{part}'"
+                        raise ValueError(
+                            f"Parse error: Use ':' instead of '=' for component options. Found in: '{part}'"
                         )
                     result[part[:split_idx].strip()] = part[split_idx+1:].strip()
             return result
@@ -309,8 +311,8 @@ class BaseComponentParser:
                 continue
 
             if split_idx == idx_equal:
-                logger.warning(
-                    f"Deprecated syntax: Use ':' instead of '=' for component options. Found in: '{part}'"
+                raise ValueError(
+                    f"Parse error: Use ':' instead of '=' for component options. Found in: '{part}'"
                 )
             k = part[:split_idx].strip()
             v = part[split_idx+1:].strip()
