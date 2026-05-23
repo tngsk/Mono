@@ -1,6 +1,6 @@
 :host {
     display: inline-flex;
-    vertical-align: middle;
+    vertical-align: baseline;
 }
 
 .mono-badge {
@@ -10,13 +10,13 @@
     transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 200ms;
-    height: 1.25rem;
-    font-size: 0.875rem;
-    line-height: 1.25rem;
+    font-size: 0.875em;
+    height: 1.428em;
+    line-height: 1.428em;
     width: fit-content;
-    padding-left: 0.563rem;
-    padding-right: 0.563rem;
-    border-radius: var(--rounded-badge, 1.9rem);
+    padding-left: 0.643em;
+    padding-right: 0.643em;
+    border-radius: var(--rounded-badge, 2em);
     border-width: 1px;
     border-style: solid;
     border-color: transparent;
