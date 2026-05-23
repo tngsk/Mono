@@ -27,7 +27,15 @@ class MonoBadge extends MonoBaseElement {
 
         const color = this.getAttribute('color');
         if (color) {
-            wrapper.classList.add(`mono-badge-${color}`);
+            const semanticColors = ['primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error'];
+            if (semanticColors.includes(color)) {
+                wrapper.classList.add(`mono-badge-${color}`);
+            } else {
+                wrapper.classList.add('mono-badge-custom');
+                wrapper.style.setProperty('--custom-badge-color', color);
+            }
+        } else {
+            wrapper.style.removeProperty('--custom-badge-color');
         }
 
         if (this.hasAttribute('soft')) {
