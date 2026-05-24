@@ -132,9 +132,9 @@
 
 /* Keyboard */
 .keyboard-container {
-  background: #F7F5F2;
+  background: #E2E0DD; /* darker background behind keyboard for contrast */
   padding: 16px 16px 0 16px; /* Added padding to align with controls */
-  border-top: 1px solid #E2E0DD;
+  border-top: 1px solid #D5D2CF;
 }
 
 .keyboard-inner {
@@ -160,7 +160,7 @@
   flex: 1;
   height: 100%;
   background: #FFFFFF;
-  border-right: 1px solid #E2E0DD;
+  border-right: 1px solid #1A1C1E;
   border-bottom: 1px solid #1A1C1E;
   z-index: 1;
   transition: background-color 0.1s;
@@ -169,15 +169,17 @@
   border-right: none;
 }
 .key-white.active {
-  background: #F0EDEB;
+  background: #D5D2CF;
 }
 
 .key-black {
   position: absolute;
   height: 60%;
   background: #1A1C1E; /* Primary */
-  border-bottom-left-radius: 2px;
-  border-bottom-right-radius: 2px;
+  border: 1px solid #1A1C1E;
+  border-top: none;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
   z-index: 2;
   transition: background-color 0.1s;
 }

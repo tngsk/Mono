@@ -3,6 +3,7 @@ class MonoTextfieldInput extends MonoBaseElement {
         super();
         this.placeholder = this.getAttribute("placeholder") || "";
         this.size = this.getAttribute("size");
+        this.label = this.getAttribute("label");
         this.inputId = this.getAttribute("id") || `textfield-${Math.random().toString(36).substr(2, 9)}`;
         this.debounceTimeout = null;
         this.storageUnavailable = false;
@@ -18,6 +19,14 @@ class MonoTextfieldInput extends MonoBaseElement {
         super.mountTemplate('mono-textfield-input-template');
         this.inputArea = this.shadowRoot.getElementById("textfield");
         this.inputArea.placeholder = this.placeholder;
+
+        this.labelElement = this.shadowRoot.getElementById("textfield-label");
+        if (this.label) {
+            this.labelElement.textContent = this.label;
+        } else {
+            this.labelElement.style.display = 'none';
+        }
+
         if (this.size) {
             this.inputArea.setAttribute("size", this.size);
             // Size specifies character width, adjust style to allow sizing
