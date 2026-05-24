@@ -1,5 +1,6 @@
 import sys
 import os
+import pytest
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 from src.processors.base_parser import BaseComponentParser
 import logging
@@ -9,26 +10,22 @@ def test_parse_key_value_args_colon():
     result = parser.parse_key_value_args('key: "value"')
     assert result == {"key": "value"}
 
-def test_parse_key_value_args_equal_with_colon_in_value(caplog):
+def test_parse_key_value_args_equal_with_colon_in_value():
     parser = BaseComponentParser()
-    with caplog.at_level(logging.WARNING, logger="markdown_converter"):
-        result = parser.parse_key_value_args('url="https://example.com"')
-
-    assert result == {"url": "https://example.com"}
-    assert "Deprecated syntax: Use ':' instead of '=' for component options." in caplog.text
+    with pytest.raises(ValueError) as excinfo:
+        parser.parse_key_value_args('url="https://example.com"')
+    assert "Parse error: Use ':' instead of '=' for component options." in str(excinfo.value)
 
 def test_parse_key_value_args_colon_with_colon_in_value():
     parser = BaseComponentParser()
     result = parser.parse_key_value_args('url: "https://example.com"')
     assert result == {"url": "https://example.com"}
 
-def test_parse_key_value_args_mixed_separators(caplog):
+def test_parse_key_value_args_mixed_separators():
     parser = BaseComponentParser()
-    with caplog.at_level(logging.WARNING, logger="markdown_converter"):
-        result = parser.parse_key_value_args('class: "gap-md", url="https://example.com"')
-
-    assert result == {"class": "gap-md", "url": "https://example.com"}
-    assert "Deprecated syntax: Use ':' instead of '=' for component options. Found in: 'url=\"https://example.com\"'" in caplog.text
+    with pytest.raises(ValueError) as excinfo:
+        parser.parse_key_value_args('class: "gap-md", url="https://example.com"')
+    assert "Parse error: Use ':' instead of '=' for component options. Found in: 'url=\"https://example.com\"'" in str(excinfo.value)
 
 def test_parse_bracket_content():
     parser = BaseComponentParser()
@@ -54,9 +51,9 @@ def test_parse_bracket_content():
     assert args == {}
 
     # 5. Label with deprecated equal syntax
-    label, args = parser.parse_bracket_content('"My Label", id="123"')
-    assert label == "My Label"
-    assert args == {"id": "123"}
+    with pytest.raises(ValueError) as excinfo:
+        parser.parse_bracket_content('"My Label", id="123"')
+    assert "Parse error: Use ':' instead of '=' for component options. Found in: 'id=\"123\"'" in str(excinfo.value)
 
     # 6. Empty content
     label, args = parser.parse_bracket_content('')
