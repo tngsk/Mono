@@ -5,7 +5,7 @@ from src.processors.base_parser import BaseComponentParser
 from collections import defaultdict, deque
 
 class Parser(BaseComponentParser):
-    # OPTIONS: title="text", direction="TB|LR"
+    # OPTIONS: title: "text", direction: "TB|LR"
     START_PATTERN = r"@\[flow(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
     END_PATTERN = r"@\[/flow\]"
 
@@ -28,6 +28,10 @@ class Parser(BaseComponentParser):
             title, specific_args = self.parse_bracket_content(bracket_content)
             common_args = self.parse_key_value_args(args_str) if args_str else {}
             args = {**specific_args, **common_args}
+
+            if 'title' in args:
+                title = args['title']
+
             direction_raw = args.get("direction", "LR").strip("'\"").upper()
             if direction_raw in ("VERTICAL", "TB", "DOWN"):
                 direction = "TB"

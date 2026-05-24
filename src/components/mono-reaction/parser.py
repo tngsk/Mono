@@ -6,7 +6,7 @@ class Parser(BaseComponentParser):
     def block_level_tags(self) -> list[str]:
         return ["mono-reaction"]
 
-    # OPTIONS: label="text", options="👍,👎"
+    # OPTIONS: label: "text", options: "👍,👎"
     PATTERN = r"@\[reaction(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
 
     def process(self, markdown_content: str) -> str:

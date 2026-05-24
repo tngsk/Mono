@@ -3,7 +3,7 @@ from src.processors.base_parser import BaseComponentParser
 import html
 
 class Parser(BaseComponentParser):
-    # OPTIONS: title="text", image="url", mode="light|dark", bg-color="#HEX", text-color="#HEX", height="px|vh", width="px|vw"
+    # OPTIONS: title: "text", image: "url", mode: "light|dark", bg-color: "#HEX", text-color: "#HEX", height: "px|vh", width: "px|vw"
     # Match @[section: title](key: value, ...) or @[section](key: value, ...)
     START_PATTERN = r"@\[section(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
     END_PATTERN = r"@\[/section\]"
@@ -22,6 +22,9 @@ class Parser(BaseComponentParser):
             title, specific_args = self.parse_bracket_content(bracket_content)
             common_args = self.parse_key_value_args(args_str)
             args = {**specific_args, **common_args}
+
+            if 'title' in args:
+                title = args['title']
 
             attrs = ['markdown="1"']
 

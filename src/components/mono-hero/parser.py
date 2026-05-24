@@ -3,7 +3,7 @@ from src.processors.base_parser import BaseComponentParser
 import html
 
 class Parser(BaseComponentParser):
-    # OPTIONS: title="text", image="url", mode="light|dark", bg-color="#HEX", text-color="#HEX"
+    # OPTIONS: title: "text", image: "url", mode: "light|dark", bg-color: "#HEX", text-color: "#HEX"
     # Match @[hero: title](key: value, ...) or @[hero](key: value, ...)
     START_PATTERN = r"@\[hero(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
     END_PATTERN = r"@\[/hero\]"
@@ -22,6 +22,9 @@ class Parser(BaseComponentParser):
             title, specific_args = self.parse_bracket_content(bracket_content)
             common_args = self.parse_key_value_args(args_str)
             args = {**specific_args, **common_args}
+
+            if "title" in args:
+                title = args["title"]
 
             attrs = ['markdown="1"']
 

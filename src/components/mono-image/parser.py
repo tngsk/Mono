@@ -2,7 +2,7 @@ import re
 from src.processors.base_parser import BaseComponentParser
 
 class Parser(BaseComponentParser):
-    # OPTIONS: label="text", src="url", alt="text", width="size", height="size"
+    # OPTIONS: src: "url", alt: "text", width: "size", height: "size"
     PATTERN = r"@\[image(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
     FAST_PATH_MARKERS = ("@[image",)
 

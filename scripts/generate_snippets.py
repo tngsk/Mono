@@ -1,6 +1,7 @@
 import json
 import os
 import glob
+import re
 from pathlib import Path
 
 def generate_snippets():
@@ -23,45 +24,58 @@ def generate_snippets():
                 if "# OPTIONS:" in line:
                     opt_str = line.split("# OPTIONS:")[1].strip()
                     if opt_str:
-                        options = [o.strip() for o in opt_str.split(",")]
+                        # Safely split by comma using regex lookahead for word characters followed by a colon
+                        options = [o.strip() for o in re.split(r',\s*(?=[\w-]+:)', opt_str)]
                     break
         components_with_parsers[comp_name] = options
 
-    # Some components might not have parser.py (e.g. implicitly injected ones)
-    # or we might want to manually define them if they don't take markdown arguments.
-    # Currently mono-brush, mono-sync, mono-export are mostly parameter-less from a markdown perspective,
-    # but we can add them to the dictionary for completion.
     implicit_components = {
         "brush": [],
         "sync": [],
-        "export": ["filename"],
-        "code-block": ["language"]
+        "export": ["filename: \"val\""],
+        "code-block": ["language: \"val\""]
     }
 
-    # Merge them together (parsers take precedence)
     all_components = {**implicit_components, **components_with_parsers}
 
     for comp, options in all_components.items():
-        prefix = f"@[{comp}"
+        # Handle special input components with UUIDs
+        prefix_comp = comp
+        if comp == "textfield-input":
+            prefix_comp = "textfield"
+
+        prefix = f"@[{prefix_comp}"
 
         # Build the arguments string
-        # e.g., color: "${1:val}", soft: "${2:val}"
         if options:
             attr_parts = []
-            for i, opt in enumerate(options, start=2): # start at 2 since 1 is usually the label
-                # Provide a generic placeholder based on the option name
-                attr_parts.append(f'{opt}: \"${{{i}:val}}\"')
+            for i, opt in enumerate(options, start=2):
+                if ":" in opt:
+                    key = opt.split(":")[0].strip()
+
+                    if key == "id" and prefix_comp in ["textfield", "notebook"]:
+                        attr_parts.append(f'{key}: \"${{UUID}}\"')
+                    else:
+                        attr_parts.append(f'{key}: \"${{{i}:val}}\"')
+                else:
+                    attr_parts.append(f'{opt}: \"${{{i}:val}}\"')
 
             attrs = ", ".join(attr_parts)
-            # Use pattern A: specific options in []
-            body = f"@[{comp}: \"${{1:Label}}\", {attrs}]"
+            body = f"@[{prefix_comp}: \"${{1:Label}}\", {attrs}]"
         else:
-            body = f"@[{comp}: \"${{1:Label}}\"]"
+            body = f"@[{prefix_comp}: \"${{1:Label}}\"]"
 
-        snippets[f"Mono Component: {comp}"] = {
+        # If it's an input component without options defined (failsafe)
+        if prefix_comp in ["textfield", "notebook"] and "id:" not in body:
+            if options:
+                body = body[:-1] + f", id: \"${{UUID}}\"]"
+            else:
+                body = f"@[{prefix_comp}: \"${{1:Label}}\", id: \"${{UUID}}\"]"
+
+        snippets[f"Mono Component: {prefix_comp}"] = {
             "prefix": prefix,
             "body": [body],
-            "description": f"Mono {comp} component"
+            "description": f"Mono {prefix_comp} component"
         }
 
     # Ensure directories exist

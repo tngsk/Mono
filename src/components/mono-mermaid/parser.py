@@ -9,7 +9,7 @@ from src.processors.base_parser import BaseComponentParser
 logger = logging.getLogger(__name__)
 
 class Parser(BaseComponentParser):
-    # OPTIONS: title="text", theme="default|dark|forest|..."
+    # OPTIONS: title: "text", theme: "default|dark|forest|..."
     START_PATTERN = r"@\[mermaid(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
     END_PATTERN = r"@\[/mermaid\]"
 
@@ -30,6 +30,9 @@ class Parser(BaseComponentParser):
             title, specific_args = self.parse_bracket_content(bracket_content)
             common_args = self.parse_key_value_args(args_str) if args_str else {}
             args = {**specific_args, **common_args}
+
+            if 'title' in args:
+                title = args['title']
 
             theme = args.get("theme", "default")
             svg_content = self._generate_svg(content, theme)
