@@ -39,12 +39,9 @@ class MonoMediaGrid extends MonoBaseElement {
         }
 
         // Apply object-fit to host to allow content.css to pick it up
-        const fit = this.getAttribute('fit');
-        if (fit) {
-             this.dataset.fit = fit;
-        } else {
-             this.dataset.fit = 'cover';
-        }
+        const fit = this.getAttribute('fit') || 'cover';
+        this.dataset.fit = fit;
+        this.style.setProperty('--fit', fit);
     }
 }
 

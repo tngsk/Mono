@@ -5,6 +5,13 @@
   width: 100%;
   max-width: 400px;
 }
+.mono-textfield-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  color: var(--color-base-content, #333);
+}
 .mono-textfield {
   padding: var(--padding-sm);
   border: 1px solid var(--border-color, #ccc);

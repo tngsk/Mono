@@ -10,22 +10,24 @@ def test_parse_key_value_args_colon():
     result = parser.parse_key_value_args('key: "value"')
     assert result == {"key": "value"}
 
-def test_parse_key_value_args_equal_with_colon_in_value():
+def test_parse_key_value_args_equal_with_colon_in_value(caplog):
     parser = BaseComponentParser()
-    with pytest.raises(ValueError) as excinfo:
-        parser.parse_key_value_args('url="https://example.com"')
-    assert "Parse error: Use ':' instead of '=' for component options." in str(excinfo.value)
+    with caplog.at_level(logging.WARNING):
+        result = parser.parse_key_value_args('url="https://example.com"')
+    assert result == {"url": "https://example.com"}
+    assert "Deprecated syntax" in caplog.text
 
 def test_parse_key_value_args_colon_with_colon_in_value():
     parser = BaseComponentParser()
     result = parser.parse_key_value_args('url: "https://example.com"')
     assert result == {"url": "https://example.com"}
 
-def test_parse_key_value_args_mixed_separators():
+def test_parse_key_value_args_mixed_separators(caplog):
     parser = BaseComponentParser()
-    with pytest.raises(ValueError) as excinfo:
-        parser.parse_key_value_args('class: "gap-md", url="https://example.com"')
-    assert "Parse error: Use ':' instead of '=' for component options. Found in: 'url=\"https://example.com\"'" in str(excinfo.value)
+    with caplog.at_level(logging.WARNING):
+        result = parser.parse_key_value_args('class: "gap-md", url="https://example.com"')
+    assert result == {"class": "gap-md", "url": "https://example.com"}
+    assert "Deprecated syntax" in caplog.text
 
 def test_parse_bracket_content():
     parser = BaseComponentParser()
@@ -49,11 +51,6 @@ def test_parse_bracket_content():
     label, args = parser.parse_bracket_content('"Only Label"')
     assert label == "Only Label"
     assert args == {}
-
-    # 5. Label with deprecated equal syntax
-    with pytest.raises(ValueError) as excinfo:
-        parser.parse_bracket_content('"My Label", id="123"')
-    assert "Parse error: Use ':' instead of '=' for component options. Found in: 'id=\"123\"'" in str(excinfo.value)
 
     # 6. Empty content
     label, args = parser.parse_bracket_content('')
