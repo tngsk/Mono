@@ -15,6 +15,19 @@ class Parser(BaseComponentParser):
     def block_level_tags(self) -> list[str]:
         return []
 
+    def safe_encode_url(self, url: str) -> str:
+        """Encode URL properly handling non-ASCII characters without double encoding"""
+        try:
+            url.encode('ascii')
+            return url
+        except UnicodeEncodeError:
+            from urllib.parse import urlsplit, urlunsplit, quote, unquote
+            scheme, netloc, path, query, fragment = urlsplit(url)
+            path = quote(unquote(path))
+            query = quote(unquote(query), safe='=&')
+            fragment = quote(unquote(fragment))
+            return urlunsplit((scheme, netloc, path, query, fragment))
+
     def fetch_og_data(self, url: str) -> dict:
         """Fetch OpenGraph metadata and image from URL"""
         data = {
@@ -27,7 +40,8 @@ class Parser(BaseComponentParser):
             return data
 
         try:
-            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'})
+            safe_url = self.safe_encode_url(url)
+            req = urllib.request.Request(safe_url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'})
             html = urllib.request.urlopen(req, timeout=5).read().decode('utf-8', errors='ignore')
 
             # Extract og:image
@@ -42,7 +56,8 @@ class Parser(BaseComponentParser):
             if title_match:
                 data["title"] = title_match.group(1).strip()
             if desc_match:
-                data["desc"] = desc_match.group(1).strip()
+                # Remove newlines to prevent markdown from splitting the tag
+                data["desc"] = desc_match.group(1).replace('\n', ' ').strip()
 
             if image_match:
                 img_url = image_match.group(1).strip()
