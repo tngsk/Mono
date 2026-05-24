@@ -25,68 +25,18 @@ BASE_CSS_FILE = "base.css"
 THEMES_TOML_FILE = "themes.toml"
 
 # 許可されたコンポーネントのリスト (セキュリティのため、明示的に指定)
-ALLOWED_COMPONENTS = [
-    "mono-ab-test",
-    "mono-account",
-    "mono-badge",
-    "mono-clock",
-    "mono-countdown",
-    "mono-dice",
-    "mono-drawer",
-    "mono-flipcard",
-    "mono-flow",
-    "mono-group-assignment",
-    "mono-hero",
-    "mono-icon",
-    "mono-image",
-    "mono-layout",
-    "mono-media-grid",
-    "mono-mermaid",
-    "mono-notebook",
-    "mono-poll",
-    "mono-reaction",
-    "mono-score",
-    "mono-section",
-    "mono-session-join",
-    "mono-sound",
-    "mono-spacer",
-    "mono-textfield-input",
-    "mono-theme",
-    "mono-synth",
-    "mono-link",
-]
 
 # ============================================================================
 # Component Behavior Configuration
 # ============================================================================
 
 # エクスポート機能（mono-export）を自動的に有効にするインタラクティブなコンポーネント
-INTERACTIVE_COMPONENTS = [
-    "mono-poll",
-    "mono-ab-test",
-    "mono-notebook",
-    "mono-textfield-input",
-    "mono-reaction",
-    "mono-session-join",
-    "mono-group-assignment",
-    "mono-synth",
-]
 
 # ドキュメントに常に含めるシステム/暗黙的コンポーネント
-ALWAYS_INCLUDE_COMPONENTS = [
-    "mono-sync",
-    "mono-brush",
-]
 
 # Highlight.js (CSS) を必要とするコンポーネント
-COMPONENTS_REQUIRING_CODE_BLOCK_HIGHLIGHT = [
-    "mono-code-block",
-]
 
 # アイコン用フォント（Material Symbols）を必要とするコンポーネント
-COMPONENTS_REQUIRING_ICONS = [
-    "mono-icon",
-]
 
 # MathJax (数式レンダリング) を必要とする要素のクラス名
 CLASSES_REQUIRING_MATH = [

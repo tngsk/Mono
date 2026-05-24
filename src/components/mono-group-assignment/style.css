@@ -19,9 +19,9 @@
 
 .mono-group-alert {
   padding: var(--padding-md);
-  background-color: var(--color-warning, #fff3cd);
-  color: var(--color-warning-content, #856404);
-  border: 1px solid var(--border-color, #ffeeba);
+  background-color: color-mix(in srgb, var(--color-warning) 15%, transparent);
+  color: var(--color-base-content, #856404);
+  border: 1px solid color-mix(in srgb, var(--color-warning) 30%, transparent);
   border-radius: 6px;
   text-align: center;
   flex: 1;
