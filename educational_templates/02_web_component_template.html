@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanilla JS Web Component Template</title>
+    <style>
+        /* Base styles for the page */
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            padding: 2rem;
+            background-color: #f9fafb;
+        }
+
+        .container {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>My Custom Badge Component</h2>
+
+    <div class="container">
+        <!-- These are the custom elements we will define -->
+        <my-badge color="primary">Primary Badge</my-badge>
+        <my-badge color="success" outline>Success Outline</my-badge>
+        <my-badge color="error" soft>Error Soft</my-badge>
+        <my-badge>Default Badge</my-badge>
+    </div>
+
+    <!-- Template for the Web Component's Shadow DOM -->
+    <template id="my-badge-template">
+        <style>
+            /*
+             * Styles inside the template are scoped to the component (Shadow DOM).
+             * They do not leak out to the main page.
+             */
+            .badge-wrapper {
+                display: inline-block;
+                padding: 0.25em 0.5em;
+                font-size: 0.875em;
+                font-weight: 600;
+                border-radius: 0.25rem;
+                background-color: #6b7280; /* default gray */
+                color: white;
+                border: 1px solid transparent;
+            }
+
+            /* Semantic color variations */
+            .badge-primary { background-color: #3b82f6; }
+            .badge-success { background-color: #10b981; }
+            .badge-error   { background-color: #ef4444; }
+
+            /* Style variations */
+            .badge-outline {
+                background-color: transparent !important;
+                border-color: currentColor;
+            }
+            .badge-outline.badge-primary { color: #3b82f6; }
+            .badge-outline.badge-success { color: #10b981; }
+            .badge-outline.badge-error   { color: #ef4444; }
+
+            .badge-soft {
+                background-color: color-mix(in srgb, currentColor 20%, transparent) !important;
+            }
+            .badge-soft.badge-primary { color: #3b82f6; }
+            .badge-soft.badge-success { color: #10b981; }
+            .badge-soft.badge-error   { color: #ef4444; }
+
+        </style>
+
+        <!-- The actual HTML structure of the component -->
+        <span class="badge-wrapper">
+            <!-- <slot> acts as a placeholder for the content passed inside the custom tag -->
+            <slot></slot>
+        </span>
+    </template>
+
+    <script>
+        /**
+         * Template for defining a Vanilla JavaScript Web Component.
+         * Inspired by Mono's component structure (e.g. MonoBadge).
+         */
+        class MyBadge extends HTMLElement {
+            constructor() {
+                super();
+                // Attach a shadow DOM tree to this instance - 'open' means it can be accessed from JavaScript outside the root
+                this.attachShadow({ mode: 'open' });
+
+                // Clone the template content and append it to the shadow root
+                const template = document.getElementById('my-badge-template');
+                this.shadowRoot.appendChild(template.content.cloneNode(true));
+            }
+
+            // Called when the element is inserted into the document
+            connectedCallback() {
+                this.render();
+            }
+
+            // Specify which attributes to observe for changes
+            static get observedAttributes() {
+                return ['color', 'soft', 'outline'];
+            }
+
+            // Called when an observed attribute has been added, removed, updated, or replaced
+            attributeChangedCallback(name, oldValue, newValue) {
+                // Only re-render if the value actually changed
+                if (oldValue !== newValue) {
+                    this.render();
+                }
+            }
+
+            // Centralized method to update the DOM based on current attributes
+            render() {
+                const wrapper = this.shadowRoot.querySelector('.badge-wrapper');
+                if (!wrapper) return;
+
+                // Reset classes to base state
+                wrapper.className = 'badge-wrapper';
+
+                // Handle 'color' attribute
+                const color = this.getAttribute('color');
+                if (color) {
+                    const validColors = ['primary', 'success', 'error'];
+                    if (validColors.includes(color)) {
+                        wrapper.classList.add(`badge-${color}`);
+                    }
+                }
+
+                // Handle boolean attributes (present or not)
+                if (this.hasAttribute('soft')) {
+                    wrapper.classList.add('badge-soft');
+                }
+
+                if (this.hasAttribute('outline')) {
+                    wrapper.classList.add('badge-outline');
+                }
+            }
+        }
+
+        // Register the custom element with the browser
+        customElements.define('my-badge', MyBadge);
+    </script>
+</body>
+</html>
