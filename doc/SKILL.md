@@ -53,34 +53,34 @@ AIは、**以下のリストに存在しないコンポーネントやパラメ�
 
 | コンポーネント | 種類 | 説明 | 引数 (OPTIONS) |
 |---|---|---|---|
-| `mono-ab-test` | Block | A/Bテスト（比較） | `src-a="url"`, `src-b="url"`, `title="text"` |
+| `mono-ab-test` | Inline | A/Bテスト（比較） | `src-a: "url"`, `src-b: "url"`, `title: "text"` |
 | `mono-account` | Inline | アカウント管理UI | なし |
-| `mono-badge` | Inline | バッジ | ラベルテキスト, `color="red|blue|..."`, `soft="true|false"`, `outline="true|false"` |
-| `mono-clock` | Inline | 時計 | `display="analog|digital"`, `format="24h|12h"` |
-| `mono-countdown`| Inline | カウントダウン | `time="10m|2024-12-31T23:59:59"`, `color="red|blue|..."` |
-| `mono-dice` | Inline | サイコロ | `number="1~6"`, `faces="4|6|8|10|12|20"` |
-| `mono-drawer` | Block | ドロワー（サイドメニュー）| `label="text"`, `position="left|right"`, `open="true|false"` |
-| `mono-flipcard` | Inline | フリップカード | ラベルテキスト(front_text), `answer="text"` |
-| `mono-flow` | Block | フローチャート（ノードは `A -> B` のように記述） | ラベルテキスト(title), `direction="TB|LR"` |
-| `mono-group-assignment` | Inline | グループ分け | `title="text"` |
-| `mono-hero` | Block | ヒーローバナー | `title="text"`, `image="url"`, `mode="light|dark"`, `bg-color="#HEX"`, `text-color="#HEX"` |
-| `mono-icon` | Inline | アイコン | ラベルテキスト(name), `size="16~128"`, `color="red|#HEX"`, `display="inline|block"` |
-| `mono-image` | Inline | 画像 | `src="url"`, `alt="text"`, `width="size"`, `height="size"` |
-| `mono-layout` | Block | レイアウト (`@[row]`, `@[stack]`) | ラベルテキスト(class), `class="text"` |
-| `mono-link` | Inline | リンクカード | `url="url"`, `style="full|small|card"` |
-| `mono-media-grid` | Block | メディアグリッド | `label="text"`, `columns="number"`, `rows="number"`, `gap="css-size"`, `fit="cover|contain"` |
-| `mono-mermaid` | Block | Mermaid図表 | `title="text"`, `theme="default|dark|forest|..."` |
-| `mono-notebook` | Inline | ノートブック入力領域 | `title="text"`, `placeholder="text"`, `id="text"` |
-| `mono-poll` | Inline | 投票 | `title="text"`, `options="A,B,C"` |
-| `mono-reaction` | Inline | リアクション（いいね等）| `label="text"`, `options="👍,👎"` |
-| `mono-score` | Inline | 楽譜 (VexFlow) | `notes="C4 D4 E4"`, `clef="treble|bass"`, `time="4/4|3/4"`, `voices='["C4 D4", "E4 F4"]'` |
-| `mono-section` | Block | セクション領域 | `title="text"`, `image="url"`, `mode="light|dark"`, `bg-color="#HEX"`, `text-color="#HEX"`, `height="px|vh"`, `width="px|vw"` |
-| `mono-session-join` | Inline | セッション参加ボタン | `title="text"` |
-| `mono-sound` | Inline | 音声再生ボタン | `label="text"`, `src="url"` |
-| `mono-spacer` | Inline | スペーサー（空白） | `width="px|rem"`, `height="px|rem"` |
-| `mono-synth` | Inline | シンセサイザー | `sample="url"`, `label="text"` |
-| `mono-textfield-input` | Inline | テキスト入力 | `label="text"`, `id="text"`, `placeholder="text"`, `size="small|medium|large"` |
-| `mono-theme` | Inline | テーマ設定・切り替え | ラベルテキスト(theme_name), `show_ui="true|false"`, `config="json"` |
+| `mono-badge` | Inline | バッジ | `text: "text"`, `color: "red|blue|..."`, `soft: "true|false"`, `outline: "true|false"` |
+| `mono-clock` | Inline | 時計 | `display: "analog|digital"`, `format: "24h|12h"` |
+| `mono-countdown` | Inline | カウントダウン | `time: "10m|2024-12-31T23:59:59"`, `color: "red|blue|..."` |
+| `mono-dice` | Inline | サイコロ | `number: "1~6"`, `faces: "4|6|8|10|12|20"` |
+| `mono-drawer` | Block | ドロワー（サイドメニュー） | `label: "text"`, `position: "left|right"`, `open: "true|false"` |
+| `mono-flipcard` | Inline | フリップカード | `front_text: "text"`, `answer: "text"` |
+| `mono-flow` | Block | フローチャート（ノードは `A -> B` のように記述） | `title: "text"`, `direction: "TB|LR"` |
+| `mono-group-assignment` | Inline | グループ分け | `title: "text"` |
+| `mono-hero` | Block | ヒーローバナー | `title: "text"`, `image: "url"`, `mode: "light|dark"`, `bg-color: "#HEX"`, `text-color: "#HEX"` |
+| `mono-icon` | Inline | アイコン | `name: "star|heart|..."`, `size: "16~128"`, `color: "red|#HEX"`, `display: "inline|block"` |
+| `mono-image` | Inline | 画像 | `src: "url"`, `alt: "text"`, `width: "size"`, `height: "size"` |
+| `mono-layout` | Block | レイアウト (`@[row]`, `@[stack]`) | `label: "text"`, `class: "text"` |
+| `mono-link` | Inline | リンクカード | `url: "url"`, `style: "full|small|card"` |
+| `mono-media-grid` | Block | メディアグリッド | `label: "text"`, `columns: "number"`, `rows: "number"`, `gap: "css-size"`, `fit: "cover|contain"` |
+| `mono-mermaid` | Block | Mermaid図表 | `title: "text"`, `theme: "default|dark|forest|..."` |
+| `mono-notebook` | Inline | ノートブック入力領域 | `title: "text"`, `placeholder: "text"`, `id: "text"` |
+| `mono-poll` | Inline | 投票 | `title: "text"`, `options: "A,B,C"` |
+| `mono-reaction` | Inline | リアクション（いいね等） | `label: "text"`, `options: "👍,👎"` |
+| `mono-score` | Inline | 楽譜 (VexFlow) | `notes: "C4 D4 E4"`, `clef: "treble|bass"`, `time: "4/4|3/4"`, `voices: '["C4 D4", "E4 F4"]'` |
+| `mono-section` | Block | セクション領域 | `title: "text"`, `image: "url"`, `mode: "light|dark"`, `bg-color: "#HEX"`, `text-color: "#HEX"`, `height: "px|vh"`, `width: "px|vw"` |
+| `mono-session-join` | Inline | セッション参加ボタン | `title: "text"` |
+| `mono-sound` | Inline | 音声再生ボタン | `label: "text"`, `src: "url"` |
+| `mono-spacer` | Inline | スペーサー（空白） | `width: "px|rem"`, `height: "px|rem"` |
+| `mono-synth` | Inline | シンセサイザー | `sample: "url"`, `label: "text"` |
+| `mono-textfield-input` | Inline | テキスト入力 | `label: "text"`, `id: "text"`, `placeholder: "text"`, `size: "small|medium|large"` |
+| `mono-theme` | Inline | テーマ設定・切り替え | `theme_name: "light|dark"`, `show_ui: "true|false"`, `config: "json"`, `font_size: "16px"` |
 
 ## 3. AIによる生成時の注意点 (AI Generation Directives)
 
@@ -88,3 +88,25 @@ AIは、**以下のリストに存在しないコンポーネントやパラメ�
 2. **フォーマットの厳守:** 引数のフォーマットは `キー: "値"` であり、`=` やシングルクォート `'` は避けてください。
 3. **ブロック要素のネスト:** `@[row]` 内に別のブロック要素を配置する場合は、正しく `:::column` 内に収め、構造を破壊しないよう気をつけてください。
 4. **IDの一意性:** `mono-textfield-input` や `mono-notebook` など、`id` を要求するコンポーネントを複数配置する場合は、それぞれに一意のIDを割り当ててください。
+
+## 4. AIへの追加指示・アドバイス (Additional Directives & Advice)
+
+ユーザーが「コンポーネントの変換結果を変更したい」と要求してきた場合や、機能追加を検討する際には以下の点に注意してアドバイスを行ってください：
+
+1. **Pythonによるパースの仕組み (Parser Logic)**
+   * 各コンポーネントは `src/components/コンポーネント名/parser.py` というファイルで処理されます。
+   * Markdown中の `@[コンポーネント名]` という記述を `re.sub` などの正規表現で検索し、Web Component用のカスタムHTMLタグ（例: `<mono-badge>`）に置換するのが基本的な流れです。
+   * インライン要素は `PATTERN` を、ブロック要素は `START_PATTERN` / `END_PATTERN` や、`block_level_tags` メソッドを用いて適切にパースされます。
+
+2. **フロントエンドの実装 (Web Components Logic)**
+   * 置換されたHTMLタグは、ブラウザ側で `src/components/コンポーネント名/index.js` (Web Components実装) や `style.css` (スタイリング) によって具体的なUIとしてレンダリングされます。
+   * デザインやUIの挙動を変えたい場合は、Pythonの `parser.py` を変更するのではなく、Web Componentsの実装である `index.js` や `style.css` の変更を検討してください。
+
+3. **新しいオプションの追加 (Adding New Options)**
+   * ユーザーが新しいオプションを追加したい場合は、以下の対応が必要です：
+     1. `parser.py` の `# OPTIONS:` コメントに追加する（ドキュメントや補完生成のため）。
+     2. `parser.py` 内で、属性をHTMLタグのプロパティとして引き継ぐようロジックを修正する。
+     3. `index.js` 内でそのプロパティ（`this.getAttribute('新しい属性')`）を受け取り、UIに反映させる。
+
+4. **コンポーネントのテスト (Testing)**
+   * 新しいコンポーネントの追加や既存の変更を行う場合、`tests/components/` ディレクトリにテストファイルを作成・更新することを推奨します。
