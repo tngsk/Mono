@@ -1,5 +1,4 @@
 import re
-from typing import Optional, Dict, Any
 
 from src.processors.base_parser import BaseComponentParser
 
@@ -13,7 +12,7 @@ class Parser(BaseComponentParser):
     def block_level_tags(self) -> list[str]:
         return ["mono-synth"]
 
-    # OPTIONS: sample: "url", label: "text"
+    # OPTIONS: url: "url", label: "text"
     def process(self, content: str) -> str:
         # Fast path
         if f"@[{self.component_name}" not in content:
@@ -32,14 +31,14 @@ class Parser(BaseComponentParser):
                 args.update(self.parse_key_value_args(paren_content))
 
             # Extract specific attributes
-            sample = args.get("sample", "")
+            url, label_val = self.resolve_url_and_label(label, args, ['url', 'sample'], 'label')
 
             # Use common attributes to get class, id, padding, etc.
             common_attrs = self.get_common_attributes(args)
 
             # Add specific attributes
-            if sample:
-                common_attrs += f' sample="{sample}"'
+            if url:
+                common_attrs += f' sample="{url}"'
 
             return f'<mono-synth{common_attrs}></mono-synth>'
 

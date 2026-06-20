@@ -30,7 +30,7 @@ Monoでは外部依存なしのVanilla JSによる多彩なWeb Componentsを埋�
 
 | コンポーネント | 概要 | 記述例 | オプション |
 |---|---|---|---|
-| `mono-ab-test` | A/Bテスト用のコンポーネント。2つの画像やコンテンツを並べて比較します。 | `@[ab-test](src-a: "img1.png", src-b: "img2.png")` | `src-a: "url"`<br>`src-b: "url"`<br>`title: "text"` |
+| `mono-ab-test` | A/Bテスト用のコンポーネント。2つの画像やコンテンツを並べて比較します。 | `@[ab-test](src-a: "img1.png", src-b: "img2.png")` | `url-a: "url"`<br>`url-b: "url"`<br>`title: "text"` |
 | `mono-account` | ログインなどのアカウント管理UIを表示します。 | `@[account]()` | なし |
 | `mono-badge` | バッジを表示します。 | `@[badge: "New!"](color: "red")` | `text: "text"`<br>`color: "red|blue|..."`<br>`soft: "true|false"`<br>`outline: "true|false"` |
 | `mono-clock` | 時計を表示します。 | `@[clock](display: "analog")` | `display: "analog|digital"`<br>`format: "24h|12h"` |
@@ -42,7 +42,7 @@ Monoでは外部依存なしのVanilla JSによる多彩なWeb Componentsを埋�
 | `mono-group-assignment` | グループ分けを行うコンポーネント。 | `@[group-assignment](title: "グループ分け")` | `title: "text"` |
 | `mono-hero` | ヒーローバナー領域を表示します。ブロック要素。 | `@[hero](bg-color: "#000", text-color: "#fff")\n...コンテンツ...\n@[/hero]` | `title: "text"`<br>`image: "url"`<br>`mode: "light|dark"`<br>`bg-color: "#HEX"`<br>`text-color: "#HEX"` |
 | `mono-icon` | アイコンを表示します。 | `@[icon: star](size: "24", color: "yellow")` | `name: "star|heart|..."`<br>`size: "16~128"`<br>`color: "red|#HEX"`<br>`display: "inline|block"` |
-| `mono-image` | 画像を表示します。 | `@[image]()` | `src: "url"`<br>`alt: "text"`<br>`width: "size"`<br>`height: "size"` |
+| `mono-image` | 画像を表示します。 | `@[image]()` | `url: "url"`<br>`alt: "text"`<br>`width: "size"`<br>`height: "size"` |
 | `mono-layout` | 横並び（hstack）や縦並び（vstack）のレイアウトを構築します。ブロック要素。 | `@[hstack]\n:::\n左側コンテンツ\n:::\n右側コンテンツ\n@[/hstack]` | `label: "text"`<br>`class: "text"` |
 | `mono-link` | リンクカードを表示します。 | `@[link]()` | `url: "url"`<br>`style: "full|small|card"` |
 | `mono-media-grid` | 複数のメディアをグリッド状に配置して表示します。ブロック要素。 | `@[media-grid]()\n...コンテンツ...\n@[/media-grid]` | `label: "text"`<br>`columns: "number"`<br>`rows: "number"`<br>`gap: "css-size"`<br>`fit: "cover|contain"` |
@@ -53,9 +53,9 @@ Monoでは外部依存なしのVanilla JSによる多彩なWeb Componentsを埋�
 | `mono-score` | 楽譜を表示します。 | `@[score](clef: "treble", notes: "C4 D4 E4")` | `notes: "C4 D4 E4"`<br>`clef: "treble|bass"`<br>`time: "4/4|3/4"`<br>`voices: '["C4 D4", "E4 F4"]'` |
 | `mono-section` | セクション領域を表示します。ブロック要素。 | `@[section](bg-color: "#f0f0f0")\n...コンテンツ...\n@[/section]` | `title: "text"`<br>`image: "url"`<br>`mode: "light|dark"`<br>`bg-color: "#HEX"`<br>`text-color: "#HEX"`<br>`height: "px|vh"`<br>`width: "px|vw"` |
 | `mono-session-join` | セッション（同期・データ収集）へ参加するボタン等を表示します。 | `@[session-join](title: "参加する")` | `title: "text"` |
-| `mono-sound` | 効果音や音声を再生するボタンを表示します。 | `@[sound](src: "audio.mp3", label: "再生")` | `label: "text"`<br>`src: "url"` |
+| `mono-sound` | 効果音や音声を再生するボタンを表示します。 | `@[sound: "https://example.com/audio.mp3"](label: "再生")` | `url: "url"`<br>`label: "text"` |
 | `mono-spacer` | 空白（スペーサー）を挿入します。 | `@[spacer](width: "10px", height: "20px")` | `width: "px|rem"`<br>`height: "px|rem"` |
-| `mono-synth` | Tone.jsを用いたシンプルなシンセサイザー。OSC, Filter, ADSR, ミニ鍵盤を備えます。 | `@[mono-synth: sample="asset-test.wav"]()` | `sample: "url"`<br>`label: "text"` |
+| `mono-synth` | Tone.jsを用いたシンプルなシンセサイザー。OSC, Filter, ADSR, ミニ鍵盤を備えます。 | `@[mono-synth: sample="asset-test.wav"]()` | `url: "url"`<br>`label: "text"` |
 | `mono-textfield-input` | テキスト入力フィールドを表示します。 | `@[textfield](placeholder: "テキストを入力", size: "large")` | `label: "text"`<br>`id: "text"`<br>`placeholder: "text"`<br>`size: "small|medium|large"` |
 | `mono-theme` | テーマ切り替えコンポーネント。通常はMarkdownディレクティブでテーマを設定します。 | `@[theme: dark]()` | `theme_name: "light|dark"`<br>`show_ui: "true|false"`<br>`config: "json"`<br>`font_size: "16px"` |
 

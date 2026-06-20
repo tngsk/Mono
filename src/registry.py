@@ -1,6 +1,5 @@
 import json
 import logging
-from pathlib import Path
 from typing import Dict, List
 
 from src.constants import COMPONENTS_DIR

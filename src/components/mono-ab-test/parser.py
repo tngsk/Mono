@@ -6,7 +6,7 @@ class Parser(BaseComponentParser):
     def block_level_tags(self) -> list[str]:
         return ["mono-ab-test"]
 
-    # OPTIONS: src-a: "url", src-b: "url", title: "text"
+    # OPTIONS: url-a: "url", url-b: "url", title: "text"
     PATTERN = r"@\[ab-test(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
 
     def process(self, markdown_content: str) -> str:
@@ -21,12 +21,8 @@ class Parser(BaseComponentParser):
             if 'title' in args:
                 title = args['title']
 
-            src_a = args.get('src-a', '')
-            if not src_a:
-                src_a = args.get('src_a', '')
-            src_b = args.get('src-b', '')
-            if not src_b:
-                src_b = args.get('src_b', '')
+            src_a = args.get('url-a', args.get('url_a', args.get('src-a', args.get('src_a', ''))))
+            src_b = args.get('url-b', args.get('url_b', args.get('src-b', args.get('src_b', ''))))
 
             safe_title = self.escape_html(title) if title else ""
             safe_src_a = self.escape_html(src_a)
