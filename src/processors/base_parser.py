@@ -379,6 +379,35 @@ class BaseComponentParser:
 
         return " " + " ".join(attrs) if attrs else ""
 
+
+    def resolve_url_and_label(self, label: str, args: dict, url_keys: list[str], label_key: str) -> tuple[str, str]:
+        """
+        Resolves the primary URL and label/alt text for components.
+        If any of the `url_keys` are present in `args`, we use that as the URL and `label` as the label text.
+        If no `url_keys` are present, we assume `label` (bracket content) is the URL, and look for `label_key` in `args`.
+
+        Returns:
+            tuple: (url, text)
+        """
+        url = ""
+        text = ""
+
+        # Check if url is explicitly passed in args
+        for key in url_keys:
+            if key in args:
+                url = args[key]
+                break
+
+        if url:
+            # URL is in args, so bracket content is the text
+            text = args.get(label_key, label)
+        else:
+            # URL is not in args, so bracket content is the URL
+            url = label
+            text = args.get(label_key, "")
+
+        return url, text
+
     def process(self, markdown_content: str) -> str:
         """
         Markdownテキストを受け取り、コンポーネント固有の前処理（置換）を行った結果を返す。

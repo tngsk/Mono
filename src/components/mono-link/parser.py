@@ -93,7 +93,8 @@ class Parser(BaseComponentParser):
             args = {**specific_args, **common_args}
 
             # Support both `@[link: "url"]` and `@[link](url="url")`
-            url = args.get('url', label).strip('\'"')
+            url, _ = self.resolve_url_and_label(label, args, ['url'], 'text')
+            url = url.strip('\'"')
             # Default style is full
             style = args.get('style', 'full')
 

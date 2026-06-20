@@ -2,7 +2,7 @@ import re
 from src.processors.base_parser import BaseComponentParser
 
 class Parser(BaseComponentParser):
-    # OPTIONS: src: "url", alt: "text", width: "size", height: "size"
+    # OPTIONS: url: "url", alt: "text", width: "size", height: "size"
     PATTERN = r"@\[image(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
     FAST_PATH_MARKERS = ("@[image",)
 
@@ -23,8 +23,8 @@ class Parser(BaseComponentParser):
             common_args = self.parse_key_value_args(args_str)
             args = {**specific_args, **common_args}
 
-            src = args.get('src', '')
-            alt = args.get('alt', label)
+            url, alt = self.resolve_url_and_label(label, args, ['url', 'src'], 'alt')
+
             width = args.get('width', '')
             height = args.get('height', '')
 
@@ -36,6 +36,6 @@ class Parser(BaseComponentParser):
 
             style_attr = f' style="{" ".join(style)}"' if style else ''
 
-            return f'<img src="{self.escape_html(src)}" alt="{self.escape_html(alt)}"{style_attr} />'
+            return f'<img src="{self.escape_html(url)}" alt="{self.escape_html(alt)}"{style_attr} />'
 
         return pattern.sub(replacer, markdown_content)

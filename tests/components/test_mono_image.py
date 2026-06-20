@@ -16,8 +16,8 @@ class TestMonoImageParser(unittest.TestCase):
     def test_mono_image_basic(self):
         markdown = '@[image: "An image"]()'
         html = self.parser.process(markdown)
-        self.assertIn('<img src=""', html)
-        self.assertIn('alt="An image"', html)
+        self.assertIn('<img src="An image"', html)
+        self.assertIn('alt=""', html)
 
     def test_mono_image_no_options(self):
         markdown = '@[image]()'
