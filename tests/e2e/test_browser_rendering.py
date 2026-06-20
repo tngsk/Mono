@@ -19,7 +19,7 @@ def temp_markdown_file(tmp_path):
     # transparent pixel
     image_path.write_bytes(base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="))
 
-    md_file.write_text(f"""
+    md_file.write_text("""
 # Test Image Lazy Load
 ![placeholder](dummy.png)
     """)

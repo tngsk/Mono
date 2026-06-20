@@ -30,9 +30,9 @@ class Parser(BaseComponentParser):
             if 'color' in args:
                 color_attr = f' color="{self.escape_html(args["color"])}"'
             if 'soft' in args and args['soft'].lower() in ['true', '1', 'yes']:
-                soft_attr = f' soft=""'
+                soft_attr = ' soft=""'
             if 'outline' in args and args['outline'].lower() in ['true', '1', 'yes']:
-                outline_attr = f' outline=""'
+                outline_attr = ' outline=""'
 
             safe_text = self.escape_html(text) if text else ""
 

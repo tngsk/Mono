@@ -68,7 +68,7 @@ def generate_snippets():
         # If it's an input component without options defined (failsafe)
         if prefix_comp in ["textfield", "notebook"] and "id:" not in body:
             if options:
-                body = body[:-1] + f", id: \"${{UUID}}\"]"
+                body = body[:-1] + ", id: \"${UUID}\"]"
             else:
                 body = f"@[{prefix_comp}: \"${{1:Label}}\", id: \"${{UUID}}\"]"
 
