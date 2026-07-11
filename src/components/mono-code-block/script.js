@@ -21,6 +21,15 @@ class MonoCodeBlock extends MonoBaseElement {
     this.initializeSyntaxHighlighting();
   }
 
+  disconnectedCallback() {
+    if (this._beforePrintHandler) {
+      window.removeEventListener("beforeprint", this._beforePrintHandler);
+    }
+    if (this._afterPrintHandler) {
+      window.removeEventListener("afterprint", this._afterPrintHandler);
+    }
+  }
+
   mountTemplate() {
         super.mountTemplate('mono-code-block-template');
         // Cache references
@@ -107,6 +116,25 @@ class MonoCodeBlock extends MonoBaseElement {
           codeElement.classList.add(`language-${this.language}`);
         }
         window.hljs.highlightElement(codeElement);
+
+        // Store references to bound handlers for cleanup
+        this._beforePrintHandler = () => {
+          if (!codeElement.dataset.rawHtml) {
+            codeElement.dataset.rawHtml = codeElement.innerHTML;
+            codeElement.textContent = codeElement.textContent; // Removes all tags safely, escaping < and >
+          }
+        };
+
+        this._afterPrintHandler = () => {
+          if (codeElement.dataset.rawHtml) {
+            codeElement.innerHTML = codeElement.dataset.rawHtml;
+            delete codeElement.dataset.rawHtml;
+          }
+        };
+
+        // Strip highlight spans for PDF printing to fix macOS copy-paste spacing
+        window.addEventListener("beforeprint", this._beforePrintHandler);
+        window.addEventListener("afterprint", this._afterPrintHandler);
       }
     }
   }
