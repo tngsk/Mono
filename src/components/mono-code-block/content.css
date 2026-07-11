@@ -9,7 +9,7 @@ mono-code-block pre {
 }
 
 mono-code-block code {
-    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    font-family: Menlo, Consolas, "Liberation Mono", monospace;
     font-variant-ligatures: none;
     font-size: 0.95em;
     line-height: 1.5;
