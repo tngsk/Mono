@@ -56,10 +56,13 @@ AIは、**以下のリストに存在しないコンポーネントやパラメ�
 | `mono-ab-test` | Block | A/Bテスト用のコンポーネント。2つの画像やコンテンツを並べて比較します。 | `url-a: "url"`, `url-b: "url"`, `title: "text"` |
 | `mono-account` | Block | ログインなどのアカウント管理UIを表示します。 | なし |
 | `mono-badge` | Inline | バッジを表示します。 | `text: "text"`, `color: "red|blue|..."`, `soft: "true|false"`, `outline: "true|false"` |
+| `mono-brush` | Implicit/System | 描画オーバーレイ機能。暗黙的に全ページに組み込まれるか、特定条件で有効化されます。 | なし |
 | `mono-clock` | Block | 時計を表示します。 | `display: "analog|digital"`, `format: "24h|12h"` |
+| `mono-code-block` | Implicit/System | コードブロックコンポーネント。コードブロックが存在する場合に暗黙的に組み込まれます。 | なし |
 | `mono-countdown` | Block | カウントダウンタイマーを表示します。 | `time: "10m|2024-12-31T23:59:59"`, `color: "red|blue|..."` |
 | `mono-dice` | Block | サイコロを表示し、クリックで振ることができます。 | `number: "1~6"`, `faces: "4|6|8|10|12|20"` |
 | `mono-drawer` | Block | 引き出し式のサイドメニュー（ドロワー）を表示します。ブロック要素。 | `label: "text"`, `position: "left|right"`, `open: "true|false"` |
+| `mono-export` | Implicit/System | 外部エクスポート機能。`--export`オプションで強制的に有効になります。 | なし |
 | `mono-flipcard` | Block | クリックまたはホバーで裏返るカード。 | `front_text: "text"`, `answer: "text"` |
 | `mono-flow` | Block | フローチャート（ノードとエッジ）を表示します。 | `title: "text"`, `direction: "TB|LR"` |
 | `mono-group-assignment` | Block | グループ分けを行うコンポーネント。 | `title: "text"` |
@@ -78,6 +81,7 @@ AIは、**以下のリストに存在しないコンポーネントやパラメ�
 | `mono-session-join` | Block | セッション（同期・データ収集）へ参加するボタン等を表示します。 | `title: "text"` |
 | `mono-sound` | Block | 効果音や音声を再生するボタンを表示します。 | `url: "url"`, `label: "text"` |
 | `mono-spacer` | Block | 空白（スペーサー）を挿入します。 | `width: "px|rem"`, `height: "px|rem"` |
+| `mono-sync` | Implicit/System | 状態同期・通信機能。サーバーとのSSE/HTTP通信を管理し、暗黙的に組み込まれます。 | なし |
 | `mono-synth` | Block | Tone.jsを用いたシンプルなシンセサイザー。OSC, Filter, ADSR, ミニ鍵盤を備えます。 | `url: "url"`, `label: "text"` |
 | `mono-textfield-input` | Inline | テキスト入力フィールドを表示します。 | `label: "text"`, `id: "text"`, `placeholder: "text"`, `size: "small|medium|large"` |
 | `mono-theme` | Block | テーマ切り替えコンポーネント。通常はMarkdownディレクティブでテーマを設定します。 | `theme_name: "light|dark"`, `show_ui: "true|false"`, `config: "json"`, `font_size: "16px"` |
@@ -126,3 +130,21 @@ AIは、**以下のリストに存在しないコンポーネントやパラメ�
 8. **Shadow DOMとスタイリング (Web Components vs Static Utilities)**
    * MonoのWeb ComponentsはShadow DOM（`MonoBaseElement`経由）を利用してカプセル化されています。
    * TailwindなどのグローバルなユーティリティクラスはShadow DOM内に浸透しないため、UIのスタイリングには`themes.toml`で定義されたCSS変数（例: `var(--color-primary)`）を活用してください。
+
+## 5. コンポーネントの変換結果を変更したい場合のアドバイス (Advice for Modifying Conversion Results)
+
+もしAI自身が「コンポーネントの変換結果（HTMLやスタイル）を変更したい」と判断した場合、あるいはユーザーからそのように要求された場合は、以下の指針に従って提案や実装を行ってください。
+
+1. **修正箇所の特定 (Identifying the Modification Target)**
+   * **見た目やスタイルの変更:** 基本的に `src/components/コンポーネント名/style.css` を変更します。`parser.py` は触りません。
+   * **HTML構造やインタラクションの変更:** `src/components/コンポーネント名/template.html` と `index.js` (または `script.js`) を変更します。
+   * **マークダウンからの引数の受け渡し方法の変更:** `src/components/コンポーネント名/parser.py` の正規表現や `get_html` メソッドを変更し、同時に `# OPTIONS:` コメントも更新します。
+
+2. **Shadow DOM を考慮したスタイリング (Styling with Shadow DOM in mind)**
+   * MonoのコンポーネントはShadow DOMを利用しています。外部のCSS（Tailwindなど）はコンポーネント内部には適用されません。
+   * コンポーネント内の要素のスタイルを変更する場合は、そのコンポーネント専用の `style.css` 内に記述してください。
+   * コンポーネント外部（ページ全体）からスタイルを制御可能にしたい場合は、CSS変数（例: `var(--my-custom-color)`）を `style.css` 内で受け取るように設計し、`parser.py` でインラインスタイルとしてそのCSS変数を流し込む手法が有効です。
+
+3. **互換性の維持 (Maintaining Compatibility)**
+   * `parser.py` を変更して新しい引数を追加する際は、既存のマークダウン記法が壊れないよう、オプショナルな引数として実装してください（例: `args.get('new_param', 'default_value')`）。
+   * `parser.py` でタグ構造を変更する場合（特にブロック要素）は、正規表現（`START_PATTERN` / `END_PATTERN`）の意図しないマッチを防ぐため、十分に注意してテストを行ってください。
