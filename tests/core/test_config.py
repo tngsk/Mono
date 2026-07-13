@@ -96,14 +96,51 @@ class TestConversionConfig(unittest.TestCase):
         )
         self.assertEqual(config.resolve_output_file(), Path("custom.html"))
 
-    def test_resolve_output_file_not_provided(self):
-        """Test resolving output file when not provided."""
+    @patch('pathlib.Path.is_dir')
+    def test_resolve_output_file_not_provided_no_dist(self, mock_is_dir):
+        """Test resolving output file when not provided and no dist folder exists."""
+        mock_is_dir.return_value = False
         config = ConversionConfig(
             input_file=Path("input.md"),
             output_file=None,
             css_files=None
         )
         self.assertEqual(config.resolve_output_file(), Path("input.html"))
+
+    @patch('pathlib.Path.is_dir')
+    def test_resolve_output_file_not_provided_with_dist(self, mock_is_dir):
+        """Test resolving output file when not provided and dist folder exists."""
+        mock_is_dir.return_value = True
+        config = ConversionConfig(
+            input_file=Path("some_dir/input.md"),
+            output_file=None,
+            css_files=None
+        )
+        self.assertEqual(config.resolve_output_file(), Path("some_dir/dist/input.html"))
+
+    @patch('pathlib.Path.is_dir')
+    def test_resolve_pdf_output_file_not_provided_no_dist(self, mock_is_dir):
+        """Test resolving pdf output file when not provided and no dist folder exists."""
+        mock_is_dir.return_value = False
+        config = ConversionConfig(
+            input_file=Path("input.md"),
+            output_file=None,
+            css_files=None,
+            pdf_output=True
+        )
+        self.assertEqual(config.resolve_pdf_output_file(), Path("input.pdf"))
+
+    @patch('pathlib.Path.is_dir')
+    def test_resolve_pdf_output_file_not_provided_with_dist(self, mock_is_dir):
+        """Test resolving pdf output file when not provided and dist folder exists."""
+        mock_is_dir.return_value = True
+        config = ConversionConfig(
+            input_file=Path("some_dir/input.md"),
+            output_file=None,
+            css_files=None,
+            pdf_output=True
+        )
+        self.assertEqual(config.resolve_pdf_output_file(), Path("some_dir/dist/input.pdf"))
 
 class TestConversionStats(unittest.TestCase):
     def test_default_initialization(self):
