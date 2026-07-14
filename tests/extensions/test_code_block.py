@@ -16,16 +16,15 @@ class TestCodeBlockExtension(unittest.TestCase):
         text = '```python\nprint("hello")\n```'
         html = self.md.convert(text)
         self.assertIn('<mono-code-block language="python">', html)
-        self.assertIn('<pre><code class="language-python hljs">', html)
-        self.assertIn('<span class="hljs-built_in">print</span>', html)
+        self.assertIn('<pre><code class="language-python">', html)
+        self.assertIn('print(&quot;hello&quot;)', html)
 
     def test_enhance_code_blocks_no_lang(self):
         text = '```\nprint("hello")\n```'
         html = self.md.convert(text)
         self.assertIn('<mono-code-block language="">', html)
-        self.assertIn('<pre><code class="language- hljs">', html)
-        # highlight.js auto-detects and adds classes even when no lang is provided
-        self.assertIn('<span class="hljs-', html)
+        self.assertIn('<pre><code class="language-">', html)
+        self.assertIn('print(&quot;hello&quot;)', html)
 
     def test_complex_code_block(self):
         text = """```python
@@ -39,7 +38,7 @@ def complex_fn(x: int) -> str:
         self.assertIn('<mono-code-block language="python">', html)
         self.assertIn("@@FENCED_CODE_BLOCK_0@@", html)
         self.assertIn("\\1", html)
-        self.assertIn('<span class="hljs-keyword">def</span>', html)
+        self.assertIn('def complex_fn(x: int) -&gt; str:', html)
 
     def test_code_block_with_pre_attributes(self):
         # Simulating attributes that might be added by attr_list or manual HTML
@@ -49,4 +48,4 @@ def complex_fn(x: int) -> str:
             '<mono-code-block language="python" id="custom-id" class="custom-class">',
             html,
         )
-        self.assertIn('<pre><code class="language-python hljs">', html)
+        self.assertIn('<pre><code class="language-python">', html)

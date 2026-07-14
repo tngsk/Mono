@@ -4,7 +4,7 @@
  * Vanilla JS Web Component for code blocks.
  * Implements "Light DOM" enhancement strategy: Wraps the original Markdown
  * <pre><code> output to preserve SEO and accessibility, while injecting
- * a copy button and syntax highlighting functionality.
+ * a copy button.
  */
 
 class MonoCodeBlock extends MonoBaseElement {
@@ -18,16 +18,6 @@ class MonoCodeBlock extends MonoBaseElement {
   connectedCallback() {
     this.mountTemplate();
     this.setupEventListeners();
-    this.initializeSyntaxHighlighting();
-  }
-
-  disconnectedCallback() {
-    if (this._beforePrintHandler) {
-      window.removeEventListener("beforeprint", this._beforePrintHandler);
-    }
-    if (this._afterPrintHandler) {
-      window.removeEventListener("afterprint", this._afterPrintHandler);
-    }
   }
 
   mountTemplate() {
@@ -62,7 +52,7 @@ class MonoCodeBlock extends MonoBaseElement {
     const codeElement = this.querySelector("code");
     if (!codeElement) return;
 
-    // Use textContent to grab raw text, avoiding HTML tags from highlight.js
+    // Use textContent to grab raw text
     const text = codeElement.textContent;
 
     navigator.clipboard
@@ -103,41 +93,6 @@ class MonoCodeBlock extends MonoBaseElement {
     }, 2000);
   }
 
-  initializeSyntaxHighlighting() {
-    // If highlight.js is loaded globally, apply it to the Light DOM <code> element
-    if (window.hljs) {
-      const codeElement = this.querySelector("code");
-      if (codeElement) {
-        // Ensure the language class is set for hljs
-        if (
-          this.language &&
-          !codeElement.classList.contains(`language-${this.language}`)
-        ) {
-          codeElement.classList.add(`language-${this.language}`);
-        }
-        window.hljs.highlightElement(codeElement);
-
-        // Store references to bound handlers for cleanup
-        this._beforePrintHandler = () => {
-          if (!codeElement.dataset.rawHtml) {
-            codeElement.dataset.rawHtml = codeElement.innerHTML;
-            codeElement.textContent = codeElement.textContent; // Removes all tags safely, escaping < and >
-          }
-        };
-
-        this._afterPrintHandler = () => {
-          if (codeElement.dataset.rawHtml) {
-            codeElement.innerHTML = codeElement.dataset.rawHtml;
-            delete codeElement.dataset.rawHtml;
-          }
-        };
-
-        // Strip highlight spans for PDF printing to fix macOS copy-paste spacing
-        window.addEventListener("beforeprint", this._beforePrintHandler);
-        window.addEventListener("afterprint", this._afterPrintHandler);
-      }
-    }
-  }
 }
 
 // Register the custom element

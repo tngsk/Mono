@@ -4,7 +4,6 @@
     "playwright": "^1.60.0"
   },
   "dependencies": {
-    "highlight.js": "^11.11.1",
     "mathjax-full": "^3.2.1",
     "vexflow": "^5.0.0"
   }

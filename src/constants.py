@@ -34,28 +34,12 @@ THEMES_TOML_FILE = "themes.toml"
 
 # ドキュメントに常に含めるシステム/暗黙的コンポーネント
 
-# Highlight.js (CSS) を必要とするコンポーネント
-
 # アイコン用フォント（Material Symbols）を必要とするコンポーネント
 
 # MathJax (数式レンダリング) を必要とする要素のクラス名
 CLASSES_REQUIRING_MATH = [
     "mono-math",
 ]
-
-# ============================================================================
-# Highlight.js Configuration
-# ============================================================================
-
-# Highlight.js CDN バージョン
-HIGHLIGHT_JS_VERSION = "11.9.0"
-
-# Highlight.js CDN URLs
-HIGHLIGHT_JS_CDN_BASE = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js"
-HIGHLIGHT_JS_CDN_CSS = (
-    f"{HIGHLIGHT_JS_CDN_BASE}/{HIGHLIGHT_JS_VERSION}/styles/atom-one-dark.min.css"
-)
-HIGHLIGHT_JS_CDN_JS = f"{HIGHLIGHT_JS_CDN_BASE}/{HIGHLIGHT_JS_VERSION}/highlight.min.js"
 
 # ============================================================================
 # MathJax Configuration

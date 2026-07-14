@@ -90,12 +90,6 @@ class HTMLDocumentBuilder:
             found_mono_tags, should_enable_export
         )
 
-        has_code_block = any(tag in found_mono_tags for tag in registry.get_components_requiring_code_block_highlight())
-        highlight_js_css = (
-            self._build_highlight_js_link(html_body) if has_code_block else ""
-        )
-        highlight_js = self._load_highlight_js_script() if has_code_block else ""
-
         mathjax = ""
         if any(f'class="{cls}' in html_body for cls in CLASSES_REQUIRING_MATH):
             mathjax = self._build_mathjax_script()
@@ -156,8 +150,9 @@ class HTMLDocumentBuilder:
 
         doc = template_content.replace("{TITLE}", safe_title)
         doc = doc.replace("{CSP_META}", csp_meta + fonts_link)
-        doc = doc.replace("{HIGHLIGHT_JS_CSS}", highlight_js_css)
-        doc = doc.replace("{HIGHLIGHT_JS}", highlight_js)
+        # Note: {HIGHLIGHT_JS_CSS} and {HIGHLIGHT_JS} are safely replaced with empty strings for backwards compatibility if still in template
+        doc = doc.replace("{HIGHLIGHT_JS_CSS}", "")
+        doc = doc.replace("{HIGHLIGHT_JS}", "")
         doc = doc.replace("{MATHJAX}", mathjax)
 
         if content_css:
@@ -311,88 +306,6 @@ class HTMLDocumentBuilder:
 
         return result
 
-    def _build_highlight_js_link(self, html_body: str) -> str:
-        """Highlight.js のCSSスタイルタグを構築（オフライン・ビルド時）"""
-        import re
-
-        from src.constants import TEMPLATES_DIR
-
-        # node_modules から highlight.js のスタイルを読み込む
-        # constants.py doesn't have PROJECT_ROOT, but TEMPLATES_DIR is PROJECT_ROOT / "src" / "templates"
-        project_root = TEMPLATES_DIR.parent.parent
-        highlight_js_dir = project_root / "node_modules" / "highlight.js" / "styles"
-
-        # すべてのテーマを抽出
-        themes = set(["atom-one-dark"])  # デフォルトテーマ
-
-        # html_bodyからtheme属性をすべて検索
-        for tag in registry.get_components_requiring_code_block_highlight():
-            matches = re.finditer(rf'<{tag}[^>]*theme="([^"]*)"', html_body)
-            for match in matches:
-                if match.group(1):
-                    themes.add(match.group(1))
-
-        css_blocks = []
-        for theme in themes:
-            theme_css_file = highlight_js_dir / f"{theme}.css"
-
-            if not theme_css_file.exists():
-                # CSSファイルが存在しない場合はフォールバック
-                self.logger.warning(
-                    f"Highlight.js theme '{theme}' not found. Falling back to default."
-                )
-                theme_css_file = highlight_js_dir / "atom-one-dark.css"
-
-            try:
-                css = theme_css_file.read_text(encoding="utf-8")
-
-                # Strip comments to prevent parsing errors during scoping
-                import re
-
-                css = re.sub(r"/\*.*?\*/", "", css, flags=re.DOTALL)
-
-                # スコープを限定する。
-                # highlight.js の CSS セレクタを mono-code-block の子孫セレクタとして定義し直す。
-                def scope_rule_set(match):
-                    selectors = match.group(1).strip()
-                    properties = match.group(2)
-
-                    # @規則（@media等）は現在の実装では簡易化のためスコープ対象外とする
-                    if selectors.startswith("@") or not selectors:
-                        return match.group(0)
-
-                    scoped_parts = []
-                    for s in selectors.split(","):
-                        s = s.strip()
-                        if not s:
-                            continue
-
-                        # Apply to all components that require code block highlighting
-                        for tag in registry.get_components_requiring_code_block_highlight():
-                            if theme == "atom-one-dark":
-                                scoped_parts.append(f"{tag}:not([theme]) {s}")
-                                scoped_parts.append(
-                                    f'{tag}[theme="atom-one-dark"] {s}'
-                                )
-                            else:
-                                scoped_parts.append(f'{tag}[theme="{theme}"] {s}')
-
-                    return f"\n{', '.join(scoped_parts)} {{{properties}}}\n"
-
-                # セレクタ { プロパティ } の構造にマッチさせ、セレクタ部分を置換する。
-                # 非グリーディーなマッチング (.*?) により、個別のルールセットを抽出する。
-                css = re.sub(r"([^{}]+)\{(.*?)\}", scope_rule_set, css, flags=re.DOTALL)
-
-                css_blocks.append(css)
-            except Exception as e:
-                self.logger.warning(f"Error loading Highlight.js theme '{theme}': {e}")
-
-        if not css_blocks:
-            return ""
-
-        combined_css = "\n".join(css_blocks)
-        return f'<style id="mono-highlightjs-css">\n{combined_css}\n</style>'
-
     def _load_lazy_load_script(self) -> str:
         """lazy_load.js ファイルを読み込んで返す"""
         js_file = TEMPLATES_DIR / "core" / "lazy_load.js"
@@ -404,10 +317,6 @@ class HTMLDocumentBuilder:
         except Exception as e:
             self.logger.warning(f"lazy_load.js の読み込みエラー: {e}")
             return ""
-
-    def _load_highlight_js_script(self) -> str:
-        """Highlight.js スクリプトタグは使用しないため空文字を返す"""
-        return ""
 
     def _build_mathjax_script(self) -> str:
         """MathJax は事前レンダリングされるため空文字を返す"""
