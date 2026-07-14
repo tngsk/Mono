@@ -104,8 +104,8 @@ AIは、**以下のリストに存在しないコンポーネントやパラメ�
    * インライン要素は `PATTERN` を、ブロック要素は `START_PATTERN` / `END_PATTERN` や、`block_level_tags` メソッドを用いて適切にパースされます。
 
 2. **フロントエンドの実装 (Web Components Logic)**
-   * 置換されたHTMLタグは、ブラウザ側で `src/components/コンポーネント名/index.js` (Web Components実装) や `style.css` (スタイリング) によって具体的なUIとしてレンダリングされます。
-   * デザインやUIの挙動を変えたい場合は、Pythonの `parser.py` を変更するのではなく、Web Componentsの実装である `index.js` や `style.css` の変更を検討してください。
+   * 置換されたHTMLタグは、ブラウザ側で `src/components/コンポーネント名/script.js` (Web Components実装) や `style.css` (スタイリング)、`template.html` (HTML構造) によって具体的なUIとしてレンダリングされます。※以前は`index.js`でしたが、現在は`script.js`と`template.html`に分離されていることが多いです。
+   * デザインやUIの挙動を変えたい場合は、Pythonの `parser.py` を変更するのではなく、Web Componentsの実装である `script.js`、`template.html` や `style.css` の変更を検討してください。
 
 3. **新しいオプションの追加 (Adding New Options)**
    * ユーザーが新しいオプションを追加したい場合は、以下の対応が必要です：
@@ -137,7 +137,7 @@ AIは、**以下のリストに存在しないコンポーネントやパラメ�
 
 1. **修正箇所の特定 (Identifying the Modification Target)**
    * **見た目やスタイルの変更:** 基本的に `src/components/コンポーネント名/style.css` を変更します。`parser.py` は触りません。
-   * **HTML構造やインタラクションの変更:** `src/components/コンポーネント名/template.html` と `index.js` (または `script.js`) を変更します。
+   * **HTML構造やインタラクションの変更:** `src/components/コンポーネント名/template.html` と `script.js` (または `index.js`) を変更します。
    * **マークダウンからの引数の受け渡し方法の変更:** `src/components/コンポーネント名/parser.py` の正規表現や `get_html` メソッドを変更し、同時に `# OPTIONS:` コメントも更新します。
 
 2. **Shadow DOM を考慮したスタイリング (Styling with Shadow DOM in mind)**
