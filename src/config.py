@@ -74,6 +74,11 @@ class ConversionConfig:
         """出力ファイルパスを決定する（未指定時は入力ファイル名から生成）"""
         if self.output_file:
             return self.output_file
+
+        dist_dir = self.input_file.parent / "dist"
+        if dist_dir.is_dir():
+            return dist_dir / self.input_file.with_suffix(".html").name
+
         return self.input_file.with_suffix(".html")
 
     def resolve_pdf_output_file(self) -> Optional[Path]:
@@ -81,6 +86,9 @@ class ConversionConfig:
         if self.pdf_output is None or self.pdf_output is False:
             return None
         if isinstance(self.pdf_output, bool) and self.pdf_output:
+            dist_dir = self.input_file.parent / "dist"
+            if dist_dir.is_dir():
+                return dist_dir / self.input_file.with_suffix(".pdf").name
             return self.input_file.with_suffix(".pdf")
         return self.pdf_output
 
