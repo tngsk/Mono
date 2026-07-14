@@ -49,7 +49,6 @@ class ComponentRegistry:
                     "name": component_dir.name,
                     "interactive": False,
                     "always_include": False,
-                    "requires_code_block_highlight": False,
                     "requires_icons": False
                 }
 
@@ -61,9 +60,6 @@ class ComponentRegistry:
 
     def get_always_include_components(self) -> List[str]:
         return [name for name, meta in self._components_meta.items() if meta.get("always_include", False)]
-
-    def get_components_requiring_code_block_highlight(self) -> List[str]:
-        return [name for name, meta in self._components_meta.items() if meta.get("requires_code_block_highlight", False)]
 
     def get_components_requiring_icons(self) -> List[str]:
         return [name for name, meta in self._components_meta.items() if meta.get("requires_icons", False)]
@@ -82,9 +78,6 @@ def get_interactive_components() -> List[str]:
 
 def get_always_include_components() -> List[str]:
     return _registry.get_always_include_components()
-
-def get_components_requiring_code_block_highlight() -> List[str]:
-    return _registry.get_components_requiring_code_block_highlight()
 
 def get_components_requiring_icons() -> List[str]:
     return _registry.get_components_requiring_icons()

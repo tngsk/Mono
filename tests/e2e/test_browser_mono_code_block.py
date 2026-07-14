@@ -65,16 +65,10 @@ def test_code_block_rendering(code_block_markdown, tmp_path):
         cb1 = code_blocks.nth(0)
         assert cb1.get_attribute("language") == "python"
 
-        # Check if highlight.js worked (should have hljs classes)
+        # Check if code exists
         code1 = cb1.locator("code")
         class_attr = code1.get_attribute("class")
         assert "language-python" in class_attr
-        assert "hljs" in class_attr
-
-        # Check if code was transformed/highlighted by looking for a span inside code
-        # highlight.js adds spans like <span class="hljs-keyword">def</span>
-        spans = code1.locator("span.hljs-keyword")
-        assert spans.count() > 0
 
         # Second code block (javascript, dark theme)
         cb2 = code_blocks.nth(1)
@@ -84,7 +78,6 @@ def test_code_block_rendering(code_block_markdown, tmp_path):
         code2 = cb2.locator("code")
         class_attr = code2.get_attribute("class")
         assert "language-javascript" in class_attr
-        assert "hljs" in class_attr
 
         # Test copy button functionality on the first code block
         # The copy button is in the shadow DOM

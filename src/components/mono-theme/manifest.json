@@ -2,6 +2,5 @@
   "name": "mono-theme",
   "interactive": false,
   "always_include": false,
-  "requires_code_block_highlight": false,
   "requires_icons": false
 }

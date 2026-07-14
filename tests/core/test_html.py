@@ -19,9 +19,7 @@ class TestHTMLDocumentBuilder(unittest.TestCase):
     def test_build_document_success(self, mock_read_text):
         mock_read_text.return_value = "<html><head>{CSP_META}{HIGHLIGHT_JS_CSS}</head><body>{TITLE}{BODY}{HIGHLIGHT_JS}{COPY_BUTTON_JS}</body></html>"
 
-        with patch.object(self.builder, '_get_used_component_dirs', return_value=[]), \
-             patch.object(self.builder, '_load_highlight_js_script', return_value="<script></script>"), \
-             patch.object(self.builder, '_build_highlight_js_link', return_value="<link>"):
+        with patch.object(self.builder, '_get_used_component_dirs', return_value=[]):
 
             result = self.builder.build_document(html_body="<p>test</p>", title="Test Title")
 
@@ -44,7 +42,7 @@ class TestHTMLDocumentBuilder(unittest.TestCase):
     def test_build_document_icon_fonts_injection(self, mock_read_text):
         """<mono-icon>が存在する場合にGoogle Fontsが注入されることをテスト"""
         mock_read_text.return_value = "<!doctype html><html><head>{CSP_META}</head><body>{BODY}</body></html>"
-        html_body = "<mono-icon name=\"search\"></mono-icon>"
+        html_body = "<mono-icon name=search></mono-icon>"
 
         result = self.builder.build_document(html_body=html_body)
 
@@ -56,8 +54,6 @@ class TestHTMLDocumentBuilder(unittest.TestCase):
     def test_build_document_export_and_interactive(self, mock_read_text):
         mock_read_text.return_value = "{BODY}{COPY_BUTTON_JS}"
         with patch.object(self.builder, '_get_used_component_dirs', return_value=[]), \
-             patch.object(self.builder, '_load_highlight_js_script', return_value=""), \
-             patch.object(self.builder, '_build_highlight_js_link', return_value=""), \
              patch.object(self.builder, '_load_component_templates', return_value=""), \
              patch.object(self.builder, '_load_mono_components_script', return_value=""):
 
@@ -73,8 +69,6 @@ class TestHTMLDocumentBuilder(unittest.TestCase):
     def test_build_document_connect_src(self, mock_read_text):
         mock_read_text.return_value = "{CSP_META}{COPY_BUTTON_JS}"
         with patch.object(self.builder, '_get_used_component_dirs', return_value=[]), \
-             patch.object(self.builder, '_load_highlight_js_script', return_value=""), \
-             patch.object(self.builder, '_build_highlight_js_link', return_value=""), \
              patch.object(self.builder, '_load_component_templates', return_value=""), \
              patch.object(self.builder, '_load_mono_components_script', return_value=""):
 
@@ -89,12 +83,9 @@ class TestHTMLDocumentBuilder(unittest.TestCase):
     def test_build_document_csp_additions(self, mock_read_text):
         mock_read_text.return_value = "{CSP_META}"
         with patch.object(self.builder, '_get_used_component_dirs', return_value=[]), \
-             patch.object(self.builder, '_load_highlight_js_script', return_value=""), \
-             patch.object(self.builder, '_build_highlight_js_link', return_value=""), \
              patch.object(self.builder, '_load_lazy_load_script', return_value="console.log('lazy');"), \
              patch.object(self.builder, '_load_component_templates', return_value=""), \
              patch.object(self.builder, '_load_mono_components_script', return_value=""):
-
             csp_additions = {"img-src": ["https://example.com"], "new-src": ["'self'"]}
             result = self.builder.build_document(html_body="<p>test</p>", csp_additions=csp_additions)
 
@@ -105,12 +96,9 @@ class TestHTMLDocumentBuilder(unittest.TestCase):
     def test_build_document_asset_store(self, mock_read_text):
         mock_read_text.return_value = "{BODY}{COPY_BUTTON_JS}"
         with patch.object(self.builder, '_get_used_component_dirs', return_value=[]), \
-             patch.object(self.builder, '_load_highlight_js_script', return_value=""), \
-             patch.object(self.builder, '_build_highlight_js_link', return_value=""), \
              patch.object(self.builder, '_load_lazy_load_script', return_value="console.log('lazy');"), \
              patch.object(self.builder, '_load_component_templates', return_value=""), \
              patch.object(self.builder, '_load_mono_components_script', return_value=""):
-
             asset_store = {"image1.png": "data:image/png;base64,1234"}
             result = self.builder.build_document(html_body="<p>test</p>", asset_store=asset_store)
 
@@ -163,22 +151,6 @@ class TestHTMLDocumentBuilder(unittest.TestCase):
         # Test no exclusions
         result5 = self.builder._remove_excluded_tags(html_input_paired, None)
         self.assertEqual(result5, html_input_paired)
-
-    def test_build_highlight_js_link(self):
-        html_body = '<mono-code-block theme="github"></mono-code-block>'
-        result = self.builder._build_highlight_js_link(html_body)
-        self.assertIn('<style id="mono-highlightjs-css">', result)
-        self.assertIn('mono-code-block[theme="github"] .hljs', result)
-
-        # Test default
-        html_body_default = '<mono-code-block></mono-code-block>'
-        result_default = self.builder._build_highlight_js_link(html_body_default)
-        self.assertIn('<style id="mono-highlightjs-css">', result_default)
-        self.assertIn('mono-code-block:not([theme]) .hljs', result_default)
-
-    def test_load_highlight_js_script(self):
-        result = self.builder._load_highlight_js_script()
-        self.assertEqual(result, "")
 
     def test_load_lazy_load_script(self):
         with patch('pathlib.Path.read_text', return_value="console.log('lazy');"):

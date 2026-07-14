@@ -22,12 +22,7 @@ class TestConstants(unittest.TestCase):
 
         self.assertEqual(constants.BASE_CSS_FILE, "base.css")
 
-    def test_highlight_js_configuration(self):
-        """Test Highlight.js Configuration constants"""
-        self.assertIsInstance(constants.HIGHLIGHT_JS_VERSION, str)
-        self.assertIn("http", constants.HIGHLIGHT_JS_CDN_BASE)
-        self.assertIn(constants.HIGHLIGHT_JS_VERSION, constants.HIGHLIGHT_JS_CDN_CSS)
-        self.assertIn(constants.HIGHLIGHT_JS_VERSION, constants.HIGHLIGHT_JS_CDN_JS)
+
 
     def test_mime_type_registry(self):
         """Test MIME Type Registry constants"""
