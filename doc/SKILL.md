@@ -55,36 +55,36 @@ AIは、**以下のリストに存在しないコンポーネントやパラメ�
 |---|---|---|---|
 | `mono-ab-test` | Block | A/Bテスト用のコンポーネント。2つの画像やコンテンツを並べて比較します。 | `url-a: "url"`, `url-b: "url"`, `title: "text"` |
 | `mono-account` | Block | ログインなどのアカウント管理UIを表示します。 | なし |
-| `mono-badge` | Inline | バッジを表示します。 | `text: "text"`, `color: "red|blue|..."`, `soft: "true|false"`, `outline: "true|false"` |
+| `mono-badge` | Inline | バッジを表示します。 | `text: "text"`, `color: "red&#124;blue&#124;..."`, `soft: "true&#124;false"`, `outline: "true&#124;false"` |blue|..."`, `soft: "true|false"`, `outline: "true|false"` |
 | `mono-brush` | Implicit/System | 描画オーバーレイ機能。暗黙的に全ページに組み込まれるか、特定条件で有効化されます。 | なし |
-| `mono-clock` | Block | 時計を表示します。 | `display: "analog|digital"`, `format: "24h|12h"` |
+| `mono-clock` | Block | 時計を表示します。 | `display: "analog&#124;digital"`, `format: "24h&#124;12h"` |digital"`, `format: "24h|12h"` |
 | `mono-code-block` | Implicit/System | コードブロックコンポーネント。コードブロックが存在する場合に暗黙的に組み込まれます。 | なし |
-| `mono-countdown` | Block | カウントダウンタイマーを表示します。 | `time: "10m|2024-12-31T23:59:59"`, `color: "red|blue|..."` |
-| `mono-dice` | Block | サイコロを表示し、クリックで振ることができます。 | `number: "1~6"`, `faces: "4|6|8|10|12|20"` |
-| `mono-drawer` | Block | 引き出し式のサイドメニュー（ドロワー）を表示します。ブロック要素。 | `label: "text"`, `position: "left|right"`, `open: "true|false"` |
+| `mono-countdown` | Block | カウントダウンタイマーを表示します。 | `time: "10m&#124;2024-12-31T23:59:59"`, `color: "red&#124;blue&#124;..."` |2024-12-31T23:59:59"`, `color: "red|blue|..."` |
+| `mono-dice` | Block | サイコロを表示し、クリックで振ることができます。 | `number: "1~6"`, `faces: "4&#124;6&#124;8&#124;10&#124;12&#124;20"` |6|8|10|12|20"` |
+| `mono-drawer` | Block | 引き出し式のサイドメニュー（ドロワー）を表示します。ブロック要素。 | `label: "text"`, `position: "left&#124;right"`, `open: "true&#124;false"` |right"`, `open: "true|false"` |
 | `mono-export` | Implicit/System | 外部エクスポート機能。`--export`オプションで強制的に有効になります。 | なし |
 | `mono-flipcard` | Block | クリックまたはホバーで裏返るカード。 | `front_text: "text"`, `answer: "text"` |
-| `mono-flow` | Block | フローチャート（ノードとエッジ）を表示します。 | `title: "text"`, `direction: "TB|LR"` |
+| `mono-flow` | Block | フローチャート（ノードとエッジ）を表示します。 | `title: "text"`, `direction: "TB&#124;LR"` |LR"` |
 | `mono-group-assignment` | Block | グループ分けを行うコンポーネント。 | `title: "text"` |
-| `mono-hero` | Block | ヒーローバナー領域を表示します。ブロック要素。 | `title: "text"`, `image: "url"`, `mode: "light|dark"`, `bg-color: "#HEX"`, `text-color: "#HEX"` |
-| `mono-icon` | Inline | アイコンを表示します。 | `name: "star|heart|..."`, `size: "16~128"`, `color: "red|#HEX"`, `display: "inline|block"` |
+| `mono-hero` | Block | ヒーローバナー領域を表示します。ブロック要素。 | `title: "text"`, `image: "url"`, `mode: "light&#124;dark"`, `bg-color: "#HEX"`, `text-color: "#HEX"` |dark"`, `bg-color: "#HEX"`, `text-color: "#HEX"` |
+| `mono-icon` | Inline | アイコンを表示します。 | `name: "star&#124;heart&#124;..."`, `size: "16~128"`, `color: "red&#124;#HEX"`, `display: "inline&#124;block"` |heart|..."`, `size: "16~128"`, `color: "red|#HEX"`, `display: "inline|block"` |
 | `mono-image` | Block | 画像を表示します。 | `url: "url"`, `alt: "text"`, `width: "size"`, `height: "size"` |
 | `mono-layout` | Block | 横並び（hstack）や縦並び（vstack）のレイアウトを構築します。ブロック要素。 | `label: "text"`, `class: "text"` |
-| `mono-link` | Block | リンクカードを表示します。 | `url: "url"`, `style: "full|small|card"` |
-| `mono-media-grid` | Block | 複数のメディアをグリッド状に配置して表示します。ブロック要素。 | `label: "text"`, `columns: "number"`, `rows: "number"`, `gap: "css-size"`, `fit: "cover|contain"` |
-| `mono-mermaid` | Block | Mermaid記法で図表を描画し、SVGとして埋め込みます。ブロック要素。 | `title: "text"`, `theme: "default|dark|forest|..."` |
+| `mono-link` | Block | リンクカードを表示します。 | `url: "url"`, `style: "full&#124;small&#124;card"` |small|card"` |
+| `mono-media-grid` | Block | 複数のメディアをグリッド状に配置して表示します。ブロック要素。 | `label: "text"`, `columns: "number"`, `rows: "number"`, `gap: "css-size"`, `fit: "cover&#124;contain"` |contain"` |
+| `mono-mermaid` | Block | Mermaid記法で図表を描画し、SVGとして埋め込みます。ブロック要素。 | `title: "text"`, `theme: "default&#124;dark&#124;forest&#124;..."` |dark|forest|..."` |
 | `mono-notebook` | Block | 入力可能なノートブック領域を表示します。 | `title: "text"`, `placeholder: "text"`, `id: "text"` |
 | `mono-poll` | Block | 投票システムを表示します。 | `title: "text"`, `options: "A,B,C"` |
 | `mono-reaction` | Block | リアクション（いいね、など）ボタンを表示します。 | `label: "text"`, `options: "👍,👎"` |
-| `mono-score` | Inline | 楽譜を表示します。 | `notes: "C4 D4 E4"`, `clef: "treble|bass"`, `time: "4/4|3/4"`, `voices: '["C4 D4", "E4 F4"]'` |
-| `mono-section` | Block | セクション領域を表示します。ブロック要素。 | `title: "text"`, `image: "url"`, `mode: "light|dark"`, `bg-color: "#HEX"`, `text-color: "#HEX"`, `height: "px|vh"`, `width: "px|vw"` |
+| `mono-score` | Inline | 楽譜を表示します。 | `notes: "C4 D4 E4"`, `clef: "treble&#124;bass"`, `time: "4/4&#124;3/4"`, `voices: '["C4 D4", "E4 F4"]'` |bass"`, `time: "4/4|3/4"`, `voices: '["C4 D4", "E4 F4"]'` |
+| `mono-section` | Block | セクション領域を表示します。ブロック要素。 | `title: "text"`, `image: "url"`, `mode: "light&#124;dark"`, `bg-color: "#HEX"`, `text-color: "#HEX"`, `height: "px&#124;vh"`, `width: "px&#124;vw"` |dark"`, `bg-color: "#HEX"`, `text-color: "#HEX"`, `height: "px|vh"`, `width: "px|vw"` |
 | `mono-session-join` | Block | セッション（同期・データ収集）へ参加するボタン等を表示します。 | `title: "text"` |
 | `mono-sound` | Block | 効果音や音声を再生するボタンを表示します。 | `url: "url"`, `label: "text"` |
-| `mono-spacer` | Block | 空白（スペーサー）を挿入します。 | `width: "px|rem"`, `height: "px|rem"` |
+| `mono-spacer` | Block | 空白（スペーサー）を挿入します。 | `width: "px&#124;rem"`, `height: "px&#124;rem"` |rem"`, `height: "px|rem"` |
 | `mono-sync` | Implicit/System | 状態同期・通信機能。サーバーとのSSE/HTTP通信を管理し、暗黙的に組み込まれます。 | なし |
 | `mono-synth` | Block | Tone.jsを用いたシンプルなシンセサイザー。OSC, Filter, ADSR, ミニ鍵盤を備えます。 | `url: "url"`, `label: "text"` |
-| `mono-textfield-input` | Inline | テキスト入力フィールドを表示します。 | `label: "text"`, `id: "text"`, `placeholder: "text"`, `size: "small|medium|large"` |
-| `mono-theme` | Block | テーマ切り替えコンポーネント。通常はMarkdownディレクティブでテーマを設定します。 | `theme_name: "light|dark"`, `show_ui: "true|false"`, `config: "json"`, `font_size: "16px"` |
+| `mono-textfield-input` | Inline | テキスト入力フィールドを表示します。 | `label: "text"`, `id: "text"`, `placeholder: "text"`, `size: "small&#124;medium&#124;large"` |medium|large"` |
+| `mono-theme` | Block | テーマ切り替えコンポーネント。通常はMarkdownディレクティブでテーマを設定します。 | `theme_name: "light&#124;dark"`, `show_ui: "true&#124;false"`, `config: "json"`, `font_size: "16px"` |dark"`, `show_ui: "true|false"`, `config: "json"`, `font_size: "16px"` |
 
 
 ## 3. AIによる生成時の注意点 (AI Generation Directives)
