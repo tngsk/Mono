@@ -25,7 +25,7 @@ Monoは標準のMarkdownを拡張し、専用のWeb Components（UI要素）を�
 * **注意:** 終了タグにはオプションを持たせないでください。
 
 ### C. レイアウト構文 (Layout Syntax: row, stack)
-`mono-layout` を使用して横並び（`row`）や縦積み（`stack`）を実現します。カラムの区切りには `:::column` を使用し、最後は `:::` で閉じます。
+`mono-layout` を使用して横並び（`row`）や縦積み（`stack`）を実現します。これらは構文上のエイリアスであり、内部的には `type="hstack"` および `type="vstack"` としてパースされます。カラムの区切りには `:::column` を使用し、最後は `:::` で閉じます。
 * **構文:**
   ```markdown
   @[row](class: "gap-md center")
@@ -111,7 +111,7 @@ AIは、**以下のリストに存在しないコンポーネントやパラメ�
    * ユーザーが新しいオプションを追加したい場合は、以下の対応が必要です：
      1. `parser.py` の `# OPTIONS:` コメントに追加する（ドキュメントや補完生成のため）。
      2. `parser.py` 内で、属性をHTMLタグのプロパティとして引き継ぐようロジックを修正する。
-     3. `index.js` 内でそのプロパティ（`this.getAttribute('新しい属性')`）を受け取り、UIに反映させる。
+     3. `script.js` 内でそのプロパティ（`this.getAttribute('新しい属性')`）を受け取り、UIに反映させる。
 
 4. **コンポーネントのテスト (Testing)**
    * 新しいコンポーネントの追加や既存の変更を行う場合、`tests/components/` ディレクトリにテストファイルを作成・更新することを推奨します。
@@ -131,13 +131,17 @@ AIは、**以下のリストに存在しないコンポーネントやパラメ�
    * MonoのWeb ComponentsはShadow DOM（`MonoBaseElement`経由）を利用してカプセル化されています。
    * TailwindなどのグローバルなユーティリティクラスはShadow DOM内に浸透しないため、UIのスタイリングには`themes.toml`で定義されたCSS変数（例: `var(--color-primary)`）を活用してください。
 
+9. **新規コンポーネントの登録 (Component Registration)**
+   * 新しいWeb Componentを追加する際は、必ずコンポーネントディレクトリ内に `manifest.json` を作成してください。
+   * このファイルには `interactive`, `always_include`, `requires_icons` などの真偽値プロパティを定義し、ComponentRegistry に機能を登録する必要があります。
+
 ## 5. コンポーネントの変換結果を変更したい場合のアドバイス (Advice for Modifying Conversion Results)
 
 もしAI自身が「コンポーネントの変換結果（HTMLやスタイル）を変更したい」と判断した場合、あるいはユーザーからそのように要求された場合は、以下の指針に従って提案や実装を行ってください。
 
 1. **修正箇所の特定 (Identifying the Modification Target)**
    * **見た目やスタイルの変更:** 基本的に `src/components/コンポーネント名/style.css` を変更します。`parser.py` は触りません。
-   * **HTML構造やインタラクションの変更:** `src/components/コンポーネント名/template.html` と `script.js` (または `index.js`) を変更します。
+   * **HTML構造やインタラクションの変更:** `src/components/コンポーネント名/template.html` と `script.js` を変更します。
    * **マークダウンからの引数の受け渡し方法の変更:** `src/components/コンポーネント名/parser.py` の正規表現や `get_html` メソッドを変更し、同時に `# OPTIONS:` コメントも更新します。
 
 2. **Shadow DOM を考慮したスタイリング (Styling with Shadow DOM in mind)**
@@ -148,3 +152,28 @@ AIは、**以下のリストに存在しないコンポーネントやパラメ�
 3. **互換性の維持 (Maintaining Compatibility)**
    * `parser.py` を変更して新しい引数を追加する際は、既存のマークダウン記法が壊れないよう、オプショナルな引数として実装してください（例: `args.get('new_param', 'default_value')`）。
    * `parser.py` でタグ構造を変更する場合（特にブロック要素）は、正規表現（`START_PATTERN` / `END_PATTERN`）の意図しないマッチを防ぐため、十分に注意してテストを行ってください。
+
+
+## 6. コンポーネント設計とスタイリングのベストプラクティス (Component Design & Styling Best Practices)
+
+コンポーネントの設計や変更を行う際は、以下のベストプラクティスに従ってください。
+
+1. **インライン要素のベースライン揃え**
+   * `mono-badge` のようなインラインWeb Componentsはテキストと自然に流れる必要があります。
+   * 内部のサイズ調整（`font-size`, `height`, `padding` など）には相対的な `em` 単位を使用し、`:host` 要素には `vertical-align: baseline;` を適用してベースラインでのプロポーショナルなスケーリングを確保してください。
+
+2. **セマンティックな背景・境界線**
+   * UIコンポーネントで柔らかい背景や境界線（例: アラートやセッション参加ボタン）が必要な場合は、`-content` 変数を使用するのではなく、CSSの `color-mix()` と `themes.toml` で定義されたセマンティックベース変数（例: `var(--color-info)` や `var(--color-warning)`）を組み合わせて使用してください。
+
+3. **Slotted Markdownコンテンツのレイアウト管理**
+   * `mono-layout` のカラムなどのコンポーネント内にSlottedされたMarkdownコンテンツは、Markdownパーサーによって自動的に `<p>` や `<br>` タグが挿入されるため、FlexboxやGridレイアウトが崩れることがあります。
+   * これを防ぐため、コンポーネントの `content.css` を使用してこれらのタグを中和してください（例: `<p>` には `display: contents;`、`<br>` には `display: none;` を設定）。
+
+4. **PDFエクスポートを考慮した設計**
+   * PDF出力用のコンポーネントを設計する際は、`@media print` CSSルールを使用してビデオコントロールやテキスト入力などのインタラクティブな要素を `display: none` で隠し、静的な視覚的フォールバックを提供してください。
+
+5. **フルブリード（全幅）コンポーネント**
+   * `mono-section` や `mono-hero` のような、プレゼンテーションスタイルの全幅スライドを作成するには、デフォルトの中央揃えグリッドから抜け出すために `--component-grid-column: 1 / -1;` を適用し、高さを `100vh` に設定してください。
+
+6. **正規表現のパース最適化**
+   * インラインラベルやパラメータがオプショナルな場合（例: `@[theme]()` と `@[theme: dark]()`）、コロンを厳密に要求するのではなく、正規表現でコロンと周囲の空白を明示的にオプショナルにする必要があります（例: `(?:(?:\:\s*)?([^\]]*))`）。
