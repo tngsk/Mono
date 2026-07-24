@@ -55,36 +55,36 @@ AIは、**以下のリストに存在しないコンポーネントやパラメ�
 |---|---|---|---|
 | `mono-ab-test` | Block | A/Bテスト用のコンポーネント。2つの画像やコンテンツを並べて比較します。 | `url-a: "url"`, `url-b: "url"`, `title: "text"` |
 | `mono-account` | Block | ログインなどのアカウント管理UIを表示します。 | なし |
-| `mono-badge` | Inline | バッジを表示します。 | `text: "text"`, `color: "red&#124;blue&#124;..."`, `soft: "true&#124;false"`, `outline: "true&#124;false"` |blue|..."`, `soft: "true|false"`, `outline: "true|false"` |
+| `mono-badge` | Inline | バッジを表示します。 | `text: "text"`, `color: "red&#124;blue&#124;..."`, `soft: "true&#124;false"`, `outline: "true&#124;false"` |
 | `mono-brush` | Implicit/System | 描画オーバーレイ機能。暗黙的に全ページに組み込まれるか、特定条件で有効化されます。 | なし |
-| `mono-clock` | Block | 時計を表示します。 | `display: "analog&#124;digital"`, `format: "24h&#124;12h"` |digital"`, `format: "24h|12h"` |
+| `mono-clock` | Block | 時計を表示します。 | `display: "analog&#124;digital"`, `format: "24h&#124;12h"` |
 | `mono-code-block` | Implicit/System | コードブロックコンポーネント。コードブロックが存在する場合に暗黙的に組み込まれます。 | なし |
-| `mono-countdown` | Block | カウントダウンタイマーを表示します。 | `time: "10m&#124;2024-12-31T23:59:59"`, `color: "red&#124;blue&#124;..."` |2024-12-31T23:59:59"`, `color: "red|blue|..."` |
-| `mono-dice` | Block | サイコロを表示し、クリックで振ることができます。 | `number: "1~6"`, `faces: "4&#124;6&#124;8&#124;10&#124;12&#124;20"` |6|8|10|12|20"` |
-| `mono-drawer` | Block | 引き出し式のサイドメニュー（ドロワー）を表示します。ブロック要素。 | `label: "text"`, `position: "left&#124;right"`, `open: "true&#124;false"` |right"`, `open: "true|false"` |
+| `mono-countdown` | Block | カウントダウンタイマーを表示します。 | `time: "10m&#124;2024-12-31T23:59:59"`, `color: "red&#124;blue&#124;..."` |
+| `mono-dice` | Block | サイコロを表示し、クリックで振ることができます。 | `number: "1~6"`, `faces: "4&#124;6&#124;8&#124;10&#124;12&#124;20"` |
+| `mono-drawer` | Block | 引き出し式のサイドメニュー（ドロワー）を表示します。ブロック要素。 | `label: "text"`, `position: "left&#124;right"`, `open: "true&#124;false"` |
 | `mono-export` | Implicit/System | 外部エクスポート機能。`--export`オプションで強制的に有効になります。 | なし |
 | `mono-flipcard` | Block | クリックまたはホバーで裏返るカード。 | `front_text: "text"`, `answer: "text"` |
-| `mono-flow` | Block | フローチャート（ノードとエッジ）を表示します。 | `title: "text"`, `direction: "TB&#124;LR"` |LR"` |
+| `mono-flow` | Block | フローチャート（ノードとエッジ）を表示します。 | `title: "text"`, `direction: "TB&#124;LR"` |
 | `mono-group-assignment` | Block | グループ分けを行うコンポーネント。 | `title: "text"` |
-| `mono-hero` | Block | ヒーローバナー領域を表示します。ブロック要素。 | `title: "text"`, `image: "url"`, `mode: "light&#124;dark"`, `bg-color: "#HEX"`, `text-color: "#HEX"` |dark"`, `bg-color: "#HEX"`, `text-color: "#HEX"` |
-| `mono-icon` | Inline | アイコンを表示します。 | `name: "star&#124;heart&#124;..."`, `size: "16~128"`, `color: "red&#124;#HEX"`, `display: "inline&#124;block"` |heart|..."`, `size: "16~128"`, `color: "red|#HEX"`, `display: "inline|block"` |
+| `mono-hero` | Block | ヒーローバナー領域を表示します。ブロック要素。 | `title: "text"`, `image: "url"`, `mode: "light&#124;dark"`, `bg-color: "#HEX"`, `text-color: "#HEX"` |
+| `mono-icon` | Inline | アイコンを表示します。 | `name: "star&#124;heart&#124;..."`, `size: "16~128"`, `color: "red&#124;#HEX"`, `display: "inline&#124;block"` |
 | `mono-image` | Block | 画像を表示します。 | `url: "url"`, `alt: "text"`, `width: "size"`, `height: "size"` |
 | `mono-layout` | Block | 横並び（hstack）や縦並び（vstack）のレイアウトを構築します。ブロック要素。 | `label: "text"`, `class: "text"` |
-| `mono-link` | Block | リンクカードを表示します。 | `url: "url"`, `style: "full&#124;small&#124;card"` |small|card"` |
-| `mono-media-grid` | Block | 複数のメディアをグリッド状に配置して表示します。ブロック要素。 | `label: "text"`, `columns: "number"`, `rows: "number"`, `gap: "css-size"`, `fit: "cover&#124;contain"` |contain"` |
-| `mono-mermaid` | Block | Mermaid記法で図表を描画し、SVGとして埋め込みます。ブロック要素。 | `title: "text"`, `theme: "default&#124;dark&#124;forest&#124;..."` |dark|forest|..."` |
+| `mono-link` | Block | リンクカードを表示します。 | `url: "url"`, `style: "full&#124;small&#124;card"` |
+| `mono-media-grid` | Block | 複数のメディアをグリッド状に配置して表示します。ブロック要素。 | `label: "text"`, `columns: "number"`, `rows: "number"`, `gap: "css-size", fit: "cover&#124;contain"` |
+| `mono-mermaid` | Block | Mermaid記法で図表を描画し、SVGとして埋め込みます。ブロック要素。 | `title: "text"`, `theme: "default&#124;dark&#124;forest&#124;..."` |
 | `mono-notebook` | Block | 入力可能なノートブック領域を表示します。 | `title: "text"`, `placeholder: "text"`, `id: "text"` |
 | `mono-poll` | Block | 投票システムを表示します。 | `title: "text"`, `options: "A,B,C"` |
 | `mono-reaction` | Block | リアクション（いいね、など）ボタンを表示します。 | `label: "text"`, `options: "👍,👎"` |
-| `mono-score` | Inline | 楽譜を表示します。 | `notes: "C4 D4 E4"`, `clef: "treble&#124;bass"`, `time: "4/4&#124;3/4"`, `voices: '["C4 D4", "E4 F4"]'` |bass"`, `time: "4/4|3/4"`, `voices: '["C4 D4", "E4 F4"]'` |
-| `mono-section` | Block | セクション領域を表示します。ブロック要素。 | `title: "text"`, `image: "url"`, `mode: "light&#124;dark"`, `bg-color: "#HEX"`, `text-color: "#HEX"`, `height: "px&#124;vh"`, `width: "px&#124;vw"` |dark"`, `bg-color: "#HEX"`, `text-color: "#HEX"`, `height: "px|vh"`, `width: "px|vw"` |
+| `mono-score` | Inline | 楽譜を表示します。 | `notes: "C4 D4 E4"`, `clef: "treble&#124;bass"`, `time: "4/4&#124;3/4"`, `voices: '["C4 D4", "E4 F4"]'` |
+| `mono-section` | Block | セクション領域を表示します。ブロック要素。 | `title: "text"`, `image: "url"`, `mode: "light&#124;dark"`, `bg-color: "#HEX"`, `text-color: "#HEX"`, `height: "px&#124;vh"`, `width: "px&#124;vw"` |
 | `mono-session-join` | Block | セッション（同期・データ収集）へ参加するボタン等を表示します。 | `title: "text"` |
 | `mono-sound` | Block | 効果音や音声を再生するボタンを表示します。 | `url: "url"`, `label: "text"` |
-| `mono-spacer` | Block | 空白（スペーサー）を挿入します。 | `width: "px&#124;rem"`, `height: "px&#124;rem"` |rem"`, `height: "px|rem"` |
+| `mono-spacer` | Block | 空白（スペーサー）を挿入します。 | `width: "px&#124;rem"`, `height: "px&#124;rem"` |
 | `mono-sync` | Implicit/System | 状態同期・通信機能。サーバーとのSSE/HTTP通信を管理し、暗黙的に組み込まれます。 | なし |
 | `mono-synth` | Block | Tone.jsを用いたシンプルなシンセサイザー。OSC, Filter, ADSR, ミニ鍵盤を備えます。 | `url: "url"`, `label: "text"` |
-| `mono-textfield-input` | Inline | テキスト入力フィールドを表示します。 | `label: "text"`, `id: "text"`, `placeholder: "text"`, `size: "small&#124;medium&#124;large"` |medium|large"` |
-| `mono-theme` | Block | テーマ切り替えコンポーネント。通常はMarkdownディレクティブでテーマを設定します。 | `theme_name: "light&#124;dark"`, `show_ui: "true&#124;false"`, `config: "json"`, `font_size: "16px"` |dark"`, `show_ui: "true|false"`, `config: "json"`, `font_size: "16px"` |
+| `mono-textfield-input` | Inline | テキスト入力フィールドを表示します。 | `label: "text"`, `id: "text"`, `placeholder: "text"`, `size: "small&#124;medium&#124;large"` |
+| `mono-theme` | Block | テーマ切り替えコンポーネント。通常はMarkdownディレクティブでテーマを設定します。 | `theme_name: "light&#124;dark"`, `show_ui: "true&#124;false"`, `config: "json"`, `font_size: "16px"` |
 
 
 ## 3. AIによる生成時の注意点 (AI Generation Directives)
@@ -106,12 +106,14 @@ AIは、**以下のリストに存在しないコンポーネントやパラメ�
 2. **フロントエンドの実装 (Web Components Logic)**
    * 置換されたHTMLタグは、ブラウザ側で `src/components/コンポーネント名/script.js` (Web Components実装) や `style.css` (スタイリング)、`template.html` (HTML構造) によって具体的なUIとしてレンダリングされます。※以前は`index.js`でしたが、現在は`script.js`と`template.html`に分離されていることが多いです。
    * デザインやUIの挙動を変えたい場合は、Pythonの `parser.py` を変更するのではなく、Web Componentsの実装である `script.js`、`template.html` や `style.css` の変更を検討してください。
+   * **重要:** UIやインタラクションの変更を行った際は、自動テストだけでなく Playwright 等を用いたスクリーンショットによる**視覚的な検証（Visual Verification）**を必ず実施してください。
 
 3. **新しいオプションの追加 (Adding New Options)**
    * ユーザーが新しいオプションを追加したい場合は、以下の対応が必要です：
-     1. `parser.py` の `# OPTIONS:` コメントに追加する（ドキュメントや補完生成のため）。
+     1. `parser.py` の `# OPTIONS:` コメントに追加する。ここで記述した内容はドキュメント生成やエディタスニペット生成に使用されるため、**必ずコロンを用いたキー・バリュー形式（例: `image: "url", mode: "light|dark"`）で正確に記述**してください（`=`は使用不可）。
      2. `parser.py` 内で、属性をHTMLタグのプロパティとして引き継ぐようロジックを修正する。
-     3. `index.js` 内でそのプロパティ（`this.getAttribute('新しい属性')`）を受け取り、UIに反映させる。
+     3. `script.js` 内でそのプロパティ（`this.getAttribute('新しい属性')`）を受け取り、UIに反映させる。
+     4. 変更後は必ず `scripts/update_readme.py` を実行し、`README.md` のドキュメントを最新状態に更新してください。
 
 4. **コンポーネントのテスト (Testing)**
    * 新しいコンポーネントの追加や既存の変更を行う場合、`tests/components/` ディレクトリにテストファイルを作成・更新することを推奨します。
@@ -126,6 +128,7 @@ AIは、**以下のリストに存在しないコンポーネントやパラメ�
 
 7. **入力要素における一意のID管理 (Managing Persistent IDs)**
    * `mono-textfield-input` や `mono-notebook` などの入力コンポーネントでは、再描画時にデータが失われないよう、必ず恒久的なID（例: UUID）をMarkdownに記述してください。
+   * エディタ（VS Code や Zed など）では `${UUID}` 変数を含むスニペットを利用することで、コンポーネント配置時に自動で一意のIDを注入できます。
 
 8. **Shadow DOMとスタイリング (Web Components vs Static Utilities)**
    * MonoのWeb ComponentsはShadow DOM（`MonoBaseElement`経由）を利用してカプセル化されています。
@@ -144,6 +147,7 @@ AIは、**以下のリストに存在しないコンポーネントやパラメ�
    * MonoのコンポーネントはShadow DOMを利用しています。外部のCSS（Tailwindなど）はコンポーネント内部には適用されません。
    * コンポーネント内の要素のスタイルを変更する場合は、そのコンポーネント専用の `style.css` 内に記述してください。
    * コンポーネント外部（ページ全体）からスタイルを制御可能にしたい場合は、CSS変数（例: `var(--my-custom-color)`）を `style.css` 内で受け取るように設計し、`parser.py` でインラインスタイルとしてそのCSS変数を流し込む手法が有効です。
+   * **テーマとの統合:** アラートや背景など、柔らかい背景色や境界線が必要なUI要素をデザインする際は、`-content` 変数を使用するのではなく、CSSの `color-mix()` とセマンティックなベース変数（例: `var(--color-info)`, `var(--color-warning)`）を組み合わせて使用してください。これにより `themes.toml` で定義されたテーマとの一貫性が保たれます。
 
 3. **互換性の維持 (Maintaining Compatibility)**
    * `parser.py` を変更して新しい引数を追加する際は、既存のマークダウン記法が壊れないよう、オプショナルな引数として実装してください（例: `args.get('new_param', 'default_value')`）。
