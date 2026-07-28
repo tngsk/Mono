@@ -71,7 +71,7 @@ AIは、**以下のリストに存在しないコンポーネントやパラメ�
 | `mono-image` | Block | 画像を表示します。 | `url: "url"`, `alt: "text"`, `width: "size"`, `height: "size"` |
 | `mono-layout` | Block | 横並び（hstack）や縦並び（vstack）のレイアウトを構築します。ブロック要素。 | `label: "text"`, `class: "text"` |
 | `mono-link` | Block | リンクカードを表示します。 | `url: "url"`, `style: "full&#124;small&#124;card"` |
-| `mono-media-grid` | Block | 複数のメディアをグリッド状に配置して表示します。ブロック要素。 | `label: "text"`, `columns: "number"`, `rows: "number"`, `gap: "css-size", fit: "cover&#124;contain"` |
+| `mono-media-grid` | Block | 複数のメディアをグリッド状に配置して表示します。ブロック要素。 | `label: "text"`, `columns: "number"`, `rows: "number"`, `gap: "css-size"`, `fit: "cover&#124;contain"` |
 | `mono-mermaid` | Block | Mermaid記法で図表を描画し、SVGとして埋め込みます。ブロック要素。 | `title: "text"`, `theme: "default&#124;dark&#124;forest&#124;..."` |
 | `mono-notebook` | Block | 入力可能なノートブック領域を表示します。 | `title: "text"`, `placeholder: "text"`, `id: "text"` |
 | `mono-poll` | Block | 投票システムを表示します。 | `title: "text"`, `options: "A,B,C"` |
