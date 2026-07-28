@@ -102,6 +102,7 @@ AIは、**以下のリストに存在しないコンポーネントやパラメ�
    * 各コンポーネントは `src/components/コンポーネント名/parser.py` というファイルで処理されます。
    * Markdown中の `@[コンポーネント名]` という記述を `re.sub` などの正規表現で検索し、Web Component用のカスタムHTMLタグ（例: `<mono-badge>`）に置換するのが基本的な流れです。
    * インライン要素は `PATTERN` を、ブロック要素は `START_PATTERN` / `END_PATTERN` や、`block_level_tags` メソッドを用いて適切にパースされます。
+   * **高速化:** Markdown処理の高速化のため、`parser.py` クラス内に `FAST_PATH_MARKERS = ("@[コンポーネント名",)` というクラス変数を定義してください。これにより、該当コンポーネントが存在しない場合の無駄な正規表現評価をスキップできます。
 
 2. **フロントエンドの実装 (Web Components Logic)**
    * 置換されたHTMLタグは、ブラウザ側で `src/components/コンポーネント名/script.js` (Web Components実装) や `style.css` (スタイリング)、`template.html` (HTML構造) によって具体的なUIとしてレンダリングされます。※以前は`index.js`でしたが、現在は`script.js`と`template.html`に分離されていることが多いです。
@@ -133,6 +134,10 @@ AIは、**以下のリストに存在しないコンポーネントやパラメ�
 8. **Shadow DOMとスタイリング (Web Components vs Static Utilities)**
    * MonoのWeb ComponentsはShadow DOM（`MonoBaseElement`経由）を利用してカプセル化されています。
    * TailwindなどのグローバルなユーティリティクラスはShadow DOM内に浸透しないため、UIのスタイリングには`themes.toml`で定義されたCSS変数（例: `var(--color-primary)`）を活用してください。
+
+9. **マニフェストファイル (Component Registration)**
+   * Web Componentを新たに追加した場合、システム（`ComponentRegistry`）に自動認識させるため、必ずコンポーネントディレクトリ内に `manifest.json` ファイル（例: `src/components/<component_name>/manifest.json`）を作成してください。
+   * このファイルには `interactive`, `always_include`, `requires_icons` などの真偽値プロパティを定義し、コンポーネントの機能要件を明示する必要があります。
 
 ## 5. コンポーネントの変換結果を変更したい場合のアドバイス (Advice for Modifying Conversion Results)
 
