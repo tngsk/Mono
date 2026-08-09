@@ -12,7 +12,7 @@ Monoは標準のMarkdownを拡張し、専用のWeb Components（UI要素）を�
 * **注意点:**
   * ラベルがない場合でも `:` は不要です： `@[image]()`
   * パラメータはカッコ `()` 内にカンマ区切りで記述します。
-  * **重要:** 属性の指定には `=` ではなく `:` を使用し、値は原則としてダブルクォーテーション `"` で囲む必要はありません（例： `color: red` や `class: bg-secondary text-large`）。ただし、**値の中にカンマ（`,`）が含まれる場合**（例： `title: "Hello, World"`, JSON, 配列など）は**必ずダブルクォーテーションで囲む**必要があります。
+  * **重要:** 属性の指定には `=` ではなくコロンとスペース `キー: "値"` の構文を使用します。ダブルクォーテーション `"` で囲むことが推奨されますが、値にカンマが含まれない場合は省略可能です。`=` を区切り文字として使用することは非推奨（警告ログが出力されます）ですが、既存の構文を壊さないために `ValueError` にはなりません。値の中にカンマが含まれる場合（JSONや配列など）は必ずダブルクォーテーションで囲んでください。
 
 ### B. ブロックレベル・コンポーネント (Block-level Components)
 内部に他のMarkdownコンテンツを含むことができる要素です。必ず対応する終了タグ `@[/コンポーネント名]` で閉じる必要があります。
@@ -25,7 +25,7 @@ Monoは標準のMarkdownを拡張し、専用のWeb Components（UI要素）を�
 * **注意:** 終了タグにはオプションを持たせないでください。
 
 ### C. レイアウト構文 (Layout Syntax: row, stack)
-`mono-layout` を使用して横並び（`row`）や縦積み（`stack`）を実現します。カラムの区切りには `:::column` を使用し、最後は `:::` で閉じます。
+`mono-layout` を使用して横並び（`row`）や縦積み（`stack`）を実現します。マークダウンタグの `@[row]` と `@[stack]` はシンタックスエイリアスとして機能し、Web Componentの `type="hstack"` および `type="vstack"` 属性にそれぞれマッピングされて既存の内部Flexbox CSSを再利用します。カラムの区切りには `:::column` を使用し、最後は `:::` で閉じます。
 * **構文:**
   ```markdown
   @[row](class: "gap-md center")
@@ -101,30 +101,35 @@ AIは、**以下のリストに存在しないコンポーネントやパラメ�
 1. **Pythonによるパースの仕組み (Parser Logic)**
    * 各コンポーネントは `src/components/コンポーネント名/parser.py` というファイルで処理されます。
    * Markdown中の `@[コンポーネント名]` という記述を `re.sub` などの正規表現で検索し、Web Component用のカスタムHTMLタグ（例: `<mono-badge>`）に置換するのが基本的な流れです。
-   * インライン要素は `PATTERN` を、ブロック要素は `START_PATTERN` / `END_PATTERN` や、`block_level_tags` メソッドを用いて適切にパースされます。
+   * インライン要素は `PATTERN` を用いてパースされます。ブロック要素は `END_PATTERN` の存在、または `end|` トークンにマッチするか、`block_level_tags` プロパティを持つことで識別されます。これらを持たないコンポーネントはインライン要素と見なされます。
+   * **高速化 (Fast Path):** Markdownのパース処理を高速化するため、各コンポーネントパーサーは `FAST_PATH_MARKERS = ("@[image",)` などのクラス属性を定義します。このマーカーがMarkdown文字列内に存在しない場合、重い正規表現の評価をスキップします。
 
 2. **フロントエンドの実装 (Web Components Logic)**
    * 置換されたHTMLタグは、ブラウザ側で `src/components/コンポーネント名/script.js` (Web Components実装) や `style.css` (スタイリング)、`template.html` (HTML構造) によって具体的なUIとしてレンダリングされます。※以前は`index.js`でしたが、現在は`script.js`と`template.html`に分離されていることが多いです。
+   * **自動ディスカバリ:** 新しく作成した Web Component をプロジェクトに追加する場合、`ComponentRegistry` による自動ディスカバリが行われます。各コンポーネントのディレクトリ（例: `src/components/<component_name>/manifest.json`）に `manifest.json` を作成し、`interactive`, `always_include`, `requires_icons` などのブール型プロパティを定義してケーパビリティを登録する必要があります。
    * デザインやUIの挙動を変えたい場合は、Pythonの `parser.py` を変更するのではなく、Web Componentsの実装である `script.js`、`template.html` や `style.css` の変更を検討してください。
    * **重要:** UIやインタラクションの変更を行った際は、自動テストだけでなく Playwright 等を用いたスクリーンショットによる**視覚的な検証（Visual Verification）**を必ず実施してください。
 
 3. **新しいオプションの追加 (Adding New Options)**
    * ユーザーが新しいオプションを追加したい場合は、以下の対応が必要です：
-     1. `parser.py` の `# OPTIONS:` コメントに追加する。ここで記述した内容はドキュメント生成やエディタスニペット生成に使用されるため、**必ずコロンを用いたキー・バリュー形式（例: `image: "url", mode: "light|dark"`）で正確に記述**してください（`=`は使用不可）。
+     1. `parser.py` の `# OPTIONS:` コメントに追加する。ここで記述した内容はドキュメント生成やエディタスニペット生成に使用されるため、**必ずコロンを用いたキー・バリュー形式（例: `image: "url", mode: "light|dark"`）で正確に記述**してください（`=`は使用不可）。コンポーネントがオプションを受け付けない場合は、`# OPTIONS:` の後に何も書かないか空にすることで、ドキュメントに「オプションなし」として正しく反映されます。
      2. `parser.py` 内で、属性をHTMLタグのプロパティとして引き継ぐようロジックを修正する。
      3. `script.js` 内でそのプロパティ（`this.getAttribute('新しい属性')`）を受け取り、UIに反映させる。
      4. 変更後は必ず `scripts/update_readme.py` を実行し、`README.md` のドキュメントを最新状態に更新してください。
 
 4. **コンポーネントのテスト (Testing)**
    * 新しいコンポーネントの追加や既存の変更を行う場合、`tests/components/` ディレクトリにテストファイルを作成・更新することを推奨します。
+   * コンポーネントのテストは、「基本機能」「オプションが一切指定されていない場合の挙動」「`# OPTIONS:` に記載されたすべてのオプションが指定された場合の挙動」の3つのシナリオを網羅的にカバーする必要があります。
 
 5. **オプションの変更とスニペットの自動更新 (Snippets Generation)**
    * `src/components/*/parser.py` の `# OPTIONS:` コメントを変更した場合、VS Code や Zed 向けのエディタスニペットを必ず更新してください。
    * 更新には `scripts/generate_snippets.py` スクリプトを実行し、生成されたスニペットファイルもコミットに含める必要があります。
 
 6. **URLや引数の安全な解決 (URL and Argument Resolution)**
-   * Markdownの省略記法（例: `@[image: url]`）とキーワード引数（例: `@[image](src: "url")`）の双方を安全に処理するため、コンポーネントパーサーでは `self.resolve_url_and_label()` を使用してください。
+   * Markdownの省略記法（例: `@[image: url]`）とキーワード引数（例: `@[image](src: "url")`）の双方を安全かつ一貫して処理するため、コンポーネントパーサーでは `BaseComponentParser.resolve_url_and_label()` を使用してください。また、`title` などのプロパティが省略ラベル構文で渡されてもキーワード引数として渡されても正しく評価されるようにフォールバック（例: `if 'title' in args: title = args['title']`）を実装してください。
+   * インラインコンポーネントのブラケット内容やキー・バリュー引数をパースする際は、URLプロトコルの一部であるコロン（例: `://`）がキー・バリューの区切り文字として誤ってパースされないようにスキップする処理を行ってください。
    * ローカルファイルパスや属性内のURLを解決する際は、Markdownプロセッサが付与する可能性のあるエンコードを元に戻すため、必ず `urllib.parse.unquote` でデコードを行ってください。
+   * 外部URLを `urllib.request.urlopen` 等でフェッチする際は、非ASCII文字が含まれている可能性を考慮し、`urllib.parse.quote` 等を用いて安全にASCIIエンコードを行い、`UnicodeEncodeError` を防いでください。
 
 7. **入力要素における一意のID管理 (Managing Persistent IDs)**
    * `mono-textfield-input` や `mono-notebook` などの入力コンポーネントでは、再描画時にデータが失われないよう、必ず恒久的なID（例: UUID）をMarkdownに記述してください。
@@ -148,7 +153,13 @@ AIは、**以下のリストに存在しないコンポーネントやパラメ�
    * コンポーネント内の要素のスタイルを変更する場合は、そのコンポーネント専用の `style.css` 内に記述してください。
    * コンポーネント外部（ページ全体）からスタイルを制御可能にしたい場合は、CSS変数（例: `var(--my-custom-color)`）を `style.css` 内で受け取るように設計し、`parser.py` でインラインスタイルとしてそのCSS変数を流し込む手法が有効です。
    * **テーマとの統合:** アラートや背景など、柔らかい背景色や境界線が必要なUI要素をデザインする際は、`-content` 変数を使用するのではなく、CSSの `color-mix()` とセマンティックなベース変数（例: `var(--color-info)`, `var(--color-warning)`）を組み合わせて使用してください。これにより `themes.toml` で定義されたテーマとの一貫性が保たれます。
+   * **インライン要素の配置:** テキスト内に自然に流し込むインラインWeb Component（例: `mono-badge`）をデザインする際は、内部のサイズ（`font-size`, `height`, `padding` など）に相対的な `em` 単位を使用し、`:host` 要素に `vertical-align: baseline;` を適用することで、ベースラインへの整列とプロポーショナルなスケーリングを保証してください。
+   * **スロット化されたコンテンツの無効化:** Web Component 内にスロット化された Markdown コンテンツ（例: `mono-layout` のカラム）が、Markdown パーサーによって自動挿入された `<p>` や `<br>` タグによって Flexbox や Grid レイアウトを崩す場合は、`content.css` を使用してこれらを無効化してください（例: `<p>` に `display: contents;`、`<br>` に `display: none;`）。
+   * **PDFエクスポートと印刷レイアウト:** PDF エクスポート用の Mono コンポーネントを構築する際は、`@media print` CSS ルールを使用して対話型の要素（動画コントロールやテキスト入力など）を `display: none` で隠し、静的な視覚的フォールバックを提供してください。また、PDF へのコードコピー時に文字化けや不要な空白を防ぐため、コードブロックは（`highlight.js` などの）シンタックスハイライトを使わずプレーンな `<pre><code>` タグに依存させ、macOS等の印刷時の文字化けを防ぐため、`font-family` にはAppleのシステム等幅フォント（`ui-monospace` や `SF Mono`）を使用せず、直接 `Menlo`, `Consolas` またはジェネリックな `monospace` を指定してください。
+   * **全画面スライドレイアウト:** Mono 内で全画面表示のプレゼンテーション用スライド（例: `mono-section` や `mono-hero`）を作成する場合は、`--component-grid-column: 1 / -1;` を適用してデフォルトの中央揃えグリッドからブレイクアウトさせ、高さを `100vh` に設定してください。
 
 3. **互換性の維持 (Maintaining Compatibility)**
    * `parser.py` を変更して新しい引数を追加する際は、既存のマークダウン記法が壊れないよう、オプショナルな引数として実装してください（例: `args.get('new_param', 'default_value')`）。
-   * `parser.py` でタグ構造を変更する場合（特にブロック要素）は、正規表現（`START_PATTERN` / `END_PATTERN`）の意図しないマッチを防ぐため、十分に注意してテストを行ってください。
+   * **正規表現の安全性:** インラインラベルやパラメータがオプショナルな場合（例: `@[theme]()` と `@[theme: dark]()`）、正規表現ではコロンや周囲の空白を厳格に要求するのではなく、明示的にオプショナルになるよう（例: `(?:(?:\:\s*)?([^\]]*))`）設計してください。
+   * `parser.py` でタグ構造を変更する場合（特にブロック要素）は、正規表現（`START_PATTERN` / `END_PATTERN`）の意図しないマッチや破滅的バックトラック（Catastrophic Backtracking）を防ぐため、十分に注意してテストを行ってください。特に、ブロックレベルコンポーネントをテストする際は、Markdown 入力に常に終了タグ（例: `@[/flow]`）が含まれていることを確認してください。終了タグを省略すると、ネストされた量指定子によってパース処理が無限に停止するリスクがあります。
+   * HTML属性（OpenGraphのディスクリプション等）として挿入されるフェッチ済みのメタデータをPython-Markdownで処理させる場合、パーサーが段落区切りとして解釈してHTMLタグ構造を壊さないように、必ず改行文字（`\n`, `\r`）を取り除くか置換してください。
