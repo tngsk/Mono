@@ -134,6 +134,21 @@ AIは、**以下のリストに存在しないコンポーネントやパラメ�
    * MonoのWeb ComponentsはShadow DOM（`MonoBaseElement`経由）を利用してカプセル化されています。
    * TailwindなどのグローバルなユーティリティクラスはShadow DOM内に浸透しないため、UIのスタイリングには`themes.toml`で定義されたCSS変数（例: `var(--color-primary)`）を活用してください。
 
+9. **新規コンポーネントの登録 (Registering New Components)**
+   * 新しいWeb Componentを作成した際は、`src/components/コンポーネント名/manifest.json`を作成し、`interactive`, `always_include`, `requires_icons` などのプロパティを定義して自動検出（auto-discovery）させる必要があります。
+
+10. **パフォーマンス最適化 (Performance Optimization)**
+   * マークダウン処理を高速化するため、各コンポーネントの `parser.py` には `FAST_PATH_MARKERS = ("@[コンポーネント名",)` を定義してください。これにより、該当文字列が存在しない場合に重い正規表現の評価をスキップできます。
+
+11. **より詳細なテスト (Advanced Testing)**
+   * ブロックレベルコンポーネントのテスト時は、終了タグ（例： `@[/flow]`）を必ず含めてください。省略すると正規表現の壊滅的なバックトラッキングが発生し、ハングアップの原因となります。
+   * オプションの有無に関わらず、基本動作、オプションなし、すべてのオプション指定時の3シナリオを網羅するようにしてください。
+   * E2Eテスト（Playwright）で `IntersectionObserver` などのスクロール依存の挙動をテストする際は、`page.add_init_script` でオブザーバーをモックし、直ちに `isIntersecting: true` をトリガーさせてください。
+
+12. **正規表現と属性のフォールバック (Regex and Fallbacks)**
+   * インラインのラベルやパラメータが省略可能な場合、正規表現ではコロンや周囲の空白を厳密に要求せず、オプショナル（例: `(?:(?:\:\s*)?([^\]]*))`）として扱ってください。
+   * プロパティの取得時は `BaseComponentParser.resolve_url_and_label` を活用し、ラベルとキー・バリューの双方を安全に処理してください（例: `if 'title' in args: title = args['title']`）。
+
 ## 5. コンポーネントの変換結果を変更したい場合のアドバイス (Advice for Modifying Conversion Results)
 
 もしAI自身が「コンポーネントの変換結果（HTMLやスタイル）を変更したい」と判断した場合、あるいはユーザーからそのように要求された場合は、以下の指針に従って提案や実装を行ってください。
@@ -152,3 +167,19 @@ AIは、**以下のリストに存在しないコンポーネントやパラメ�
 3. **互換性の維持 (Maintaining Compatibility)**
    * `parser.py` を変更して新しい引数を追加する際は、既存のマークダウン記法が壊れないよう、オプショナルな引数として実装してください（例: `args.get('new_param', 'default_value')`）。
    * `parser.py` でタグ構造を変更する場合（特にブロック要素）は、正規表現（`START_PATTERN` / `END_PATTERN`）の意図しないマッチを防ぐため、十分に注意してテストを行ってください。
+
+4. **インライン要素のスタイリング (Styling Inline Web Components)**
+   * テキストに自然に混ざるインライン要素（例: `mono-badge`）を設計する際は、内部のサイズ（`font-size`, `height`, `padding`）に相対的な `em` 単位を使用し、`:host` に `vertical-align: baseline;` を適用してベースラインの整列と比例縮小を確保してください。
+
+5. **PDFエクスポートの考慮 (Considering PDF Export)**
+   * PDF出力（印刷）を想定し、ビデオコントロールや入力フォームなどのインタラクティブ要素は `@media print` で `display: none` とし、静的な代替UIを提供してください。
+   * macOSでのPDF文字化けや不要な改行を防ぐため、コードブロックにはシンタックスハイライトを使用せず、プレーンな `<pre><code>` タグを利用してください。また、CSSの `font-family` にAppleシステムフォント（`ui-monospace` や `SF Mono`）を指定せず、`Menlo`, `Consolas`, `monospace` を使用してください。
+
+6. **自動挿入タグの中和 (Neutralizing Auto-injected Tags)**
+   * `mono-layout` のようにMarkdownコンテンツをスロットに差し込むコンポーネントにおいて、Markdownパーサーが自動挿入する `<p>` や `<br>` タグがFlexboxなどのレイアウトを崩す場合は、`content.css` を用いてそれらを中和（例: `display: contents;` や `display: none;`）してください。
+
+7. **全画面スライドの実装 (Full-bleed Presentation Slides)**
+   * プレゼンテーション風のフルスクリーン・スライドを作成する際は、デフォルトの中央揃えグリッドから抜け出すために `--component-grid-column: 1 / -1;` を適用し、高さを `100vh` に設定してください（例: `mono-section`, `mono-hero`）。
+
+8. **レイアウト構文の裏側 (Layout Syntax Internals)**
+   * `@[row]` と `@[stack]` はそれぞれ内部的に `type="hstack"` と `type="vstack"` という属性にマッピングされ、既存のFlexbox CSSを再利用する仕組みになっています。
