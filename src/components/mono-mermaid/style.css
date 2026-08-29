@@ -1,11 +1,57 @@
 :host {
     display: block;
     width: 100%;
+    --mermaid-justify: center;
+    --mermaid-bg-color: transparent;
+    --mermaid-max-width: 100%;
+    --mermaid-border-radius: 0;
+    --mermaid-border: none;
+    --mermaid-padding: 0;
+    --mermaid-shadow: none;
+}
+
+:host([align="left"]) {
+    --mermaid-justify: flex-start;
+}
+
+:host([align="right"]) {
+    --mermaid-justify: flex-end;
+}
+
+:host([align="center"]) {
+    --mermaid-justify: center;
+}
+
+:host([border="true"]) {
+    --mermaid-border: 1px solid var(--color-base-300, #e5e7eb);
+    --mermaid-border-radius: var(--radius-box, 0.5rem);
+    --mermaid-padding: 1.5rem;
+    --mermaid-shadow: var(--shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.05));
+    --mermaid-bg-color: var(--color-base-100, #ffffff);
 }
 
 .mermaid-container {
     width: 100%;
+    max-width: var(--mermaid-max-width);
     display: flex;
-    justify-content: center;
+    justify-content: var(--mermaid-justify);
     overflow-x: auto;
+    background-color: var(--mermaid-bg-color);
+    border: var(--mermaid-border);
+    border-radius: var(--mermaid-border-radius);
+    padding: var(--mermaid-padding);
+    box-shadow: var(--mermaid-shadow);
+    box-sizing: border-box;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+:host([align="left"]) .mermaid-container {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+:host([align="right"]) .mermaid-container {
+    margin-left: auto;
+    margin-right: 0;
 }

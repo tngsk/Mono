@@ -111,6 +111,23 @@ def test_mermaid_subprocess_error(mock_run, parser):
 
 
 def test_mono_mermaid_no_options(parser):
-    markdown = '@[mermaid]()'
-    html = parser.process(markdown)
-    assert isinstance(html, str)
+    markdown = '@[mermaid]()\ngraph TD;\n@[/mermaid]'
+    with patch.object(parser, '_generate_svg', return_value="<svg></svg>"):
+        html = parser.process(markdown)
+        assert isinstance(html, str)
+
+def test_mermaid_design_options(parser):
+    """新しいデザインオプションが正しく解析・適用されるかテスト"""
+    markdown_content = """
+@[mermaid: "Sample"](align: "right", bg-color: "#FF0000", border: "true", max-width: "500px")
+graph TD;
+    A-->B;
+@[/mermaid]
+"""
+    with patch.object(parser, '_generate_svg', return_value="<svg></svg>"):
+        html_output = parser.process(markdown_content)
+
+        assert 'align="right"' in html_output
+        assert 'bg-color="#FF0000"' in html_output
+        assert 'border="true"' in html_output
+        assert 'max-width="500px"' in html_output

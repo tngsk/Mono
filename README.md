@@ -46,7 +46,7 @@ Monoでは外部依存なしのVanilla JSによる多彩なWeb Componentsを埋�
 | `mono-layout` | 横並び（hstack）や縦並び（vstack）のレイアウトを構築します。ブロック要素。 | `@[hstack]\n:::\n左側コンテンツ\n:::\n右側コンテンツ\n@[/hstack]` | `label: "text"`<br>`class: "text"` |
 | `mono-link` | リンクカードを表示します。 | `@[link]()` | `url: "url"`<br>`style: "full|small|card"` |
 | `mono-media-grid` | 複数のメディアをグリッド状に配置して表示します。ブロック要素。 | `@[media-grid]()\n...コンテンツ...\n@[/media-grid]` | `label: "text"`<br>`columns: "number"`<br>`rows: "number"`<br>`gap: "css-size"`<br>`fit: "cover|contain"` |
-| `mono-mermaid` | Mermaid記法で図表を描画し、SVGとして埋め込みます。ブロック要素。 | `@[mermaid]\ngraph TD;\nA-->B;\n@[/mermaid]` | `title: "text"`<br>`theme: "default|dark|forest|..."` |
+| `mono-mermaid` | Mermaid記法で図表を描画し、SVGとして埋め込みます。ブロック要素。 | `@[mermaid]\ngraph TD;\nA-->B;\n@[/mermaid]` | `title: "text"`<br>`theme: "default|dark|forest|neutral|base"`<br>`align: "center|left|right"`<br>`bg-color: "#HEX|color"`<br>`border: "true|false"`<br>`max-width: "size"` |
 | `mono-notebook` | 入力可能なノートブック領域を表示します。 | `@[notebook](title: "メモ", placeholder: "入力してください")` | `title: "text"`<br>`placeholder: "text"`<br>`id: "text"` |
 | `mono-poll` | 投票システムを表示します。 | `@[poll](title: "好きな言語は？", options: "Python, JavaScript")` | `title: "text"`<br>`options: "A,B,C"` |
 | `mono-reaction` | リアクション（いいね、など）ボタンを表示します。 | `@[reaction](options: "👍, 👎")` | `label: "text"`<br>`options: "👍,👎"` |

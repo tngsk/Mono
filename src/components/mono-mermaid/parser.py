@@ -9,7 +9,7 @@ from src.processors.base_parser import BaseComponentParser
 logger = logging.getLogger(__name__)
 
 class Parser(BaseComponentParser):
-    # OPTIONS: title: "text", theme: "default|dark|forest|..."
+    # OPTIONS: title: "text", theme: "default|dark|forest|neutral|base", align: "center|left|right", bg-color: "#HEX|color", border: "true|false", max-width: "size"
     START_PATTERN = r"@\[mermaid(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
     END_PATTERN = r"@\[/mermaid\]"
 
@@ -44,6 +44,15 @@ class Parser(BaseComponentParser):
             attrs = []
             if title and title.strip():
                 attrs.append(f'title="{html.escape(title.strip())}"')
+
+            if 'align' in args:
+                attrs.append(f'align="{html.escape(args["align"].strip())}"')
+            if 'bg-color' in args:
+                attrs.append(f'bg-color="{html.escape(args["bg-color"].strip())}"')
+            if 'border' in args:
+                attrs.append(f'border="{html.escape(args["border"].strip())}"')
+            if 'max-width' in args:
+                attrs.append(f'max-width="{html.escape(args["max-width"].strip())}"')
 
             # Clean up the SVG a bit to embed smoothly (remove xml/doctype declarations if present)
             svg_content = re.sub(r'<\?xml.*?\?>', '', svg_content, flags=re.IGNORECASE).strip()
