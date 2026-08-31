@@ -1,0 +1,178 @@
+:host {
+    display: block;
+    position: absolute; /* Ensures it doesn't take space in flow */
+    z-index: var(--z-index-overlay, 9999);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Trigger Button */
+#zoom-trigger {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: var(--z-index-overlay, 9999);
+    background: var(--color-base-100, #ffffff);
+    color: var(--color-base-content, #000000);
+    border: 1px solid var(--color-base-300, #cccccc);
+    border-radius: 4px;
+    padding: 6px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: opacity 0.2s, transform 0.2s;
+    opacity: 0;
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translate(-50%, -50%); /* Centered on coordinates */
+}
+
+#zoom-trigger.visible {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+#zoom-trigger:hover {
+    background: var(--color-base-200, #f0f0f0);
+}
+
+/* Modal Overlay */
+#zoom-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: calc(var(--z-index-overlay, 9999) + 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+#zoom-overlay:not(.hidden) {
+    opacity: 1;
+    visibility: visible;
+}
+
+#zoom-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+#zoom-content-wrapper {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    pointer-events: none; /* Let clicks pass to backdrop except for children */
+}
+
+/* Specific slotted content scaling for large fullscreen display */
+#zoom-content {
+    pointer-events: auto;
+    overflow: auto;
+    max-width: 92vw;
+    max-height: 88vh;
+    min-width: min(80vw, 900px);
+    background: var(--color-base-100, #ffffff);
+    color: var(--color-base-content, #000000);
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    font-size: clamp(1.2rem, 2vw, 1.8rem);
+    line-height: 1.6;
+}
+
+::slotted(img) {
+    max-width: 88vw !important;
+    max-height: 80vh !important;
+    object-fit: contain !important;
+    width: auto !important;
+    height: auto !important;
+    display: block;
+    margin: 0 auto;
+}
+
+::slotted(svg) {
+    max-width: 88vw !important;
+    max-height: 80vh !important;
+    width: 100% !important;
+    height: auto !important;
+    display: block;
+    margin: 0 auto;
+}
+
+::slotted(table) {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto;
+    font-size: clamp(1.15rem, 1.8vw, 1.8rem) !important;
+    border-collapse: collapse;
+}
+
+::slotted(table) th,
+::slotted(table) td {
+    padding: 12px 18px !important;
+}
+
+::slotted(pre),
+::slotted(mono-code-block) {
+    font-size: clamp(1.1rem, 1.6vw, 1.6rem) !important;
+    padding: 1.5rem !important;
+    width: 100% !important;
+    box-sizing: border-box;
+}
+
+::slotted(*) {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+#zoom-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: transparent;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    transition: background 0.2s;
+}
+
+#zoom-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+#zoom-close:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+}
+
+@media print {
+    :host {
+        display: none !important;
+    }
+}

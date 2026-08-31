@@ -1,0 +1,6 @@
+{
+  "name": "mono-zoom",
+  "interactive": false,
+  "always_include": true,
+  "requires_icons": true
+}

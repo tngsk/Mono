@@ -58,6 +58,7 @@ Monoでは外部依存なしのVanilla JSによる多彩なWeb Componentsを埋�
 | `mono-synth` | Tone.jsを用いたシンプルなシンセサイザー。OSC, Filter, ADSR, ミニ鍵盤を備えます。 | `@[mono-synth: sample="asset-test.wav"]()` | `url: "url"`<br>`label: "text"` |
 | `mono-textfield-input` | テキスト入力フィールドを表示します。 | `@[textfield](placeholder: "テキストを入力", size: "large")` | `label: "text"`<br>`id: "text"`<br>`placeholder: "text"`<br>`size: "small|medium|large"` |
 | `mono-theme` | テーマ切り替えコンポーネント。通常はMarkdownディレクティブでテーマを設定します。 | `@[theme: dark]()` | `theme_name: "light|dark"`<br>`show_ui: "true|false"`<br>`config: "json"`<br>`font_size: "16px"` |
+| `mono-zoom` | 説明なし | `@[zoom]()` | なし |
 
 #### 暗黙的・システムコンポーネント
 
