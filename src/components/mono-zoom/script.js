@@ -221,23 +221,27 @@ class MonoZoom extends MonoBaseElement {
     handleKeyDown(e) {
         if (e.key === 'Escape') {
             this.closeModal();
+            return;
         }
         
         // Focus trap
         if (e.key === 'Tab') {
-            const focusableElements = this.overlay.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            const shadowFocusables = Array.from(this.overlay.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'));
+            const lightFocusables = Array.from(this.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'));
+            const focusableElements = [...shadowFocusables, ...lightFocusables];
             if (focusableElements.length === 0) return;
             
             const firstElement = focusableElements[0];
             const lastElement = focusableElements[focusableElements.length - 1];
+            const currentActive = this.shadowRoot.activeElement || document.activeElement;
             
             if (e.shiftKey) {
-                if (document.activeElement === firstElement || document.activeElement === this) {
+                if (currentActive === firstElement || currentActive === this) {
                     lastElement.focus();
                     e.preventDefault();
                 }
             } else {
-                if (document.activeElement === lastElement) {
+                if (currentActive === lastElement) {
                     firstElement.focus();
                     e.preventDefault();
                 }
