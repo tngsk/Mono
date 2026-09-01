@@ -9,3 +9,7 @@
 ## 2026-09-01 - Microkernel Architecture and On-Demand Asset Inlining (Zero-JS)
 **Learning:** Always-including default components (like zoom, brush, sync) in single-file HTML outputs forces unnecessary template/JS bloat (30KB+) even on pure static text documents. By eliminating `always_include` and implementing on-demand tree-shaking with profile-driven presets, static documents achieve 100% Zero-JS output and drop to ~10KB file sizes.
 **Action:** Keep core HTML conversion strictly minimal. Guard script tag generation so that no `<script>` or Web Component base class is injected unless interactive components are actually referenced in intermediate HTML or explicitly activated via profiles.
+
+## 2026-09-01 - Fullscreen Fluid Typography and Container-Query Scaling
+**Learning:** Hardcoded container limits (like `860px` or `80ch`) cause severe visual imbalances on large screens (1920px+ FHD and 4K displays), leaving >50% of the viewport as dead white space while text fails to fill the slide. Combining fluid CSS Grid (`min(92vw, 1750px)`), full-range fluid typography (`clamp()`), and `container-type: inline-size` with `cqi`/`vw` units allows display headings to dynamically occupy ~80% of the screen width without triggering horizontal overflow on mobile devices.
+**Action:** When designing presentation-ready scroll documents, use container queries and fluid scaling formulas (`clamp(min, preferred, max)`) instead of static pixel caps, ensuring components automatically maximize screen area on projectors while preserving strict mobile constraints.
