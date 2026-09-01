@@ -62,10 +62,6 @@
     visibility: visible;
 }
 
-#zoom-backdrop {
-    display: none; /* Fullscreen overlay completely covers the screen */
-}
-
 #zoom-content-wrapper {
     position: relative;
     width: 100vw;
@@ -186,6 +182,8 @@
 ::slotted(*) {
     max-width: 100%;
     box-sizing: border-box;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 #zoom-close {

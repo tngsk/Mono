@@ -16,6 +16,9 @@ def load_parser():
 def parser():
     return load_parser()
 
+import json
+from pathlib import Path
+
 class TestMonoZoomParser:
     def test_process_does_nothing(self, parser):
         # mono-zoom is a system component that just includes assets and handles things on frontend.
@@ -23,3 +26,18 @@ class TestMonoZoomParser:
         content = "Some markdown @[image: test.png]"
         result = parser.process(content)
         assert result == content
+
+    def test_manifest_always_include(self):
+        manifest_path = Path(__file__).resolve().parent.parent.parent / "src" / "components" / "mono-zoom" / "manifest.json"
+        assert manifest_path.exists()
+        with open(manifest_path, "r", encoding="utf-8") as f:
+            manifest = json.load(f)
+        assert manifest.get("name") == "mono-zoom"
+        assert manifest.get("always_include") is True
+
+    def test_component_files_exist(self):
+        component_dir = Path(__file__).resolve().parent.parent.parent / "src" / "components" / "mono-zoom"
+        assert (component_dir / "template.html").exists()
+        assert (component_dir / "style.css").exists()
+        assert (component_dir / "script.js").exists()
+        assert (component_dir / "parser.py").exists()

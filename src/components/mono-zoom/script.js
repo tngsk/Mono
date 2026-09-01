@@ -43,12 +43,15 @@ class MonoZoom extends MonoBaseElement {
 
     disconnectedCallback() {
         this.removeEventListeners();
+        if (this.activeTarget) {
+            this.activeTarget.removeEventListener('mouseleave', this.boundHandleMouseLeave);
+            this.activeTarget = null;
+        }
     }
 
     setupElements() {
         this.trigger = this.shadowRoot.getElementById('zoom-trigger');
         this.overlay = this.shadowRoot.getElementById('zoom-overlay');
-        this.backdrop = this.shadowRoot.getElementById('zoom-backdrop');
         this.closeBtn = this.shadowRoot.getElementById('zoom-close');
         this.content = this.shadowRoot.getElementById('zoom-content');
     }
@@ -56,19 +59,20 @@ class MonoZoom extends MonoBaseElement {
     setupEventListeners() {
         document.addEventListener('mouseover', this.boundHandleMouseOver);
         document.addEventListener('scroll', this.boundHandleScroll, { passive: true });
+        window.addEventListener('resize', this.boundHandleScroll, { passive: true });
         document.addEventListener('keydown', this.boundHandleKeyDown);
         
         this.trigger.addEventListener('click', () => this.openModal());
         this.trigger.addEventListener('mouseenter', () => this.keepTriggerVisible());
         this.trigger.addEventListener('mouseleave', () => this.hideTriggerDelayed());
         
-        this.backdrop.addEventListener('click', () => this.closeModal());
         this.closeBtn.addEventListener('click', () => this.closeModal());
     }
 
     removeEventListeners() {
         document.removeEventListener('mouseover', this.boundHandleMouseOver);
         document.removeEventListener('scroll', this.boundHandleScroll);
+        window.removeEventListener('resize', this.boundHandleScroll);
         document.removeEventListener('keydown', this.boundHandleKeyDown);
     }
 
@@ -194,6 +198,14 @@ class MonoZoom extends MonoBaseElement {
             clone.style.top = 'auto';
             clone.style.left = 'auto';
             clone.style.margin = '0 auto';
+        }
+
+        // Prevent duplicate IDs in the DOM tree
+        if (clone.removeAttribute) {
+            clone.removeAttribute('id');
+        }
+        if (clone.querySelectorAll) {
+            clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
         }
 
         // We append to this to place it in the Light DOM.
