@@ -317,12 +317,13 @@ th {
     line-height: 1.15;
     font-weight: 800;
     text-align: center;
+    margin-block: clamp(2rem, 3.5vw, 4rem);
     overflow-wrap: break-word;
 }
 
 .text-display,
 .text-hero {
-    /* 2〜3文字がコンテナ・画面幅を約80〜90%埋め尽くす特大流体スケール */
+    /* 2〜3文字がコンテナ・画面幅を約80〜90%埋め尽くす特大流体スケール (上下マージン2倍拡張) */
     display: block;
     width: 100%;
     font-size: clamp(3.5rem, min(36vw, 40cqi), 45rem);
@@ -330,6 +331,7 @@ th {
     font-weight: 900;
     letter-spacing: -0.02em;
     text-align: center;
+    margin-block: clamp(3.5rem, 6.5vw, 7.5rem);
     overflow-wrap: normal;
     word-break: keep-all;
 }
