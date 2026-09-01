@@ -39,20 +39,22 @@
     background: var(--color-base-200, #f0f0f0);
 }
 
-/* Modal Overlay */
+/* Fullscreen Overlay (Complete viewport coverage) */
 #zoom-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: calc(var(--z-index-overlay, 9999) + 1);
+    z-index: calc(var(--z-index-overlay, 9999) + 10);
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s, visibility 0.3s;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+    background: var(--color-base-100, #ffffff);
+    color: var(--color-base-content, #111827);
 }
 
 #zoom-overlay:not(.hidden) {
@@ -61,48 +63,44 @@
 }
 
 #zoom-backdrop {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    display: none; /* Fullscreen overlay completely covers the screen */
 }
 
 #zoom-content-wrapper {
     position: relative;
-    max-width: 90vw;
-    max-height: 90vh;
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    z-index: 1;
-    pointer-events: none; /* Let clicks pass to backdrop except for children */
+    padding: clamp(2rem, 5vw, 5rem);
+    box-sizing: border-box;
+    overflow: auto;
 }
 
-/* Specific slotted content scaling for large fullscreen display */
+/* Fullscreen Content Area */
 #zoom-content {
-    pointer-events: auto;
-    overflow: auto;
-    max-width: 92vw;
-    max-height: 88vh;
-    min-width: min(80vw, 900px);
-    background: var(--color-base-100, #ffffff);
-    color: var(--color-base-content, #000000);
-    border-radius: 8px;
-    padding: 24px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 1300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
     box-sizing: border-box;
-    font-size: clamp(1.2rem, 2vw, 1.8rem);
-    line-height: 1.6;
+    font-size: clamp(1.4rem, 2.5vw, 2.5rem);
+    line-height: 1.7;
 }
 
 ::slotted(img) {
-    max-width: 88vw !important;
-    max-height: 80vh !important;
+    max-width: 92vw !important;
+    max-height: 85vh !important;
     object-fit: contain !important;
     width: auto !important;
     height: auto !important;
@@ -111,8 +109,8 @@
 }
 
 ::slotted(svg) {
-    max-width: 88vw !important;
-    max-height: 80vh !important;
+    max-width: 92vw !important;
+    max-height: 85vh !important;
     width: 100% !important;
     height: auto !important;
     display: block;
@@ -121,57 +119,68 @@
 
 ::slotted(table) {
     width: 100% !important;
-    max-width: 100% !important;
+    max-width: 1200px !important;
     height: auto;
-    font-size: clamp(1.15rem, 1.8vw, 1.8rem) !important;
+    font-size: clamp(1.3rem, 2vw, 2.2rem) !important;
     border-collapse: collapse;
+    margin: 0 auto;
 }
 
 ::slotted(table) th,
 ::slotted(table) td {
-    padding: 12px 18px !important;
+    padding: 14px 20px !important;
 }
 
 ::slotted(h1) {
-    font-size: clamp(2rem, 3.8vw, 3.5rem) !important;
-    line-height: 1.3 !important;
-    margin: 0 !important;
+    font-size: clamp(2.5rem, 5vw, 4.8rem) !important;
+    line-height: 1.25 !important;
+    text-align: center;
+    margin: 0 auto !important;
 }
 
 ::slotted(h2) {
-    font-size: clamp(1.75rem, 3.2vw, 3rem) !important;
-    line-height: 1.35 !important;
-    margin: 0 !important;
+    font-size: clamp(2.2rem, 4.2vw, 4rem) !important;
+    line-height: 1.3 !important;
+    text-align: center;
+    margin: 0 auto !important;
 }
 
 ::slotted(h3),
 ::slotted(h4) {
-    font-size: clamp(1.4rem, 2.5vw, 2.4rem) !important;
-    line-height: 1.4 !important;
-    margin: 0 !important;
+    font-size: clamp(1.8rem, 3.2vw, 3.2rem) !important;
+    line-height: 1.35 !important;
+    margin: 0 auto !important;
+    width: 100%;
+    max-width: 1200px;
 }
 
 ::slotted(ul),
 ::slotted(ol) {
-    font-size: clamp(1.25rem, 2.2vw, 2.2rem) !important;
-    line-height: 1.8 !important;
-    padding-left: 2.2rem !important;
-    margin: 0 !important;
+    font-size: clamp(1.4rem, 2.6vw, 2.6rem) !important;
+    line-height: 1.9 !important;
+    padding-left: 2.5rem !important;
+    margin: 0 auto !important;
+    width: 100%;
+    max-width: 1200px;
 }
 
 ::slotted(blockquote) {
-    font-size: clamp(1.3rem, 2.2vw, 2.2rem) !important;
+    font-size: clamp(1.5rem, 2.8vw, 2.8rem) !important;
     line-height: 1.8 !important;
-    padding: 1.5rem !important;
-    margin: 0 !important;
+    padding: 2rem !important;
+    margin: 0 auto !important;
+    width: 100%;
+    max-width: 1200px;
 }
 
 ::slotted(pre),
 ::slotted(mono-code-block) {
-    font-size: clamp(1.1rem, 1.6vw, 1.6rem) !important;
-    padding: 1.5rem !important;
+    font-size: clamp(1.2rem, 1.8vw, 1.8rem) !important;
+    padding: 2rem !important;
     width: 100% !important;
+    max-width: 1200px;
     box-sizing: border-box;
+    margin: 0 auto;
 }
 
 ::slotted(*) {
@@ -180,28 +189,29 @@
 }
 
 #zoom-close {
-    position: absolute;
-    top: -40px;
-    right: 0;
-    background: transparent;
-    color: #ffffff;
-    border: none;
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: var(--color-base-200, rgba(0, 0, 0, 0.08));
+    color: var(--color-base-content, #111827);
+    border: 1px solid var(--border-color, rgba(0, 0, 0, 0.15));
     cursor: pointer;
-    padding: 8px;
+    padding: 10px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    pointer-events: auto;
-    transition: background 0.2s;
+    z-index: 100;
+    transition: background 0.2s, transform 0.15s;
 }
 
 #zoom-close:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--color-base-300, rgba(0, 0, 0, 0.18));
+    transform: scale(1.08);
 }
 
 #zoom-close:focus-visible {
-    outline: 2px solid #ffffff;
+    outline: 2px solid var(--color-primary, #3b82f6);
     outline-offset: 2px;
 }
 
