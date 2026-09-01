@@ -36,6 +36,9 @@ class Parser(BaseComponentParser):
 
             style_attr = f' style="{" ".join(style)}"' if style else ''
 
-            return f'<img src="{self.escape_html(url)}" alt="{self.escape_html(alt)}"{style_attr} />'
+            
+            alt_attr = f' alt="{self.escape_html(alt)}"' if alt else ' aria-hidden="true" alt=""'
+            return f'<img src="{self.escape_html(url)}"{alt_attr}{style_attr} />'
+    
 
         return pattern.sub(replacer, markdown_content)

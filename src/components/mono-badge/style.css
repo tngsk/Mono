@@ -16,8 +16,8 @@
     width: fit-content;
     padding-left: 0.643em;
     padding-right: 0.643em;
-    border-radius: var(--rounded-badge, 2em);
-    border-width: 1px;
+    border-radius: var(--rounded-badge, var(--radius-lg, 0.5rem));
+    border-width: 0.0625rem;
     border-style: solid;
     border-color: transparent;
     background-color: var(--color-base-200, #f3f4f6);
@@ -62,7 +62,7 @@
 
 .mono-badge-custom {
     background-color: var(--custom-badge-color);
-    color: #ffffff; /* fallback or ideally calculated contrast color */
+    color: var(--color-base-100); /* fallback or ideally calculated contrast color */
 }
 
 /* Outline */

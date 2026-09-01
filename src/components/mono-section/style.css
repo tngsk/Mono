@@ -23,7 +23,7 @@
 
 :host([width="fit"]) {
     --component-grid-column: 2;
-    border-radius: 8px;
+    border-radius: var(--radius-lg, 0.5rem);
 }
 
 .section-container {
@@ -44,4 +44,11 @@
     grid-column: 2;
     width: 100%;
     z-index: 1;
+}
+
+@media print {
+    :host {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
 }

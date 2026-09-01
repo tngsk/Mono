@@ -1,13 +1,13 @@
 :host {
     display: block;
     width: 100%;
-    margin: 1rem 0;
+    margin: var(--spacing-md, 1.5rem) 0;
 }
 
 .grid-wrapper {
     display: grid;
     width: 100%;
-    gap: 1rem;
+    gap: var(--spacing-md, 1.5rem);
     box-sizing: border-box;
 }
 
@@ -26,4 +26,10 @@
     height: 100%;
     object-fit: var(--fit, cover);
     max-height: 100vh;
+}
+
+@media print {
+    .grid-wrapper {
+        gap: var(--spacing-sm, 1rem);
+    }
 }
