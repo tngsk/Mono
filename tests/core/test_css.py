@@ -141,6 +141,14 @@ class TestCSSEmbedder(unittest.TestCase):
         self.assertNotIn("{CODE_BLOCK_CSS}", result)
         self.assertNotIn("{CSS_BLOCK}", result)
 
+    def test_get_base_css_includes_design_tokens(self):
+        self.mock_file_handler.read_text.return_value = "/* base.css content with minmax(0, var(--content-max-width)) */"
+        result = self.css_embedder.get_base_css()
+        self.assertIn("--radius-sm:", result)
+        self.assertIn("--radius-md:", result)
+        self.assertIn("--shadow-sm:", result)
+        self.assertIn("--content-max-width:", result)
+
 
 if __name__ == '__main__':
     unittest.main()
