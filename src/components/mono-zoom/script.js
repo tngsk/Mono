@@ -2,6 +2,13 @@ class MonoZoom extends MonoBaseElement {
     constructor() {
         super();
         this.targetSelectors = [
+            'h1:not(.no-zoom)',
+            'h2:not(.no-zoom)',
+            'h3:not(.no-zoom)',
+            'h4:not(.no-zoom)',
+            'ul:not(.no-zoom)',
+            'ol:not(.no-zoom)',
+            'blockquote:not(.no-zoom)',
             'table:not(.no-zoom)',
             'mono-mermaid:not(.no-zoom)',
             'mono-flow:not(.no-zoom)',
@@ -10,6 +17,12 @@ class MonoZoom extends MonoBaseElement {
             'img:not(.colab-badge):not(.no-zoom)',
             '.mono-math:not(.no-zoom)',
             'mono-score:not(.no-zoom)',
+            'mono-section:not(.no-zoom)',
+            'mono-hero:not(.no-zoom)',
+            'mono-layout:not(.no-zoom)',
+            'mono-media-grid:not(.no-zoom)',
+            'mono-drawer:not(.no-zoom)',
+            'mono-flipcard:not(.no-zoom)',
             '[data-zoomable]'
         ].join(', ');
         
