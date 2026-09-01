@@ -70,6 +70,7 @@ body {
 body > * {
     grid-column: var(--component-grid-column, 2);
     min-width: 0;
+    container-type: inline-size;
 }
 
 /* The Stack - https://every-layout.dev/layouts/stack/ */
@@ -311,23 +312,26 @@ th {
 }
 
 .text-xlarge {
-    /* 4〜6文字のキーワード用スケール (下限2rem, 上限6rem) */
-    font-size: clamp(2rem, 1.5rem + 3.5vw, 6rem);
-    line-height: 1.2;
-    font-weight: 700;
-    letter-spacing: 0.04em;
+    /* 4〜8文字のキーワード用スケール */
+    font-size: clamp(2rem, min(14vw, 15cqi), 12rem);
+    line-height: 1.15;
+    font-weight: 800;
+    text-align: center;
     overflow-wrap: break-word;
 }
 
 .text-display,
 .text-hero {
-    /* 2〜3文字がコンテナ・画面いっぱいに広がる特大スケール (下限3.5rem, 上限16rem) */
-    font-size: clamp(3.5rem, 2rem + 9vw, 16rem);
-    line-height: 1.05;
-    font-weight: 800;
-    letter-spacing: 0.04em;
-    overflow-wrap: break-word;
-    word-break: break-word;
+    /* 2〜3文字がコンテナ・画面幅を約80〜90%埋め尽くす特大流体スケール */
+    display: block;
+    width: 100%;
+    font-size: clamp(3.5rem, min(36vw, 40cqi), 45rem);
+    line-height: 1.0;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    text-align: center;
+    overflow-wrap: normal;
+    word-break: keep-all;
 }
 
 /* Print specific global adjustments */
