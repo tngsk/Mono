@@ -246,11 +246,11 @@ pre code {
 
 /* 引用 ---------------------------------------------------- */
 blockquote {
-    padding: var(--spacing-sm) var(--spacing-md);
+    padding-left: var(--spacing-md);
+    padding-top: var(--spacing-xs);
+    padding-bottom: var(--spacing-xs);
     border-left: 0.1875rem solid var(--color-primary, #3b82f6);
-    background: var(--color-base-100, #f9fafb);
     color: var(--color-base-content-muted, #4b5563);
-    border-radius: var(--radius-sm, 0.125rem);
 }
 
 /* テーブル ------------------------------------------------ */
