@@ -213,7 +213,7 @@ tasks.sh
 demo/*.html
 doc/*.html
 /watch_and_run.sh
-.vscode/mono.code-snippets
+.vscode/
 .zed/snippets/markdown.json
 *.pdf
 
