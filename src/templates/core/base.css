@@ -310,19 +310,21 @@ th {
 }
 
 .text-xlarge {
-    font-size: 2.25em;
-    line-height: 1.25;
+    /* 4〜6文字のキーワード用スケール */
+    font-size: clamp(2rem, min(10vw, 10ch), 5rem);
+    line-height: 1.2;
     font-weight: 700;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
     overflow-wrap: break-word;
 }
 
 .text-display,
 .text-hero {
-    font-size: min(4.5em, 12vw);
-    line-height: 1.15;
+    /* 2〜3文字がコンテナ・画面いっぱいに広がる特大スケール (文字数2〜3文字に対するコンテナ幅の約30〜45%) */
+    font-size: clamp(3.5rem, min(22vw, 24ch), 14rem);
+    line-height: 1.05;
     font-weight: 800;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.04em;
     overflow-wrap: break-word;
     word-break: break-word;
 }
