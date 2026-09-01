@@ -173,14 +173,17 @@ class MonoZoom extends MonoBaseElement {
         
         // Special handling for web components or regular elements
         let clone;
-        if (this.activeTarget.tagName.startsWith('MONO-')) {
-            // Check for SVG, pre, img inside shadowRoot OR light DOM children
+        if (typeof this.activeTarget.getZoomElement === 'function') {
+            const customZoomEl = this.activeTarget.getZoomElement();
+            clone = customZoomEl ? customZoomEl.cloneNode(true) : this.activeTarget.cloneNode(true);
+        } else if (this.activeTarget.tagName.startsWith('MONO-')) {
+            // Check for [data-zoom-content], SVG, pre, img, table inside shadowRoot OR light DOM
             let innerContent = null;
             if (this.activeTarget.shadowRoot) {
-                innerContent = this.activeTarget.shadowRoot.querySelector('svg, pre, img, table');
+                innerContent = this.activeTarget.shadowRoot.querySelector('[data-zoom-content], svg, pre, img, table');
             }
             if (!innerContent) {
-                innerContent = this.activeTarget.querySelector('svg, pre, img, table');
+                innerContent = this.activeTarget.querySelector('[data-zoom-content], svg, pre, img, table');
             }
 
             if (innerContent) {

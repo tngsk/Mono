@@ -17,10 +17,10 @@
     background: var(--color-base-100, #ffffff);
     color: var(--color-base-content, #000000);
     border: 1px solid var(--color-base-300, #cccccc);
-    border-radius: 4px;
+    border-radius: var(--radius-md, 0.25rem);
     padding: 6px;
     cursor: pointer;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
     transition: opacity 0.2s, transform 0.2s;
     opacity: 0;
     pointer-events: auto;

@@ -106,7 +106,7 @@ hr {
     margin-left: auto;
     margin-right: auto;
     border: none;
-    border-top: 2px dotted var(--border-color, #d1d5db);
+    border-top: 0.125rem dotted var(--border-color, #d1d5db);
 }
 
 /* 見出し -------------------------------------------------- */
