@@ -19,10 +19,11 @@
 }
 
 :root {
-    --content-max-width: 80ch;
+    --content-max-width: min(92vw, 1750px);
     --font-color: var(--color-base-content, #111827);
     --font-color-light: var(--color-base-content-muted, #374151);
-    --body-padding-y: 5rem;
+    --body-padding-x: clamp(1rem, 3.5vw, 3.5rem);
+    --body-padding-y: clamp(2.5rem, 4.5vw, 4.5rem);
     --z-index-overlay: 999;
     --z-index-modal: 1000;
 
@@ -53,15 +54,15 @@ body {
         -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
         "Segoe UI", "Yu Gothic Medium", "Hiragino Kaku Gothic ProN",
         "Noto Sans JP", Meiryo, sans-serif;
-    font-size: 1rem;
+    font-size: clamp(1rem, 0.92rem + 0.35vw, 1.35rem);
     line-height: 1.85;
     color: var(--font-color);
     background: var(--color-base-200, #f3f4f6);
 
-    /* CSS Grid Layout: 80ch（全角40文字分の最適行長） */
+    /* CSS Grid Layout: フルスクリーン画面フル活用（min(92vw, 1750px)） */
     display: grid;
-    grid-template-columns: minmax(1rem, 1fr) minmax(0, var(--content-max-width, 80ch)) minmax(
-            1rem,
+    grid-template-columns: minmax(var(--body-padding-x), 1fr) minmax(0, var(--content-max-width, 1750px)) minmax(
+            var(--body-padding-x),
             1fr
         );
 }
