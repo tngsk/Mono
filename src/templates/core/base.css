@@ -250,7 +250,7 @@ blockquote {
     padding-left: var(--spacing-md);
     padding-top: var(--spacing-xs);
     padding-bottom: var(--spacing-xs);
-    border-left: 0.1875rem solid var(--color-primary, #3b82f6);
+    border-left: 0.1875rem solid var(--font-color);
     color: var(--color-base-content-muted, #4b5563);
 }
 
@@ -270,7 +270,7 @@ td {
 th {
     text-align: left;
     font-weight: 600;
-    border-bottom: 0.125rem solid var(--border-color, #d1d5db);
+    border-bottom: 0.125rem solid var(--font-color);
 }
 
 /* ============================================================================ */
