@@ -27,17 +27,17 @@
     --z-index-overlay: 999;
     --z-index-modal: 1000;
 
-    /* Modular Spacing Scale (rem) */
-    --spacing-xs: 0.5rem;
-    --spacing-sm: 1rem;
-    --spacing-md: 2rem;
-    --spacing-lg: 3rem;
-    --spacing-xl: 4.5rem;
+    /* Fluid Spacing Scale */
+    --spacing-xs: clamp(0.25rem, 0.5vw, 0.75rem);
+    --spacing-sm: clamp(0.75rem, 1.2vw, 1.5rem);
+    --spacing-md: clamp(1.5rem, 2.5vw, 3rem);
+    --spacing-lg: clamp(2.5rem, 4vw, 4.5rem);
+    --spacing-xl: clamp(3.5rem, 6vw, 7rem);
 
-    /* Modular Padding Scale (rem) */
-    --padding-sm: 0.5rem;
-    --padding-md: 1rem;
-    --padding-lg: 2rem;
+    /* Fluid Padding Scale */
+    --padding-sm: clamp(0.5rem, 1vw, 1rem);
+    --padding-md: clamp(1rem, 2vw, 2rem);
+    --padding-lg: clamp(1.75rem, 3.5vw, 3.5rem);
 }
 
 html {
@@ -54,7 +54,7 @@ body {
         -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
         "Segoe UI", "Yu Gothic Medium", "Hiragino Kaku Gothic ProN",
         "Noto Sans JP", Meiryo, sans-serif;
-    font-size: clamp(1rem, 0.92rem + 0.35vw, 1.35rem);
+    font-size: clamp(1rem, 0.85rem + 0.6vw, 1.75rem);
     line-height: 1.85;
     color: var(--font-color);
     background: var(--color-base-200, #f3f4f6);
@@ -121,29 +121,29 @@ h4 {
 }
 
 h1 {
-    font-size: 1.953rem;
+    font-size: clamp(2rem, 1.6rem + 2.2vw, 4.5rem);
     font-weight: 700;
-    line-height: 1.3;
+    line-height: 1.25;
     scroll-margin-top: 2rem;
 }
 
 h2 {
-    font-size: 1.5625rem;
+    font-size: clamp(1.6rem, 1.3rem + 1.6vw, 3.5rem);
     font-weight: 600;
-    line-height: 1.4;
+    line-height: 1.3;
     scroll-margin-top: 2.5rem;
 }
 
 h3 {
-    font-size: 1.25rem;
+    font-size: clamp(1.25rem, 1.1rem + 1vw, 2.5rem);
     font-weight: 600;
     color: var(--font-color-light);
-    line-height: 1.5;
+    line-height: 1.4;
     scroll-margin-top: 2rem;
 }
 
 h4 {
-    font-size: 1.125rem;
+    font-size: clamp(1.1rem, 1rem + 0.6vw, 2rem);
     font-weight: 600;
     color: var(--font-color-light);
 }
@@ -306,13 +306,13 @@ th {
 }
 
 .text-large {
-    font-size: 1.35em;
+    font-size: clamp(1.35rem, 1.1rem + 1.2vw, 2.8rem);
     line-height: 1.5;
 }
 
 .text-xlarge {
-    /* 4〜6文字のキーワード用スケール */
-    font-size: clamp(2rem, min(10vw, 10ch), 5rem);
+    /* 4〜6文字のキーワード用スケール (下限2rem, 上限6rem) */
+    font-size: clamp(2rem, 1.5rem + 3.5vw, 6rem);
     line-height: 1.2;
     font-weight: 700;
     letter-spacing: 0.04em;
@@ -321,8 +321,8 @@ th {
 
 .text-display,
 .text-hero {
-    /* 2〜3文字がコンテナ・画面いっぱいに広がる特大スケール (文字数2〜3文字に対するコンテナ幅の約30〜45%) */
-    font-size: clamp(3.5rem, min(22vw, 24ch), 14rem);
+    /* 2〜3文字がコンテナ・画面いっぱいに広がる特大スケール (下限3.5rem, 上限16rem) */
+    font-size: clamp(3.5rem, 2rem + 9vw, 16rem);
     line-height: 1.05;
     font-weight: 800;
     letter-spacing: 0.04em;
