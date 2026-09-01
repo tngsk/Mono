@@ -1,6 +1,5 @@
 {
   "name": "mono-brush",
   "interactive": false,
-  "always_include": true,
   "requires_icons": false
 }

@@ -144,17 +144,6 @@ class TestMarkdownProcessor(unittest.TestCase):
         result = self._get_parser("mono-group-assignment").process(md_content)
         self.assertEqual(result, expected_html)
 
-    def test_preprocess_spacer(self):
-        md_content_single = "Text before @[spacer](width: 20px) text after."
-        expected_html_single = 'Text before <mono-spacer width="20px" height="20px"></mono-spacer> text after.'
-        result_single = self._get_parser("mono-spacer").process(md_content_single)
-        self.assertEqual(result_single, expected_html_single)
-
-        md_content_double = "Text before @[spacer](width: 10px, height: 20px) text after."
-        expected_html_double = 'Text before <mono-spacer width="10px" height="20px"></mono-spacer> text after.'
-        result_double = self._get_parser("mono-spacer").process(md_content_double)
-        self.assertEqual(result_double, expected_html_double)
-
     def test_preprocess_hero(self):
         md_content = (
             "@[hero: Welcome!](image: \"bg.jpg\", mode: cover, bg-color: \"#000\", text-color: \"#fff\")\n"

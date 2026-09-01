@@ -111,6 +111,14 @@ def create_argument_parser() -> argparse.ArgumentParser:
     )
 
     parser.add_argument(
+        "-p",
+        "--profile",
+        type=str,
+        default=None,
+        help="用途別プロファイルプリセット（minimal, standard, presentation, interactive, all）",
+    )
+
+    parser.add_argument(
         "--pdf",
         type=Path,
         nargs='?',
@@ -129,6 +137,8 @@ def print_header(config: ConversionConfig) -> None:
     print("=" * 75)
     print(f"  入力ファイル: {config.input_file}")
     print(f"  出力ファイル: {config.resolve_output_file()}")
+    if config.profile:
+        print(f"  プロファイル: {config.profile}")
     if config.css_files:
         print(f"  CSSファイル:  {', '.join(str(f) for f in config.css_files)}")
     if config.excluded_tags:
@@ -160,6 +170,7 @@ def main() -> int:
         force=args.force,
         enable_export=args.export,
         pdf_output=args.pdf,
+        profile=args.profile,
     )
 
     # ヘッダー表示

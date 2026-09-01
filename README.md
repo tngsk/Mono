@@ -54,7 +54,6 @@ Monoでは外部依存なしのVanilla JSによる多彩なWeb Componentsを埋�
 | `mono-section` | セクション領域を表示します。ブロック要素。 | `@[section](bg-color: "#f0f0f0")\n...コンテンツ...\n@[/section]` | `title: "text"`<br>`image: "url"`<br>`mode: "light|dark"`<br>`bg-color: "#HEX"`<br>`text-color: "#HEX"`<br>`height: "px|vh"`<br>`width: "px|vw"` |
 | `mono-session-join` | セッション（同期・データ収集）へ参加するボタン等を表示します。 | `@[session-join](title: "参加する")` | `title: "text"` |
 | `mono-sound` | 効果音や音声を再生するボタンを表示します。 | `@[sound: "https://example.com/audio.mp3"](label: "再生")` | `url: "url"`<br>`label: "text"` |
-| `mono-spacer` | 空白（スペーサー）を挿入します。 | `@[spacer](width: "10px", height: "20px")` | `width: "px|rem"`<br>`height: "px|rem"` |
 | `mono-synth` | Tone.jsを用いたシンプルなシンセサイザー。OSC, Filter, ADSR, ミニ鍵盤を備えます。 | `@[mono-synth: sample="asset-test.wav"]()` | `url: "url"`<br>`label: "text"` |
 | `mono-textfield-input` | テキスト入力フィールドを表示します。 | `@[textfield](placeholder: "テキストを入力", size: "large")` | `label: "text"`<br>`id: "text"`<br>`placeholder: "text"`<br>`size: "small|medium|large"` |
 | `mono-theme` | テーマ切り替えコンポーネント。通常はMarkdownディレクティブでテーマを設定します。 | `@[theme: dark]()` | `theme_name: "light|dark"`<br>`show_ui: "true|false"`<br>`config: "json"`<br>`font_size: "16px"` |

@@ -27,13 +27,14 @@ class TestMonoZoomParser:
         result = parser.process(content)
         assert result == content
 
-    def test_manifest_always_include(self):
+    def test_manifest_config(self):
         manifest_path = Path(__file__).resolve().parent.parent.parent / "src" / "components" / "mono-zoom" / "manifest.json"
         assert manifest_path.exists()
         with open(manifest_path, "r", encoding="utf-8") as f:
             manifest = json.load(f)
         assert manifest.get("name") == "mono-zoom"
-        assert manifest.get("always_include") is True
+        assert manifest.get("always_include", False) is False
+        assert manifest.get("requires_icons") is True
 
     def test_component_files_exist(self):
         component_dir = Path(__file__).resolve().parent.parent.parent / "src" / "components" / "mono-zoom"

@@ -8,3 +8,26 @@ cors-allowed-origins = [
 
 [security.csp-additions]
 img-src = ["https://placehold.co"]
+
+[profiles]
+default = "standard"
+
+[profiles.minimal]
+description = "完全静的ドキュメント（JavaScriptゼロ出力）"
+components = []
+
+[profiles.standard]
+description = "標準モード（Markdown内のタグを自動検出して必要アセットのみ注入）"
+components = []
+
+[profiles.presentation]
+description = "プレゼンテーションモード（自動ズーム、ブラシ描画を常時有効化）"
+components = ["mono-zoom", "mono-brush"]
+
+[profiles.interactive]
+description = "インタラクティブ講義モード（投票、同期、アカウントを常時有効化）"
+components = ["mono-poll", "mono-reaction", "mono-account", "mono-sync"]
+
+[profiles.all]
+description = "フルモード（全コンポーネントを有効化）"
+components = ["*"]

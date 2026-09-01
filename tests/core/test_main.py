@@ -100,5 +100,21 @@ class TestMain(unittest.TestCase):
                 self.assertIn("Integration Test", content)
                 self.assertIn("This is a real integration test.", content)
 
+    def test_main_with_profile_argument(self):
+        with patch("src.main.MarkdownToHTMLConverter") as mock_converter_class, \
+             patch("src.main.configure_logging"), \
+             patch("sys.argv", ["main.py", "test.md", "--profile", "presentation"]):
+            mock_converter = MagicMock()
+            mock_converter.convert.return_value = True
+            mock_converter_class.return_value = mock_converter
+
+            exit_code = main_module.main()
+            self.assertEqual(exit_code, 0)
+            args, kwargs = mock_converter_class.call_args
+            config = args[0]
+            self.assertEqual(config.profile, "presentation")
+            self.assertIn("mono-zoom", config.profile_components)
+
+
 if __name__ == "__main__":
     unittest.main()

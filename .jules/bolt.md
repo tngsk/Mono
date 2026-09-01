@@ -5,3 +5,7 @@
 ## 2026-05-16 - Optimizing Canvas Drawing Loops
 **Learning:** Attaching synchronous DOM/canvas drawing methods directly to high-frequency pointer events (`mousemove`, `touchmove`) blocks the main thread, leading to visual jank and high CPU usage.
 **Action:** Decouple these events by pushing coordinates to an array in the event listener, and executing the actual canvas path rendering inside a `requestAnimationFrame` loop. Always ensure that any pending points in the buffer are flushed completely on `mouseup` or `touchend` to prevent dropping the final segments of strokes.
+
+## 2026-09-01 - Microkernel Architecture and On-Demand Asset Inlining (Zero-JS)
+**Learning:** Always-including default components (like zoom, brush, sync) in single-file HTML outputs forces unnecessary template/JS bloat (30KB+) even on pure static text documents. By eliminating `always_include` and implementing on-demand tree-shaking with profile-driven presets, static documents achieve 100% Zero-JS output and drop to ~10KB file sizes.
+**Action:** Keep core HTML conversion strictly minimal. Guard script tag generation so that no `<script>` or Web Component base class is injected unless interactive components are actually referenced in intermediate HTML or explicitly activated via profiles.

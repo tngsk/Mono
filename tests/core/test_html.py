@@ -201,12 +201,12 @@ class TestHTMLDocumentBuilder(unittest.TestCase):
 
         mock_iterdir.return_value = [mock_sync, mock_brush, mock_export, mock_poll, mock_unknown, mock_not_dir]
 
-        # Test 1: enable_export=False, html_body has <mono-poll>
+        # Test 1: enable_export=False, html_body has <mono-poll> (On-demand only)
         result1 = self.builder._get_used_component_dirs(found_mono_tags={"mono-poll"}, should_enable_export=False)
         names1 = [p.name for p in result1]
-        self.assertIn('mono-sync', names1)  # Always included
-        self.assertIn('mono-brush', names1) # Always included
         self.assertIn('mono-poll', names1)  # Found in HTML
+        self.assertNotIn('mono-sync', names1)  # Not in profile or HTML
+        self.assertNotIn('mono-brush', names1) # Not in profile or HTML
         self.assertNotIn('mono-export', names1) # Export not enabled
         self.assertNotIn('mono-unknown', names1) # Not found in HTML
         self.assertNotIn('not-a-dir', names1) # Not a directory
@@ -214,10 +214,20 @@ class TestHTMLDocumentBuilder(unittest.TestCase):
         # Test 2: enable_export=True, no components in HTML
         result2 = self.builder._get_used_component_dirs(found_mono_tags=set(), should_enable_export=True)
         names2 = [p.name for p in result2]
-        self.assertIn('mono-sync', names2)
-        self.assertIn('mono-brush', names2)
         self.assertIn('mono-export', names2) # Export enabled
         self.assertNotIn('mono-poll', names2)
+        self.assertNotIn('mono-sync', names2)
+
+        # Test 3: with profile_components
+        result3 = self.builder._get_used_component_dirs(
+            found_mono_tags=set(),
+            should_enable_export=False,
+            profile_components=["mono-sync", "mono-brush"]
+        )
+        names3 = [p.name for p in result3]
+        self.assertIn('mono-sync', names3)
+        self.assertIn('mono-brush', names3)
+        self.assertNotIn('mono-poll', names3)
 
     @patch('pathlib.Path.exists', return_value=False)
     def test_get_used_component_dirs_missing_dir(self, mock_exists):
@@ -267,6 +277,29 @@ class TestHTMLDocumentBuilder(unittest.TestCase):
 
     def test_load_component_templates_empty(self):
         self.assertEqual(self.builder._load_component_templates([]), "")
+
+    @patch('pathlib.Path.read_text')
+    def test_build_document_zero_js_for_static_content(self, mock_read_text):
+        """静的コンテンツ（コンポーネントなし）の場合、<script>タグが出力されない（Zero-JS）ことをテスト"""
+        mock_read_text.return_value = "<!doctype html><html><head>{CSP_META}</head><body>{BODY}{COPY_BUTTON_JS}</body></html>"
+        html_body = "<p>Simple static text</p>"
+
+        result = self.builder.build_document(html_body=html_body, profile_components=[])
+        self.assertNotIn("<script>", result)
+        self.assertNotIn("</script>", result)
+        self.assertIn("<p>Simple static text</p>", result)
+
+    def test_get_used_component_dirs_with_profile(self):
+        """プロファイルで指定されたコンポーネントが抽出されることをテスト"""
+        result = self.builder._get_used_component_dirs(
+            found_mono_tags=set(),
+            should_enable_export=False,
+            profile_components=["mono-zoom", "mono-brush"]
+        )
+        names = [d.name for d in result]
+        self.assertIn("mono-zoom", names)
+        self.assertIn("mono-brush", names)
+        self.assertNotIn("mono-poll", names)
 
 
 if __name__ == '__main__':

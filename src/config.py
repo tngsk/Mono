@@ -58,15 +58,24 @@ class ConversionConfig:
     enable_export: bool = False
     pdf_output: Union[Path, bool, None] = None
     csp_additions: dict[str, List[str]] = None
+    profile: Optional[str] = None
+    profile_components: Optional[List[str]] = None
 
     def __post_init__(self):
         self.csp_additions = {}
+        self.profile_components = []
         try:
             with open("config.toml", "rb") as f:
                 config_data = tomllib.load(f)
                 security = config_data.get("security", {})
                 self.connect_src = security.get("connect-src", "")
                 self.csp_additions = security.get("csp-additions", {})
+                
+                # Profiles resolving
+                profiles = config_data.get("profiles", {})
+                active_profile_name = self.profile or profiles.get("default", "standard")
+                if active_profile_name in profiles and isinstance(profiles[active_profile_name], dict):
+                    self.profile_components = profiles[active_profile_name].get("components", [])
         except Exception:
             pass
 

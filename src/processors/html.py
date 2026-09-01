@@ -38,9 +38,10 @@ class HTMLDocumentBuilder:
         title: str = "Document",
         excluded_tags: Optional[List[str]] = None,
         connect_src: str = "",
-        asset_store: Optional[dict] = None,
+        asset_store: Optional[Dict[str, str]] = None,
         enable_export: bool = False,
         csp_additions: Optional[dict[str, List[str]]] = None,
+        profile_components: Optional[List[str]] = None,
     ) -> str:
         """
         テンプレートとHTML断片からドキュメントを生成
@@ -48,6 +49,7 @@ class HTMLDocumentBuilder:
         Args:
             html_body: <body>に挿入するHTML
             title: ドキュメントのタイトル
+            profile_components: プロファイルで指定された追加コンポーネント名リスト
 
         Returns:
             完全なHTMLドキュメント
@@ -87,7 +89,7 @@ class HTMLDocumentBuilder:
 
         # 使用されているコンポーネントを特定
         used_component_dirs = self._get_used_component_dirs(
-            found_mono_tags, should_enable_export
+            found_mono_tags, should_enable_export, profile_components
         )
 
         mathjax = ""
@@ -323,12 +325,18 @@ class HTMLDocumentBuilder:
         return ""
 
     def _get_used_component_dirs(
-        self, found_mono_tags: set, should_enable_export: bool
+        self,
+        found_mono_tags: set,
+        should_enable_export: bool,
+        profile_components: Optional[List[str]] = None,
     ) -> List[Path]:
         """使用されているコンポーネントのディレクトリ一覧を取得する"""
         components_dir = COMPONENTS_DIR
         if not components_dir.exists() or not components_dir.is_dir():
             return []
+
+        profile_components = profile_components or []
+        include_all = "*" in profile_components
 
         used_dirs = []
         for component_dir in sorted(components_dir.iterdir()):
@@ -337,7 +345,12 @@ class HTMLDocumentBuilder:
 
             name = component_dir.name
 
-            # 常に含めるコンポーネント
+            # プロファイルによる指定
+            if include_all or name in profile_components:
+                used_dirs.append(component_dir)
+                continue
+
+            # 常に含めるコンポーネント（後方互換性）
             if name in registry.get_always_include_components():
                 used_dirs.append(component_dir)
                 continue
@@ -371,13 +384,18 @@ class HTMLDocumentBuilder:
                     f"JS読み込みエラー ({base_element_script_file}): {e}"
                 )
 
-        # Base interactive element script
-        base_script_file = TEMPLATES_DIR / "core" / "mono-interactive-element.js"
-        if base_script_file.exists():
-            try:
-                js_contents.append(base_script_file.read_text(encoding="utf-8"))
-            except Exception as e:
-                self.logger.warning(f"JS読み込みエラー ({base_script_file}): {e}")
+        # Base interactive element script (インタラクティブコンポーネントが含まれる場合のみ注入)
+        has_interactive = any(
+            d.name in registry.get_interactive_components()
+            for d in used_component_dirs
+        )
+        if has_interactive:
+            base_script_file = TEMPLATES_DIR / "core" / "mono-interactive-element.js"
+            if base_script_file.exists():
+                try:
+                    js_contents.append(base_script_file.read_text(encoding="utf-8"))
+                except Exception as e:
+                    self.logger.warning(f"JS読み込みエラー ({base_script_file}): {e}")
 
         for component_dir in used_component_dirs:
             js_file = component_dir / "script.js"
