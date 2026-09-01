@@ -56,6 +56,7 @@ class MonoZoom extends MonoBaseElement {
     setupEventListeners() {
         document.addEventListener('mouseover', this.boundHandleMouseOver);
         document.addEventListener('scroll', this.boundHandleScroll, { passive: true });
+        document.addEventListener('keydown', this.boundHandleKeyDown);
         
         this.trigger.addEventListener('click', () => this.openModal());
         this.trigger.addEventListener('mouseenter', () => this.keepTriggerVisible());
@@ -206,8 +207,6 @@ class MonoZoom extends MonoBaseElement {
         this.previousActiveElement = document.activeElement;
         this.closeBtn.focus();
         
-        document.addEventListener('keydown', this.boundHandleKeyDown);
-        
         // Prevent body scroll
         document.body.style.overflow = 'hidden';
     }
@@ -216,8 +215,6 @@ class MonoZoom extends MonoBaseElement {
         this.isModalOpen = false;
         this.overlay.classList.add('hidden');
         this.innerHTML = '';
-        
-        document.removeEventListener('keydown', this.boundHandleKeyDown);
         
         // Restore focus
         if (this.previousActiveElement) {
@@ -232,8 +229,33 @@ class MonoZoom extends MonoBaseElement {
     }
 
     handleKeyDown(e) {
+        // Ignore shortcut keys when typing inside editable fields
+        const activeEl = document.activeElement;
+        const isEditable = activeEl && (
+            activeEl.tagName === 'INPUT' ||
+            activeEl.tagName === 'TEXTAREA' ||
+            activeEl.tagName === 'SELECT' ||
+            activeEl.isContentEditable
+        );
+
+        // Toggle zoom on 'Z' key press
+        if (!isEditable && (e.key === 'z' || e.key === 'Z')) {
+            if (this.isModalOpen) {
+                this.closeModal();
+                e.preventDefault();
+                return;
+            } else if (this.activeTarget) {
+                this.openModal();
+                e.preventDefault();
+                return;
+            }
+        }
+
+        if (!this.isModalOpen) return;
+
         if (e.key === 'Escape') {
             this.closeModal();
+            e.preventDefault();
             return;
         }
         
