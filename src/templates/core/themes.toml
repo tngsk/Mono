@@ -22,6 +22,8 @@ color-warning-content = "#ffffff"
 color-error = "#ef4444"
 color-error-content = "#ffffff"
 border-color = "#d1d5db"
+selection-bg = "rgba(254, 240, 138, 0.85)"
+selection-color = "inherit"
 
 [dark]
 color-primary = "#3b82f6"
@@ -46,6 +48,8 @@ color-warning-content = "#111827"
 color-error = "#f87171"
 color-error-content = "#111827"
 border-color = "#4b5563"
+selection-bg = "rgba(234, 179, 8, 0.45)"
+selection-color = "inherit"
 
 [corporate]
 color-primary = "#4b6bfb"
@@ -70,6 +74,8 @@ color-warning-content = "#ffffff"
 color-error = "#f87272"
 color-error-content = "#ffffff"
 border-color = "#e5e7eb"
+selection-bg = "rgba(254, 240, 138, 0.85)"
+selection-color = "inherit"
 
 [calm-study]
 color-primary = "#1f108e"
@@ -94,3 +100,5 @@ color-warning-content = "#191c1d"
 color-error = "#ba1a1a"
 color-error-content = "#ffffff"
 border-color = "#e1e3e4"
+selection-bg = "rgba(254, 240, 138, 0.85)"
+selection-color = "inherit"

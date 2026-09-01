@@ -6,6 +6,18 @@
     padding: 0;
     box-sizing: border-box;
 }
+
+/* 蛍光マーカー風テキスト選択スタイル */
+::selection {
+    background: var(--selection-bg, rgba(254, 240, 138, 0.85));
+    color: var(--selection-color, inherit);
+}
+
+::-moz-selection {
+    background: var(--selection-bg, rgba(254, 240, 138, 0.85));
+    color: var(--selection-color, inherit);
+}
+
 :root {
     --font-color: var(--color-base-content, #111827);
     --font-color-light: var(--color-base-content-muted, #374151);
