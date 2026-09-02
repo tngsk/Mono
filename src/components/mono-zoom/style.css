@@ -1,6 +1,6 @@
 :host {
     display: block;
-    position: absolute; /* Ensures it doesn't take space in flow */
+    position: absolute;
     z-index: var(--z-index-overlay, 9999);
 }
 
@@ -27,7 +27,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transform: translate(-50%, -50%); /* Centered on coordinates */
+    transform: translate(-50%, -50%);
 }
 
 #zoom-trigger.visible {
@@ -80,7 +80,7 @@
 /* Fullscreen Content Area */
 #zoom-content {
     width: 100%;
-    max-width: min(94vw, 1750px);
+    max-width: var(--zoom-max-width-xl, min(94vw, 1750px));
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -90,7 +90,7 @@
     padding: 0;
     box-shadow: none;
     box-sizing: border-box;
-    font-size: clamp(1.8rem, 3.2vw, 3.8rem);
+    font-size: var(--zoom-font-body, clamp(1.8rem, 3.2vw, 3.8rem));
     line-height: 1.7;
 }
 
@@ -115,11 +115,11 @@
 
 ::slotted(table) {
     width: 100% !important;
-    max-width: min(94vw, 1700px) !important;
+    max-width: var(--zoom-max-width-lg, min(94vw, 1700px)) !important;
     height: auto;
-    font-size: clamp(1.5rem, 2.6vw, 3rem) !important;
+    font-size: var(--zoom-font-table, clamp(1.5rem, 2.6vw, 3rem)) !important;
     border-collapse: collapse;
-    margin: 0 auto clamp(1.5rem, 2.5vw, 2.5rem) auto !important;
+    margin: 0 auto var(--zoom-margin-flow, clamp(1.5rem, 2.5vw, 2.5rem)) auto !important;
 }
 
 ::slotted(table) th,
@@ -128,55 +128,55 @@
 }
 
 ::slotted(h1) {
-    font-size: clamp(4.5rem, 9vw, 9rem) !important;
+    font-size: var(--zoom-font-h1, clamp(4.5rem, 9vw, 9rem)) !important;
     line-height: 1.15 !important;
     text-align: center;
-    margin: 0 auto clamp(2rem, 3.5vw, 4rem) auto !important;
+    margin: 0 auto var(--zoom-margin-h1-bottom, clamp(2rem, 3.5vw, 4rem)) auto !important;
     width: 100%;
-    max-width: min(94vw, 1750px);
+    max-width: var(--zoom-max-width-xl, min(94vw, 1750px));
 }
 
 ::slotted(h2) {
-    font-size: clamp(3.5rem, 7.5vw, 7.5rem) !important;
+    font-size: var(--zoom-font-h2, clamp(3.5rem, 7.5vw, 7.5rem)) !important;
     line-height: 1.2 !important;
     text-align: center;
-    margin: clamp(1.5rem, 2.5vw, 3rem) auto clamp(1.5rem, 2.5vw, 2.5rem) auto !important;
+    margin: var(--zoom-margin-h2-top, clamp(1.5rem, 2.5vw, 3rem)) auto var(--zoom-margin-h2-bottom, clamp(1.5rem, 2.5vw, 2.5rem)) auto !important;
     width: 100%;
-    max-width: min(94vw, 1700px);
+    max-width: var(--zoom-max-width-lg, min(94vw, 1700px));
 }
 
 ::slotted(h3),
 ::slotted(h4) {
-    font-size: clamp(2.5rem, 5.5vw, 5.5rem) !important;
+    font-size: var(--zoom-font-h3, clamp(2.5rem, 5.5vw, 5.5rem)) !important;
     line-height: 1.25 !important;
     text-align: center;
-    margin: clamp(1.2rem, 2vw, 2.5rem) auto clamp(1rem, 1.8vw, 2rem) auto !important;
+    margin: var(--zoom-margin-h3-top, clamp(1.2rem, 2vw, 2.5rem)) auto var(--zoom-margin-h3-bottom, clamp(1rem, 1.8vw, 2rem)) auto !important;
     width: 100%;
-    max-width: min(94vw, 1650px);
+    max-width: var(--zoom-max-width-md, min(94vw, 1650px));
 }
 
 ::slotted(ul),
 ::slotted(ol) {
-    font-size: clamp(1.8rem, 3.2vw, 3.8rem) !important;
+    font-size: var(--zoom-font-body, clamp(1.8rem, 3.2vw, 3.8rem)) !important;
     line-height: 1.85 !important;
     padding-left: clamp(2rem, 4vw, 4rem) !important;
-    margin: 0 auto clamp(1.5rem, 2.5vw, 2.5rem) auto !important;
+    margin: 0 auto var(--zoom-margin-flow, clamp(1.5rem, 2.5vw, 2.5rem)) auto !important;
     width: 100%;
-    max-width: min(94vw, 1650px);
+    max-width: var(--zoom-max-width-md, min(94vw, 1650px));
 }
 
 ::slotted(blockquote) {
-    font-size: clamp(2.2rem, 4.2vw, 4.8rem) !important;
+    font-size: var(--zoom-font-quote, clamp(2.2rem, 4.2vw, 4.8rem)) !important;
     line-height: 1.5 !important;
     padding: clamp(1rem, 2vw, 2rem) clamp(1.5rem, 3vw, 3rem) !important;
-    margin: clamp(1.5rem, 2.5vw, 2.5rem) auto !important;
+    margin: var(--zoom-margin-flow, clamp(1.5rem, 2.5vw, 2.5rem)) auto !important;
     width: 100%;
-    max-width: min(94vw, 1650px);
+    max-width: var(--zoom-max-width-md, min(94vw, 1650px));
 }
 
 ::slotted(.column) {
     width: 100% !important;
-    max-width: min(94vw, 1700px) !important;
+    max-width: var(--zoom-max-width-lg, min(94vw, 1700px)) !important;
     margin: 0 auto !important;
     display: flex !important;
     flex-direction: column !important;
@@ -185,20 +185,20 @@
 
 ::slotted(pre),
 ::slotted(mono-code-block) {
-    font-size: clamp(1.4rem, 2.4vw, 2.8rem) !important;
+    font-size: var(--zoom-font-code, clamp(1.4rem, 2.4vw, 2.8rem)) !important;
     padding: clamp(1.5rem, 2.5vw, 3rem) !important;
     width: 100% !important;
-    max-width: min(94vw, 1700px);
+    max-width: var(--zoom-max-width-lg, min(94vw, 1700px));
     box-sizing: border-box;
-    margin: 0 auto clamp(1.5rem, 2.5vw, 2.5rem) auto !important;
+    margin: 0 auto var(--zoom-margin-flow, clamp(1.5rem, 2.5vw, 2.5rem)) auto !important;
 }
 
 ::slotted(p) {
     width: 100%;
-    max-width: min(94vw, 1650px);
-    font-size: clamp(1.8rem, 3.2vw, 3.8rem) !important;
+    max-width: var(--zoom-max-width-md, min(94vw, 1650px));
+    font-size: var(--zoom-font-body, clamp(1.8rem, 3.2vw, 3.8rem)) !important;
     line-height: 1.75 !important;
-    margin: 0 auto clamp(1.5rem, 2.5vw, 2.5rem) auto !important;
+    margin: 0 auto var(--zoom-margin-flow, clamp(1.5rem, 2.5vw, 2.5rem)) auto !important;
 }
 
 ::slotted(mono-flipcard) {

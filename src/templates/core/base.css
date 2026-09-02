@@ -23,7 +23,7 @@
     --font-color: var(--color-base-content, #111827);
     --font-color-light: var(--color-base-content-muted, #374151);
     --body-padding-x: clamp(1rem, 3.5vw, 3.5rem);
-    --body-padding-y: clamp(2.5rem, 4.5vw, 4.5rem);
+    --body-padding-y: clamp(3rem, 5vw, 5.5rem);
     --z-index-overlay: 999;
     --z-index-modal: 1000;
 

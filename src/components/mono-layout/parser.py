@@ -53,10 +53,13 @@ class Parser(BaseComponentParser):
 
             return f'<mono-layout{attr} markdown="1">\n{inner_html}\n</mono-layout>'
 
-        # Process from inside out
+        # Process from inside out with safety guard against infinite loops
         prev_content = None
-        while prev_content != markdown_content:
+        max_depth = 20
+        depth = 0
+        while prev_content != markdown_content and depth < max_depth:
             prev_content = markdown_content
             markdown_content = pattern.sub(replacer, markdown_content)
+            depth += 1
 
         return markdown_content

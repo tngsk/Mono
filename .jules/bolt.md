@@ -13,3 +13,8 @@
 ## 2026-09-01 - Fullscreen Fluid Typography and Container-Query Scaling
 **Learning:** Hardcoded container limits (like `860px` or `80ch`) cause severe visual imbalances on large screens (1920px+ FHD and 4K displays), leaving >50% of the viewport as dead white space while text fails to fill the slide. Combining fluid CSS Grid (`min(92vw, 1750px)`), full-range fluid typography (`clamp()`), and `container-type: inline-size` with `cqi`/`vw` units allows display headings to dynamically occupy ~80% of the screen width without triggering horizontal overflow on mobile devices.
 **Action:** When designing presentation-ready scroll documents, use container queries and fluid scaling formulas (`clamp(min, preferred, max)`) instead of static pixel caps, ensuring components automatically maximize screen area on projectors while preserving strict mobile constraints.
+
+## 2026-09-02 - Spacious-by-Default (Default-LG) and Measure-Constrained Fluid Typography
+**Learning:** Initializing layout spacing to narrow scales (sm/md) creates a recurring editing friction where authors repeatedly request margin expansions across large displays. Inverting the paradigm to "Default-LG" (`--spacing-flow: var(--spacing-lg)`) combined with a strict 42em relative measure (`max-width: min(100%, 42em); text-wrap: pretty;`) guarantees optimal visual breathing room and readability on 4K/FHD displays without text stretching into unreadable 80+ character lines.
+**Action:** Standardize baseline flow margins on the largest fluid scale (`lg`), provide modifier classes only for compacting, and enforce `42em` measures on body paragraphs while allowing containers (`@[hbox]`) and headings (`text-wrap: balance`) to leverage full viewport widths.
+
