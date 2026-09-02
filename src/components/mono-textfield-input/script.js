@@ -1,4 +1,4 @@
-class MonoTextfieldInput extends MonoBaseElement {
+class MonoTextfieldInput extends MonoInteractiveElement {
     constructor() {
         super();
         this.placeholder = this.getAttribute("placeholder") || "";
@@ -10,6 +10,9 @@ class MonoTextfieldInput extends MonoBaseElement {
     }
 
     connectedCallback() {
+        if (super.connectedCallback) {
+            super.connectedCallback();
+        }
         this.mountTemplate();
         this.setupEventListeners();
         this.restoreData();

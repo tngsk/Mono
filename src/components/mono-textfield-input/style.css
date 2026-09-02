@@ -3,7 +3,7 @@
   display: inline-block;
   position: relative;
   width: 100%;
-  max-width: 400px;
+  max-width: 25rem;
 }
 .mono-textfield-label {
   display: block;
@@ -14,8 +14,8 @@
 }
 .mono-textfield {
   padding: var(--padding-sm);
-  border: 1px solid var(--border-color, #ccc);
-  border-radius: 4px;
+  border: 0.0625rem solid var(--border-color, #d1d5db);
+  border-radius: var(--radius-md, 0.25rem);
   font-size: 1rem;
   width: 100%;
   box-sizing: border-box;
@@ -25,11 +25,11 @@
 .mono-textfield:focus {
   outline: none;
   border-color: var(--color-primary, #0066cc);
-  box-shadow: 0 0 0 2px var(--color-primary-light, rgba(0, 102, 204, 0.2));
+  box-shadow: 0 0 0 0.125rem var(--color-primary-light, rgba(0, 102, 204, 0.2));
 }
 .status-indicator {
   position: absolute;
-  right: 10px;
+  right: 0.625rem;
   top: 50%;
   transform: translateY(-50%);
   font-size: 0.8rem;
@@ -47,12 +47,16 @@
 
 /* Print specific styles */
 @media print {
+    :host {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
     input[type="text"] {
         display: none !important;
     }
-    .textfield-container::after {
+    .textfield-container::after, .mono-textfield-container::after {
         content: "___ (Text Input)";
-        color: #999;
+        color: var(--color-base-content-muted, #9ca3af);
         display: inline-block;
         padding: var(--padding-sm);
     }

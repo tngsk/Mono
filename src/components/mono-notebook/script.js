@@ -6,7 +6,7 @@
  * persists the content automatically to Local Storage.
  */
 
-class MonoNotebookInput extends MonoBaseElement {
+class MonoNotebookInput extends MonoInteractiveElement {
   constructor() {
     super();
     this.inputId =
@@ -17,6 +17,9 @@ class MonoNotebookInput extends MonoBaseElement {
   }
 
   connectedCallback() {
+    if (super.connectedCallback) {
+        super.connectedCallback();
+    }
     this.mountTemplate();
     this.setupEventListeners();
     this.restoreData();

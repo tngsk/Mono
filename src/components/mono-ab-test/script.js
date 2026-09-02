@@ -6,7 +6,7 @@
  * Implements "Lab-Gear Aesthetic" and strict event-driven architecture.
  */
 
-class MonoABTest extends MonoBaseElement {
+class MonoABTest extends MonoInteractiveElement {
   constructor() {
     super();
 
@@ -50,6 +50,9 @@ class MonoABTest extends MonoBaseElement {
 
 
   connectedCallback() {
+    if (super.connectedCallback) {
+        super.connectedCallback();
+    }
     this.mountTemplate();
 
     this.title = this.getAttribute("title") || "A/B Test";

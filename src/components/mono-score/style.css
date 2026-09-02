@@ -14,3 +14,11 @@ mono-score svg * {
     fill: currentColor;
     stroke: currentColor;
 }
+
+/* Print specific styles */
+@media print {
+    :host {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}

@@ -1,10 +1,13 @@
-class MonoAccount extends MonoBaseElement {
+class MonoAccount extends MonoInteractiveElement {
     constructor() {
         super();
         this.user = null;
     }
 
     connectedCallback() {
+        if (super.connectedCallback) {
+            super.connectedCallback();
+        }
         this.mountTemplate();
         this.initializeAuth();
     }
@@ -35,7 +38,11 @@ class MonoAccount extends MonoBaseElement {
         if (this.user) {
             // Logout
             this.user = null;
-            this.removeState("mono_auth");
+            try {
+                this.removeState("mono_auth");
+            } catch (e) {
+                console.info("ログアウト時の状態保存に失敗しました", e);
+            }
         } else {
             // Mock Login
             this.user = {
@@ -43,7 +50,11 @@ class MonoAccount extends MonoBaseElement {
                 name: "Test User",
                 token: "mock-jwt-token"
             };
-            this.saveState("mono_auth", { user: this.user });
+            try {
+                this.saveState("mono_auth", { user: this.user });
+            } catch (e) {
+                console.info("ログイン時の状態保存に失敗しました", e);
+            }
         }
 
         this.updateView();

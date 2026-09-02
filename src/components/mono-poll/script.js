@@ -27,7 +27,9 @@ class MonoPoll extends MonoInteractiveElement {
   }
 
   connectedCallback() {
-    super.connectedCallback();
+    if (super.connectedCallback) {
+        super.connectedCallback();
+    }
     this.checkPreviousVote();
     this.mountTemplate();
     this.setupEventListeners();

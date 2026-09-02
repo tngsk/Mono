@@ -1,10 +1,13 @@
-class MonoSessionJoin extends MonoBaseElement {
+class MonoSessionJoin extends MonoInteractiveElement {
   constructor() {
     super();
     this.mountTemplate('mono-session-join-template');
   }
 
   connectedCallback() {
+    if (super.connectedCallback) {
+        super.connectedCallback();
+    }
     this.title = this.getAttribute("title") || "セッション参加";
 
     const titleEl = this.shadowRoot.getElementById("join-title");

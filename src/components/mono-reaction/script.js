@@ -5,7 +5,9 @@ class MonoReaction extends MonoInteractiveElement {
   }
 
   connectedCallback() {
-    super.connectedCallback();
+    if (super.connectedCallback) {
+        super.connectedCallback();
+    }
     this.options = (this.getAttribute("options") || "")
       .split(",")
       .map((opt) => opt.trim())
