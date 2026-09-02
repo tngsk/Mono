@@ -1,22 +1,28 @@
 :host {
     display: block;
     width: 100%;
-    margin: var(--spacing-md, 1.5rem) 0;
+    margin: 0;
 }
 
 .grid-wrapper {
     display: grid;
     width: 100%;
-    gap: var(--spacing-md, 1.5rem);
+    gap: var(--spacing-lg, 3rem);
     box-sizing: border-box;
 }
+
+:host([gap="xs"]) .grid-wrapper { gap: var(--spacing-xs, 0.5rem); }
+:host([gap="sm"]) .grid-wrapper { gap: var(--spacing-sm, 1.25rem); }
+:host([gap="md"]) .grid-wrapper { gap: var(--spacing-md, 2rem); }
+:host([gap="lg"]) .grid-wrapper { gap: var(--spacing-lg, 3.5rem); }
 
 /* Allow cells to stretch and contain contents uniformly */
 ::slotted(*) {
     display: flex;
     flex-direction: column;
-    min-height: 0; /* Important for preventing grid blowout */
+    min-height: 0;
     width: 100%;
+    border-radius: var(--radius-md, 0.25rem);
 }
 
 ::slotted(img),
@@ -26,10 +32,12 @@
     height: 100%;
     object-fit: var(--fit, cover);
     max-height: 100vh;
+    border-radius: var(--radius-md, 0.25rem);
 }
 
 @media print {
     .grid-wrapper {
         gap: var(--spacing-sm, 1rem);
+        page-break-inside: avoid;
     }
 }

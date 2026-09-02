@@ -201,6 +201,24 @@
     margin: 0 auto var(--zoom-margin-flow, clamp(1.5rem, 2.5vw, 2.5rem)) auto !important;
 }
 
+::slotted(mono-flow),
+::slotted(mono-media-grid) {
+    width: 100% !important;
+    max-width: var(--zoom-max-width-lg, min(94vw, 1700px)) !important;
+    margin: 0 auto !important;
+}
+
+::slotted(mono-ab-test) {
+    width: min(90vw, 1100px) !important;
+    margin: 0 auto !important;
+}
+
+::slotted(mono-score) {
+    transform: scale(2.0);
+    margin: 3rem auto !important;
+    display: inline-block;
+}
+
 ::slotted(mono-flipcard) {
     width: min(85vw, 850px) !important;
     min-height: clamp(300px, 45vh, 550px) !important;
