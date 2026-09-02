@@ -159,15 +159,13 @@ body.mono-focus-mode hr.mono-slide-divider {
     opacity: 0.15;
 }
 
-/* 水平罫線（スライド区切り） */
+/* 水平罫線（スライド区切り・話題の区切り） */
 hr,
 hr.mono-slide-divider {
     width: 100%;
     max-width: 25%;
-    margin-top: var(--body-padding-y);
-    margin-bottom: var(--body-padding-y);
-    margin-left: auto;
-    margin-right: auto;
+    margin-block: var(--spacing-md, 2rem);
+    margin-inline: auto;
     border: none;
     border-top: 0.125rem dotted var(--border-color, #d1d5db);
     opacity: 0.6;
