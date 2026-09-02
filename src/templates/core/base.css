@@ -163,7 +163,7 @@ hr,
 hr.mono-slide-divider {
     width: 100%;
     max-width: 25%;
-    margin-block: var(--spacing-md, 2rem);
+    margin-block: var(--spacing-lg, 3.5rem);
     margin-inline: auto;
     border: none;
     border-top: 0.125rem dotted var(--border-color, #d1d5db);
