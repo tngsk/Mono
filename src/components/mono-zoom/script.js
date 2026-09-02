@@ -33,12 +33,16 @@ class MonoZoom extends MonoBaseElement {
         this.boundHandleMouseLeave = this.handleMouseLeave.bind(this);
         this.boundHandleScroll = this.handleScroll.bind(this);
         this.boundHandleKeyDown = this.handleKeyDown.bind(this);
+        
+        this.virtualSlides = []; // Array of Arrays of HTMLElements
+        this.activeSlideIndex = 0;
     }
 
     connectedCallback() {
         super.mountTemplate('mono-zoom-template');
         this.setupElements();
         this.setupEventListeners();
+        this.setupVirtualSlideFocus();
     }
 
     disconnectedCallback() {
@@ -76,155 +80,182 @@ class MonoZoom extends MonoBaseElement {
         document.removeEventListener('keydown', this.boundHandleKeyDown);
     }
 
+    setupVirtualSlideFocus() {
+        // Collect direct body elements, ignoring system tags
+        const ignoredTags = new Set(['SCRIPT', 'TEMPLATE', 'STYLE', 'MONO-ZOOM', 'MONO-BRUSH', 'MONO-SYNC']);
+        const elements = Array.from(document.body.children).filter(el => !ignoredTags.has(el.tagName));
+        if (elements.length === 0) return;
+
+        this.virtualSlides = [];
+        let currentSlide = [];
+
+        elements.forEach(el => {
+            const tag = el.tagName;
+            if (tag === 'HR') {
+                if (currentSlide.length > 0) {
+                    this.virtualSlides.push(currentSlide);
+                    currentSlide = [];
+                }
+                currentSlide.push(el);
+                this.virtualSlides.push(currentSlide);
+                currentSlide = [];
+            } else if (tag === 'H1' || tag === 'H2') {
+                if (currentSlide.length > 0) {
+                    this.virtualSlides.push(currentSlide);
+                    currentSlide = [];
+                }
+                currentSlide.push(el);
+            } else {
+                currentSlide.push(el);
+            }
+        });
+
+        if (currentSlide.length > 0) {
+            this.virtualSlides.push(currentSlide);
+        }
+
+        // Run initial focus update
+        this.updateActiveVirtualSlide();
+    }
+
+    updateActiveVirtualSlide() {
+        if (this.virtualSlides.length === 0) return;
+
+        const viewportHeight = window.innerHeight;
+        const scrollY = window.scrollY;
+
+        // If at the very top of page, slide 0 is always active
+        if (scrollY < 60) {
+            this.activeSlideIndex = 0;
+        } else {
+            // Find the slide closest to the upper-middle reading focal point (35% of viewport)
+            const focalPoint = viewportHeight * 0.35;
+            let bestIndex = 0;
+            let minDistance = Infinity;
+
+            this.virtualSlides.forEach((slide, idx) => {
+                const firstEl = slide[0];
+                if (!firstEl) return;
+                const rect = firstEl.getBoundingClientRect();
+                const dist = Math.abs(rect.top - focalPoint);
+                // Bias towards elements that have already scrolled slightly past the focal point or near it
+                if (rect.top <= focalPoint + 100 && dist < minDistance) {
+                    minDistance = dist;
+                    bestIndex = idx;
+                }
+            });
+
+            this.activeSlideIndex = bestIndex;
+        }
+
+        // Apply .mono-ambient-dimmed to non-active slides
+        this.virtualSlides.forEach((slide, idx) => {
+            const isActive = (idx === this.activeSlideIndex);
+            slide.forEach(el => {
+                if (isActive) {
+                    el.classList.remove('mono-ambient-dimmed');
+                } else {
+                    el.classList.add('mono-ambient-dimmed');
+                }
+            });
+        });
+    }
+
     handleMouseOver(e) {
         if (this.isModalOpen) return;
 
         const target = e.target.closest(this.targetSelectors);
         if (target) {
-            // Check if it's already the active target
             if (this.activeTarget === target) {
                 this.keepTriggerVisible();
                 return;
             }
 
-            // Remove listener from previous target if any
             if (this.activeTarget) {
                 this.activeTarget.removeEventListener('mouseleave', this.boundHandleMouseLeave);
             }
 
             this.activeTarget = target;
             this.activeTarget.addEventListener('mouseleave', this.boundHandleMouseLeave);
-            
-            this.positionTrigger();
             this.showTrigger();
         }
     }
 
     handleMouseLeave(e) {
-        // If moving to the trigger itself, don't hide
-        if (e.relatedTarget === this || this.shadowRoot.contains(e.relatedTarget)) {
-            return;
-        }
+        if (this.isModalOpen) return;
         this.hideTriggerDelayed();
     }
 
     handleScroll() {
-        if (this.activeTarget && !this.trigger.classList.contains('hidden')) {
+        if (this.isModalOpen) return;
+        if (this.activeTarget) {
             this.positionTrigger();
         }
-    }
-
-    positionTrigger() {
-        if (!this.activeTarget) return;
-        const rect = this.activeTarget.getBoundingClientRect();
-        
-        // Position at top-right corner of the element
-        const top = rect.top;
-        const right = rect.right;
-        
-        this.trigger.style.top = `${top}px`;
-        this.trigger.style.left = `${right}px`;
+        this.updateActiveVirtualSlide();
     }
 
     showTrigger() {
         clearTimeout(this.hoverTimeout);
-        this.trigger.classList.remove('hidden');
-        // Small delay to allow display:block to apply before adding opacity class for transition
-        requestAnimationFrame(() => {
-            this.trigger.classList.add('visible');
-        });
+        this.positionTrigger();
+        this.trigger.classList.add('visible');
+    }
+
+    hideTriggerDelayed() {
+        this.hoverTimeout = setTimeout(() => {
+            this.trigger.classList.remove('visible');
+            if (this.activeTarget) {
+                this.activeTarget.removeEventListener('mouseleave', this.boundHandleMouseLeave);
+                this.activeTarget = null;
+            }
+        }, 150);
     }
 
     keepTriggerVisible() {
         clearTimeout(this.hoverTimeout);
+        this.trigger.classList.add('visible');
     }
 
-    hideTriggerDelayed() {
-        clearTimeout(this.hoverTimeout);
-        this.hoverTimeout = setTimeout(() => {
-            this.hideTrigger();
-        }, 100); // Small delay to allow moving mouse to trigger
-    }
-
-    hideTrigger() {
-        this.trigger.classList.remove('visible');
-        setTimeout(() => {
-            if (!this.trigger.classList.contains('visible')) {
-                this.trigger.classList.add('hidden');
-                if (this.activeTarget) {
-                    this.activeTarget.removeEventListener('mouseleave', this.boundHandleMouseLeave);
-                    this.activeTarget = null;
-                }
-            }
-        }, 200); // Match CSS transition duration
-    }
-
-    openModal(target = null) {
-        if (target) {
-            this.activeTarget = target;
-        }
+    positionTrigger() {
         if (!this.activeTarget) return;
+
+        const rect = this.activeTarget.getBoundingClientRect();
         
+        let top = rect.top + 8;
+        let left = rect.right - 8;
+
+        if (left > window.innerWidth - 30) {
+            left = window.innerWidth - 30;
+        }
+        if (top < 10) {
+            top = 10;
+        }
+
+        this.trigger.style.top = `${top}px`;
+        this.trigger.style.left = `${left}px`;
+    }
+
+    openModal() {
+        if (!this.activeTarget) return;
+
         this.isModalOpen = true;
-        this.hideTrigger();
-        
-        // Clear previous light DOM clones if any
-        this.innerHTML = '';
-        
-        // Special handling for web components or regular elements
-        let clone;
-        if (typeof this.activeTarget.getZoomElement === 'function') {
-            const customZoomEl = this.activeTarget.getZoomElement();
-            clone = customZoomEl ? customZoomEl.cloneNode(true) : this.activeTarget.cloneNode(true);
-        } else if (this.activeTarget.tagName.startsWith('MONO-')) {
-            // Check for [data-zoom-content], SVG, pre, img, table inside shadowRoot OR light DOM
-            let innerContent = null;
-            if (this.activeTarget.shadowRoot) {
-                innerContent = this.activeTarget.shadowRoot.querySelector('[data-zoom-content], svg, pre, img, table');
-            }
-            if (!innerContent) {
-                innerContent = this.activeTarget.querySelector('[data-zoom-content], svg, pre, img, table');
-            }
-
-            if (innerContent) {
-                clone = innerContent.cloneNode(true);
-            } else {
-                clone = this.activeTarget.cloneNode(true);
-            }
-        } else {
-            clone = this.activeTarget.cloneNode(true);
-        }
-        
-        // Clean up inline positioning styles that might interfere with modal layout
-        if (clone.style) {
-            clone.style.position = 'relative';
-            clone.style.top = 'auto';
-            clone.style.left = 'auto';
-            clone.style.marginLeft = 'auto';
-            clone.style.marginRight = 'auto';
-        }
-
-        // Prevent duplicate IDs in the DOM tree
-        if (clone.removeAttribute) {
-            clone.removeAttribute('id');
-        }
-        if (clone.querySelectorAll) {
-            clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
-        }
-
-        // We append to this to place it in the Light DOM.
-        // It will project into the `<slot></slot>` inside `#zoom-content`.
-        this.appendChild(clone);
-        
-        // Show overlay
-        this.overlay.classList.remove('hidden');
-        
-        // Focus management
         this.previousActiveElement = document.activeElement;
-        this.closeBtn.focus();
         
+        // Hide trigger
+        this.trigger.classList.remove('visible');
+
         // Prevent body scroll
         document.body.style.overflow = 'hidden';
+
+        // Clone target and append to content
+        const clone = this.activeTarget.cloneNode(true);
+        this.innerHTML = '';
+        this.appendChild(clone);
+
+        // Show overlay
+        this.overlay.classList.remove('hidden');
+
+        // Focus close button
+        this.closeBtn.focus();
     }
 
     closeModal() {
@@ -264,6 +295,36 @@ class MonoZoom extends MonoBaseElement {
                 this.openModal();
                 e.preventDefault();
                 return;
+            }
+        }
+
+        // Toggle Flat Mode on 'D' key press (switch between Ambient Focus and Plain view)
+        if (!isEditable && !this.isModalOpen && (e.key === 'd' || e.key === 'D')) {
+            document.body.classList.toggle('mono-flat-mode');
+            e.preventDefault();
+            return;
+        }
+
+        // Section navigation with J / K / ArrowDown / ArrowUp
+        if (!isEditable && !this.isModalOpen && (e.key === 'j' || e.key === 'J' || e.key === 'ArrowDown' || e.key === 'k' || e.key === 'K' || e.key === 'ArrowUp')) {
+            if (this.virtualSlides.length > 1) {
+                let nextIndex = this.activeSlideIndex;
+                if (e.key === 'j' || e.key === 'J' || e.key === 'ArrowDown') {
+                    nextIndex = Math.min(this.activeSlideIndex + 1, this.virtualSlides.length - 1);
+                } else {
+                    nextIndex = Math.max(this.activeSlideIndex - 1, 0);
+                }
+
+                if (nextIndex !== this.activeSlideIndex) {
+                    this.activeSlideIndex = nextIndex;
+                    const targetEl = this.virtualSlides[nextIndex][0];
+                    if (targetEl) {
+                        targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        this.updateActiveVirtualSlide();
+                    }
+                    e.preventDefault();
+                    return;
+                }
             }
         }
 

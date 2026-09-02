@@ -74,6 +74,18 @@ body > * {
     grid-column: var(--component-grid-column, 2);
     min-width: 0;
     container-type: inline-size;
+    transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), filter 0.35s ease;
+}
+
+/* 非アクティブスライド要素の穏やかな減光（Ambient Focus） */
+body:not(.mono-flat-mode) > .mono-ambient-dimmed {
+    opacity: 0.22;
+    filter: blur(0.3px);
+}
+
+body:not(.mono-flat-mode) > .mono-ambient-dimmed:hover {
+    opacity: 1.0;
+    filter: none;
 }
 
 /* ==========================================================================
