@@ -67,3 +67,12 @@ mono-zoom mono-flipcard {
     font-size: clamp(2.2rem, 4.5vw, 4.2rem) !important;
     margin: 0 auto !important;
 }
+
+mono-zoom .column {
+    width: 100% !important;
+    max-width: min(94vw, 1700px) !important;
+    margin: 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+}
