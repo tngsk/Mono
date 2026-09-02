@@ -1,15 +1,15 @@
 :host {
   display: block;
   margin: 0;
-  --flow-bg-color: var(--mono-bg-color, #ffffff);
-  --flow-border-color: var(--mono-border-color, #e5e7eb);
-  --flow-text-color: var(--mono-text-color, #374151);
-  --flow-line-color: var(--mono-primary-color, #4f46e5);
+  --flow-bg-color: var(--color-base-100, #ffffff);
+  --flow-border-color: var(--border-color, #d1d5db);
+  --flow-text-color: var(--color-base-content, #111827);
+  --flow-line-color: var(--color-primary, #3b82f6);
   --flow-line-width: 2px;
-  --flow-node-bg: var(--mono-bg-color, #ffffff);
-  --flow-node-border: var(--mono-border-color, #d1d5db);
+  --flow-node-bg: var(--color-base-100, #ffffff);
+  --flow-node-border: var(--border-color, #d1d5db);
   --flow-node-border-width: 2px;
-  --flow-node-radius: 0.25rem;
+  --flow-node-radius: var(--radius-md, 0.25rem);
   --flow-node-padding: var(--padding-md);
   --flow-gap-x: 3rem;
   --flow-gap-y: 1.5rem;
@@ -17,7 +17,7 @@
 
 .flow-wrapper {
     background-color: var(--flow-bg-color);
-    border: 1px solid var(--flow-border-color);
+    border: 0.0625rem solid var(--flow-border-color);
     border-radius: var(--flow-node-radius);
     padding: var(--padding-md);
     overflow-x: auto;
@@ -28,7 +28,7 @@
     font-weight: 600;
     font-size: 1.1rem;
     color: var(--flow-text-color);
-    margin-bottom: 1rem;
+    margin-bottom: var(--spacing-sm, 1rem);
     display: none; /* Shown by JS if title exists */
 }
 
@@ -74,5 +74,13 @@
 .flow-label-bg {
     fill: var(--flow-bg-color);
     stroke: var(--flow-border-color);
-    stroke-width: 1px;
+    stroke-width: 0.0625rem;
+}
+
+/* Print specific styles */
+@media print {
+    .flow-wrapper {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
 }

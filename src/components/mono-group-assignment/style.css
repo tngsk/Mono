@@ -18,11 +18,11 @@
 }
 
 .mono-group-alert {
-  padding: var(--padding-md);
+  padding: var(--padding-md, 1rem);
   background-color: color-mix(in srgb, var(--color-warning) 15%, transparent);
-  color: var(--color-base-content, #856404);
-  border: 1px solid color-mix(in srgb, var(--color-warning) 30%, transparent);
-  border-radius: 6px;
+  color: var(--color-base-content, #111827);
+  border: 0.0625rem solid color-mix(in srgb, var(--color-warning) 30%, transparent);
+  border-radius: var(--radius-md, 0.25rem);
   text-align: center;
   flex: 1;
   display: flex;
@@ -33,17 +33,17 @@
 
 .mono-group-title {
   font-weight: bold;
-  margin-bottom: 10px;
-  color: var(--color-base-content, #24292e);
+  margin-bottom: var(--spacing-xs, 0.5rem);
+  color: var(--color-base-content, #111827);
 }
 
 .mono-group-card {
-  padding: var(--padding-md);
+  padding: var(--padding-md, 1rem);
   background-color: var(--color-base-100, #ffffff);
-  border: 2px solid var(--color-primary, #0366d6);
-  border-radius: 8px;
+  border: 0.125rem solid var(--color-primary, #3b82f6);
+  border-radius: var(--radius-md, 0.25rem);
   text-align: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: var(--shadow-sm, 0 0.125rem 0.25rem rgba(0,0,0,0.05));
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -53,8 +53,8 @@
 
 .mono-group-label {
   font-size: 0.9em;
-  color: var(--color-base-content-muted, #586069);
-  margin-bottom: 5px;
+  color: var(--color-base-content-muted, #4b5563);
+  margin-bottom: 0.25rem;
 }
 
 .mono-group-value {

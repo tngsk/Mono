@@ -2,26 +2,26 @@
   display: block;
   width: 100%;
   font-family: var(--font-family-sans, sans-serif);
-  background-color: #F7F5F2; /* Neutral */
-  border: 1px solid #E2E0DD;
-  border-radius: var(--radius-md, 8px);
+  background-color: var(--color-base-200, #F7F5F2);
+  border: 0.0625rem solid var(--border-color, #E2E0DD);
+  border-radius: var(--radius-md, 0.25rem);
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  box-shadow: var(--shadow-md, 0 0.25rem 0.75rem rgba(0,0,0,0.03));
 }
 
 .synth-container {
   display: flex;
   flex-direction: column;
   position: relative;
-  background-color: #F7F5F2;
+  background-color: var(--color-base-200, #F7F5F2);
 }
 
 /* Oscilloscope */
 .scope-container {
   width: 100%;
-  height: 250px; /* Increased height */
-  background: #1A1C1E; /* Primary */
-  border-bottom: 1px solid #E2E0DD;
+  height: 15.625rem; /* Increased height */
+  background: var(--color-base-content, #1A1C1E);
+  border-bottom: 0.0625rem solid var(--border-color, #E2E0DD);
 }
 .synth-scope {
   width: 100%;

@@ -17,17 +17,17 @@ mono-flow .flow-layer {
   z-index: 2;
 }
 mono-flow .flow-node {
-  background-color: var(--flow-node-bg, #ffffff);
-  border: var(--flow-node-border-width, 2px) solid var(--flow-node-border, #d1d5db);
+  background-color: var(--flow-node-bg, var(--color-base-100));
+  border: var(--flow-node-border-width, 0.125rem) solid var(--flow-node-border, var(--border-color));
   border-radius: var(--flow-node-radius, 0.25rem);
   padding: var(--flow-node-padding, 0.75rem 1.25rem);
   width: 100%;
   box-sizing: border-box;
-  color: var(--flow-text-color, #374151);
+  color: var(--flow-text-color, var(--color-base-content));
   font-size: 0.75rem;
   font-weight: 500;
   text-align: center;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-sm, 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.05));
   transition: all 0.2s ease-in-out;
   cursor: default;
   user-select: none;

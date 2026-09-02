@@ -11,7 +11,7 @@ mono-code-block pre {
 mono-code-block code {
     display: block;
     padding: var(--padding-md);
-    border-radius: 0 0 8px 8px; /* Matching the container */
+    border-radius: 0 0 var(--radius-md, 0.25rem) var(--radius-md, 0.25rem); /* Matching the container */
     background: var(--color-base-300);
     font-family: Menlo, Consolas, "Liberation Mono", monospace;
     font-variant-ligatures: none;
@@ -21,8 +21,8 @@ mono-code-block code {
 
 /* Scrollbar styling for the code block */
 mono-code-block pre::-webkit-scrollbar {
-    height: 8px;
-    width: 8px;
+    height: 0.5rem;
+    width: 0.5rem;
 }
 
 mono-code-block pre::-webkit-scrollbar-track {
@@ -31,7 +31,7 @@ mono-code-block pre::-webkit-scrollbar-track {
 
 mono-code-block pre::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
+    border-radius: var(--radius-sm, 0.125rem);
 }
 
 mono-code-block pre::-webkit-scrollbar-thumb:hover {

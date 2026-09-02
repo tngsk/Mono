@@ -477,11 +477,16 @@ class MonoSynth extends MonoBaseElement {
     const height = this.canvas.height;
 
     // Background Primary (#1A1C1E)
-    this.ctx.fillStyle = '#1A1C1E';
+    // Get variables from host styles
+    const computedStyle = getComputedStyle(this);
+    const bgColor = computedStyle.getPropertyValue('--color-base-content').trim() || '#1A1C1E';
+    const lineColor = computedStyle.getPropertyValue('--color-primary').trim() || '#B8422E';
+
+    this.ctx.fillStyle = bgColor;
     this.ctx.fillRect(0, 0, width, height);
 
     this.ctx.lineWidth = 2;
-    this.ctx.strokeStyle = '#B8422E'; // Tertiary
+    this.ctx.strokeStyle = lineColor; // Tertiary
     this.ctx.beginPath();
 
     // Zero-crossing trigger logic for stabilization

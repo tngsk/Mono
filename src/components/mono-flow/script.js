@@ -105,7 +105,7 @@ class MonoFlow extends MonoBaseElement {
     // Read the line color variable from the host
     const lineColor =
       getComputedStyle(this).getPropertyValue("--flow-line-color").trim() ||
-      "#4f46e5";
+      "var(--color-primary, #3b82f6)";
     path.setAttribute("fill", lineColor);
 
     marker.appendChild(path);
