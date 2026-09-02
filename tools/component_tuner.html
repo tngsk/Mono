@@ -180,8 +180,8 @@
     --spacing-lg: clamp(2.5rem, 4vw, 4.5rem);
     --spacing-xl: clamp(3.5rem, 6vw, 7rem);
 
-    /* 共通タグマージン（垂直フローリズム） */
-    --spacing-flow: var(--spacing-sm);
+    /* 共通タグマージン（デフォルトで最も広い lg 基準、必要に応じて狭める設計方針） */
+    --spacing-flow: var(--spacing-lg);
 
     /* Fluid Padding Scale */
     --padding-sm: clamp(0.5rem, 1vw, 1rem);
@@ -223,10 +223,10 @@ body > * {
 }
 
 /* ==========================================================================
-   共通タグマージンシステム（詳細度0・一方向フロー・競合防止）
+   共通タグマージンシステム（デフォルト最大余白 lg 基準・競合ゼロ）
    ========================================================================== */
 
-/* 全ブロック要素の共通一方向（下部）フロー・マージン */
+/* 全ブロック要素の共通一方向（下部）フロー・マージン（デフォルト: lg） */
 :where(p, ul, ol, dl, table, pre, figure, blockquote, hr, mono-*) {
     margin-block-start: 0;
     margin-block-end: var(--spacing-flow);
@@ -235,12 +235,12 @@ body > * {
 /* 見出しの垂直階層マージン（詳細度0） */
 :where(h1, h2) {
     margin-block-start: var(--spacing-xl);
-    margin-block-end: var(--spacing-sm);
+    margin-block-end: var(--spacing-md);
 }
 
 :where(h3, h4, h5, h6) {
     margin-block-start: var(--spacing-lg);
-    margin-block-end: var(--spacing-sm);
+    margin-block-end: var(--spacing-md);
 }
 
 /* コンテナ境界のクリーンアップ（先頭の上マージン・末尾の下マージンを相殺し二重加算を根絶） */
@@ -251,9 +251,9 @@ body > * {
     margin-block-end: 0 !important;
 }
 
-/* The Stack - https://every-layout.dev/layouts/stack/ */
+/* The Stack: デフォルトで広い lg 余白を適用 */
 body > * + * {
-    margin-top: var(--spacing-md);
+    margin-top: var(--spacing-lg);
 }
 
 /* 共通コンポーネントパディング属性 */
@@ -3886,23 +3886,23 @@ if (!customElements.get("mono-textfield-input")) {
 
       <div class="tuner-control-group">
         <div class="tuner-control-label">
-          <span>--spacing-flow (共通タグマージン)</span>
-          <span id="val-spacing-flow" class="tuner-control-value">1.25rem</span>
+          <span>--spacing-flow (共通タグマージン: デフォルトlg)</span>
+          <span id="val-spacing-flow" class="tuner-control-value">3.5rem</span>
         </div>
-        <input type="range" id="slider-spacing-flow" class="tuner-slider" min="0.25" max="3.0" step="0.125" value="1.25">
+        <input type="range" id="slider-spacing-flow" class="tuner-slider" min="0.5" max="6.0" step="0.25" value="3.5">
       </div>
 
       <div class="tuner-control-group">
         <div class="tuner-control-label">
-          <span>--spacing-sm</span>
-          <span id="val-spacing-sm" class="tuner-control-value">1.25rem</span>
+          <span>--spacing-lg (大余白)</span>
+          <span id="val-spacing-lg" class="tuner-control-value">3.5rem</span>
         </div>
-        <input type="range" id="slider-spacing-sm" class="tuner-slider" min="0.25" max="2.5" step="0.125" value="1.25">
+        <input type="range" id="slider-spacing-lg" class="tuner-slider" min="1.0" max="6.0" step="0.25" value="3.5">
       </div>
 
       <div class="tuner-control-group">
         <div class="tuner-control-label">
-          <span>--spacing-md</span>
+          <span>--spacing-md (中余白)</span>
           <span id="val-spacing-md" class="tuner-control-value">2rem</span>
         </div>
         <input type="range" id="slider-spacing-md" class="tuner-slider" min="0.5" max="4.0" step="0.25" value="2">
@@ -3910,10 +3910,10 @@ if (!customElements.get("mono-textfield-input")) {
 
       <div class="tuner-control-group">
         <div class="tuner-control-label">
-          <span>--padding-md</span>
-          <span id="val-padding-md" class="tuner-control-value">1.25rem</span>
+          <span>--padding-lg (大パディング)</span>
+          <span id="val-padding-lg" class="tuner-control-value">2.5rem</span>
         </div>
-        <input type="range" id="slider-padding-md" class="tuner-slider" min="0.25" max="2.5" step="0.125" value="1.25">
+        <input type="range" id="slider-padding-lg" class="tuner-slider" min="0.5" max="5.0" step="0.25" value="2.5">
       </div>
     </div>
 
@@ -3961,9 +3961,9 @@ if (!customElements.get("mono-textfield-input")) {
     "radius-md": { el: document.getElementById("slider-radius-md"), valEl: document.getElementById("val-radius-md"), unit: "rem", cssVar: "--radius-md" },
     "radius-lg": { el: document.getElementById("slider-radius-lg"), valEl: document.getElementById("val-radius-lg"), unit: "rem", cssVar: "--radius-lg" },
     "spacing-flow": { el: document.getElementById("slider-spacing-flow"), valEl: document.getElementById("val-spacing-flow"), unit: "rem", cssVar: "--spacing-flow" },
-    "spacing-sm": { el: document.getElementById("slider-spacing-sm"), valEl: document.getElementById("val-spacing-sm"), unit: "rem", cssVar: "--spacing-sm" },
+    "spacing-lg": { el: document.getElementById("slider-spacing-lg"), valEl: document.getElementById("val-spacing-lg"), unit: "rem", cssVar: "--spacing-lg" },
     "spacing-md": { el: document.getElementById("slider-spacing-md"), valEl: document.getElementById("val-spacing-md"), unit: "rem", cssVar: "--spacing-md" },
-    "padding-md": { el: document.getElementById("slider-padding-md"), valEl: document.getElementById("val-padding-md"), unit: "rem", cssVar: "--padding-md" },
+    "padding-lg": { el: document.getElementById("slider-padding-lg"), valEl: document.getElementById("val-padding-lg"), unit: "rem", cssVar: "--padding-lg" },
     "max-width": { el: document.getElementById("slider-max-width"), valEl: document.getElementById("val-max-width"), unit: "px", cssVar: "--content-max-width" },
     "font-size": { el: document.getElementById("slider-font-size"), valEl: document.getElementById("val-font-size"), unit: "px", cssVar: "--tuner-root-font" },
   };

@@ -380,23 +380,23 @@ tuner_gui_html = """
 
       <div class="tuner-control-group">
         <div class="tuner-control-label">
-          <span>--spacing-flow (共通タグマージン)</span>
-          <span id="val-spacing-flow" class="tuner-control-value">1.25rem</span>
+          <span>--spacing-flow (共通タグマージン: デフォルトlg)</span>
+          <span id="val-spacing-flow" class="tuner-control-value">3.5rem</span>
         </div>
-        <input type="range" id="slider-spacing-flow" class="tuner-slider" min="0.25" max="3.0" step="0.125" value="1.25">
+        <input type="range" id="slider-spacing-flow" class="tuner-slider" min="0.5" max="6.0" step="0.25" value="3.5">
       </div>
 
       <div class="tuner-control-group">
         <div class="tuner-control-label">
-          <span>--spacing-sm</span>
-          <span id="val-spacing-sm" class="tuner-control-value">1.25rem</span>
+          <span>--spacing-lg (大余白)</span>
+          <span id="val-spacing-lg" class="tuner-control-value">3.5rem</span>
         </div>
-        <input type="range" id="slider-spacing-sm" class="tuner-slider" min="0.25" max="2.5" step="0.125" value="1.25">
+        <input type="range" id="slider-spacing-lg" class="tuner-slider" min="1.0" max="6.0" step="0.25" value="3.5">
       </div>
 
       <div class="tuner-control-group">
         <div class="tuner-control-label">
-          <span>--spacing-md</span>
+          <span>--spacing-md (中余白)</span>
           <span id="val-spacing-md" class="tuner-control-value">2rem</span>
         </div>
         <input type="range" id="slider-spacing-md" class="tuner-slider" min="0.5" max="4.0" step="0.25" value="2">
@@ -404,10 +404,10 @@ tuner_gui_html = """
 
       <div class="tuner-control-group">
         <div class="tuner-control-label">
-          <span>--padding-md</span>
-          <span id="val-padding-md" class="tuner-control-value">1.25rem</span>
+          <span>--padding-lg (大パディング)</span>
+          <span id="val-padding-lg" class="tuner-control-value">2.5rem</span>
         </div>
-        <input type="range" id="slider-padding-md" class="tuner-slider" min="0.25" max="2.5" step="0.125" value="1.25">
+        <input type="range" id="slider-padding-lg" class="tuner-slider" min="0.5" max="5.0" step="0.25" value="2.5">
       </div>
     </div>
 
@@ -455,9 +455,9 @@ tuner_gui_html = """
     "radius-md": { el: document.getElementById("slider-radius-md"), valEl: document.getElementById("val-radius-md"), unit: "rem", cssVar: "--radius-md" },
     "radius-lg": { el: document.getElementById("slider-radius-lg"), valEl: document.getElementById("val-radius-lg"), unit: "rem", cssVar: "--radius-lg" },
     "spacing-flow": { el: document.getElementById("slider-spacing-flow"), valEl: document.getElementById("val-spacing-flow"), unit: "rem", cssVar: "--spacing-flow" },
-    "spacing-sm": { el: document.getElementById("slider-spacing-sm"), valEl: document.getElementById("val-spacing-sm"), unit: "rem", cssVar: "--spacing-sm" },
+    "spacing-lg": { el: document.getElementById("slider-spacing-lg"), valEl: document.getElementById("val-spacing-lg"), unit: "rem", cssVar: "--spacing-lg" },
     "spacing-md": { el: document.getElementById("slider-spacing-md"), valEl: document.getElementById("val-spacing-md"), unit: "rem", cssVar: "--spacing-md" },
-    "padding-md": { el: document.getElementById("slider-padding-md"), valEl: document.getElementById("val-padding-md"), unit: "rem", cssVar: "--padding-md" },
+    "padding-lg": { el: document.getElementById("slider-padding-lg"), valEl: document.getElementById("val-padding-lg"), unit: "rem", cssVar: "--padding-lg" },
     "max-width": { el: document.getElementById("slider-max-width"), valEl: document.getElementById("val-max-width"), unit: "px", cssVar: "--content-max-width" },
     "font-size": { el: document.getElementById("slider-font-size"), valEl: document.getElementById("val-font-size"), unit: "px", cssVar: "--tuner-root-font" },
   };

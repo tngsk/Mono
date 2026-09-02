@@ -34,8 +34,8 @@
     --spacing-lg: clamp(2.5rem, 4vw, 4.5rem);
     --spacing-xl: clamp(3.5rem, 6vw, 7rem);
 
-    /* 共通タグマージン（垂直フローリズム） */
-    --spacing-flow: var(--spacing-sm);
+    /* 共通タグマージン（デフォルトで最も広い lg 基準、必要に応じて狭める設計方針） */
+    --spacing-flow: var(--spacing-lg);
 
     /* Fluid Padding Scale */
     --padding-sm: clamp(0.5rem, 1vw, 1rem);
@@ -77,10 +77,10 @@ body > * {
 }
 
 /* ==========================================================================
-   共通タグマージンシステム（詳細度0・一方向フロー・競合防止）
+   共通タグマージンシステム（デフォルト最大余白 lg 基準・競合ゼロ）
    ========================================================================== */
 
-/* 全ブロック要素の共通一方向（下部）フロー・マージン */
+/* 全ブロック要素の共通一方向（下部）フロー・マージン（デフォルト: lg） */
 :where(p, ul, ol, dl, table, pre, figure, blockquote, hr, mono-*) {
     margin-block-start: 0;
     margin-block-end: var(--spacing-flow);
@@ -89,12 +89,12 @@ body > * {
 /* 見出しの垂直階層マージン（詳細度0） */
 :where(h1, h2) {
     margin-block-start: var(--spacing-xl);
-    margin-block-end: var(--spacing-sm);
+    margin-block-end: var(--spacing-md);
 }
 
 :where(h3, h4, h5, h6) {
     margin-block-start: var(--spacing-lg);
-    margin-block-end: var(--spacing-sm);
+    margin-block-end: var(--spacing-md);
 }
 
 /* コンテナ境界のクリーンアップ（先頭の上マージン・末尾の下マージンを相殺し二重加算を根絶） */
@@ -105,9 +105,9 @@ body > * {
     margin-block-end: 0 !important;
 }
 
-/* The Stack - https://every-layout.dev/layouts/stack/ */
+/* The Stack: デフォルトで広い lg 余白を適用 */
 body > * + * {
-    margin-top: var(--spacing-md);
+    margin-top: var(--spacing-lg);
 }
 
 /* 共通コンポーネントパディング属性 */
