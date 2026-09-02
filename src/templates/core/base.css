@@ -147,9 +147,13 @@ hr {
 h1,
 h2,
 h3,
-h4 {
+h4,
+h5,
+h6 {
     color: var(--font-color);
     letter-spacing: 0.04em;
+    text-wrap: balance;
+    line-break: strict;
 }
 
 h1 {
@@ -178,6 +182,14 @@ h4 {
     font-size: clamp(1.1rem, 1rem + 0.6vw, 2rem);
     font-weight: 600;
     color: var(--font-color-light);
+}
+
+/* 段落・テキスト（最適文字数 38〜42文字制御・モダン組版） --------- */
+p {
+    max-width: min(100%, 42em);
+    text-wrap: pretty;
+    line-break: strict;
+    overflow-wrap: break-word;
 }
 
 strong {
@@ -234,6 +246,8 @@ li + li {
 
 li {
     margin-bottom: var(--spacing-xs);
+    max-width: min(100%, 42em);
+    text-wrap: pretty;
 }
 
 /* コード -------------------------------------------------- */
@@ -268,6 +282,17 @@ blockquote {
     padding-bottom: var(--spacing-xs);
     border-left: 0.1875rem solid var(--font-color);
     color: var(--color-base-content-muted, #4b5563);
+    max-width: min(100%, 42em);
+    text-wrap: pretty;
+}
+
+/* カラム内およびフル幅指定の例外解除 */
+.column p,
+.column li,
+.column blockquote,
+.full-width,
+.full-width p {
+    max-width: 100%;
 }
 
 /* テーブル ------------------------------------------------ */
