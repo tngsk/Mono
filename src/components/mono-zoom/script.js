@@ -36,6 +36,7 @@ class MonoZoom extends MonoBaseElement {
         
         this.virtualSlides = []; // Array of Arrays of HTMLElements
         this.activeSlideIndex = 0;
+        this.scrollTicking = false;
     }
 
     connectedCallback() {
@@ -191,7 +192,13 @@ class MonoZoom extends MonoBaseElement {
         if (this.activeTarget) {
             this.positionTrigger();
         }
-        this.updateActiveVirtualSlide();
+        if (!this.scrollTicking) {
+            this.scrollTicking = true;
+            requestAnimationFrame(() => {
+                this.updateActiveVirtualSlide();
+                this.scrollTicking = false;
+            });
+        }
     }
 
     showTrigger() {
