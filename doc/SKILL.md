@@ -24,18 +24,18 @@ Monoは標準のMarkdownを拡張し、専用のWeb Components（UI要素）を�
   ```
 * **注意:** 終了タグにはオプションを持たせないでください。
 
-### C. レイアウト構文 (Layout Syntax: hstack, vstack)
-`mono-layout` を使用して横並び（`hstack`）や縦並び（`vstack`）を実現します。カラムの区切りには `:::column` または `:::` を使用します。
+### C. レイアウト構文 (Layout Syntax: hbox, vbox)
+`mono-layout` を使用して水平並び（`hbox`）や垂直並び（`vbox`）を実現します。カラムの区切りには `:::column` または `:::` を使用します。
 * **構文:**
   ```markdown
-  @[hstack](class: "gap-md center")
+  @[hbox](class: "gap-md center")
   :::
   左側のコンテンツ
   :::
   :::
   右側のコンテンツ
   :::
-  @[/hstack]
+  @[/hbox]
   ```
 
 ### D. テキストフォーマット・拡張機能
@@ -77,7 +77,7 @@ AIは、**以下のリストに存在しないコンポーネントやパラメ�
 | `mono-hero` | Block | ヒーローバナー領域を表示します。ブロック要素。 | `title: "text"`, `image: "url"`, `mode: "light&#124;dark"` |
 | `mono-icon` | Inline | アイコンを表示します。 | `name: "star&#124;heart&#124;..."`, `size: "16~128"`, `color: "primary&#124;success&#124;..."` |
 | `mono-image` | Block | 画像を表示します。 | `src: "url"`, `alt: "text"`, `width: "size"`, `height: "size"` |
-| `mono-layout` | Block | 横並び（hstack）や縦並び（vstack）のレイアウトを構築します。ブロック要素。 | `label: "text"`, `class: "text"` |
+| `mono-layout` | Block | 水平枠（hbox）や垂直枠（vbox）のレイアウトを構築します。ブロック要素。 | `label: "text"`, `class: "text"` |
 | `mono-link` | Block | リンクカードを表示します。 | `url: "url"`, `style: "full&#124;small&#124;card"`, `description: "text"`, `image: "url"` |
 | `mono-media-grid` | Block | 複数のメディアをグリッド状に配置して表示します。ブロック要素。 | `columns: "number"`, `rows: "number"`, `gap: "css-size"`, `fit: "cover&#124;contain"` |
 | `mono-mermaid` | Block | Mermaid記法で図表を描画し、SVGとして埋め込みます。ブロック要素。 | `title: "text"`, `theme: "default&#124;dark&#124;forest&#124;..."` |

@@ -5,18 +5,48 @@
     box-sizing: border-box;
 }
 /* 方向制御 */
-:host([type="hstack"]) .layout-wrapper { flex-direction: row; flex-wrap: wrap; }
-:host([type="vstack"]) .layout-wrapper { flex-direction: column; }
+:host([type="hbox"]),
+:host([type="hstack"]) {
+    display: block;
+}
+:host([type="hbox"]) .layout-wrapper,
+:host([type="hstack"]) .layout-wrapper {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
 
-/* モディファイア対応 (CSS変数で管理) */
+:host([type="vbox"]),
+:host([type="vstack"]) {
+    display: block;
+}
+:host([type="vbox"]) .layout-wrapper,
+:host([type="vstack"]) .layout-wrapper {
+    flex-direction: column;
+}
+
+/* モディファイア対応 (デザイントークン連動) */
 .layout-wrapper.center { justify-content: center; align-items: center; }
-.layout-wrapper.gap-md { gap: 1.5rem; }
-.layout-wrapper.gap-sm { gap: 0.5rem; }
-.layout-wrapper.gap-lg { gap: 3rem; }
+.layout-wrapper.gap-sm { gap: var(--spacing-sm, 0.5rem); }
+.layout-wrapper.gap-md { gap: var(--spacing-md, 1.5rem); }
+.layout-wrapper.gap-lg { gap: var(--spacing-lg, 3rem); }
 .layout-wrapper.start { justify-content: flex-start; align-items: flex-start; }
 .layout-wrapper.end { justify-content: flex-end; align-items: flex-end; }
 
 /* モバイルフォールバック */
 @media (max-width: 768px) {
-    :host([type="hstack"]) .layout-wrapper { flex-direction: column; }
+    :host([type="hbox"]) .layout-wrapper,
+    :host([type="hstack"]) .layout-wrapper {
+        flex-direction: column;
+    }
+}
+
+/* 印刷・PDF対応 */
+@media print {
+    :host {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    .layout-wrapper {
+        page-break-inside: avoid;
+    }
 }

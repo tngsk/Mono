@@ -1,45 +1,49 @@
-# Layout Component Demo
+# Layout Component Demo (hbox / vbox)
 
-The `mono-layout` component is used to create flexbox-based layouts such as rows and stacks (columns).
+The `mono-layout` component creates flexbox-based layouts: horizontal rows (`@[hbox]`) and vertical stacks (`@[vbox]`).
 
 ## Usage
-**Row Syntax:**
+
+**Horizontal Box (`@[hbox]`):**
 ```markdown
-@[hstack: <classes>]
-...content...
-@[/hstack]
+@[hbox](class: "gap-md")
+:::
+Left column content...
+:::
+:::
+Right column content...
+:::
+@[/hbox]
 ```
 
-**Stack Syntax:**
+**Vertical Box (`@[vbox]`):**
 ```markdown
-@[vstack: <classes>]
-...content...
-@[/vstack]
-```
-
-**Column Layout:**
-```markdown
+@[vbox](class: "center")
 :::
-...
+Top section...
 :::
+:::
+Bottom section...
+:::
+@[/vbox]
 ```
 
 ## Simple Demos
 
-### Two-Column Row
-@[hstack]
+### Two-Column Horizontal Box
+@[hbox](class: "gap-md")
 :::
 **Column 1**
-Content for the first column.
+Content for the first column with modern spacing.
 :::
 :::
 **Column 2**
-Content for the second column.
+Content for the second column with equal flex distribution.
 :::
-@[/hstack]
+@[/hbox]
 
-### Stack Layout
-@[vstack]
+### Vertical Box Layout
+@[vbox](class: "gap-sm")
 :::
 **Top Section**
 Content at the top.
@@ -48,52 +52,36 @@ Content at the top.
 **Bottom Section**
 Content at the bottom.
 :::
-@[/vstack]
+@[/vbox]
 
 ## Advanced Demos
 
-### Complex Dashboard Layout
-Combining rows, stacks, and components.
-
-@[hstack]
+### Dashboard Layout with Nested Boxes
+@[hbox](class: "gap-md")
 :::
-@[vstack]
+@[vbox](class: "gap-sm")
 :::
 **Current Time**
 @[clock]
 :::
 :::
 **Quick Actions**
-@[icon: "home"] @[icon: "settings"]
+@[icon: "star"](size: "24", color: "primary")
 :::
-@[/vstack]
+@[/vbox]
 :::
-@[spacer: width: 20px]
 :::
 **Feedback**
-@[poll: "How's the layout?", options: "Great, Needs Work"]
+@[poll: "How's the layout?", options: "Great, Clean, Modern"]
 :::
-@[/hstack]
+@[/hbox]
 
-### Media Gallery
-Using a row to display multiple interactive media components side by side.
-
-@[hstack]
+## Modifiers
+@[hbox](class: "gap-lg start")
 :::
-@[ab-test: "Design A vs B", src-a: test.svg, src-b: test_xml.svg]
-:::
-@[spacer: width: 10px]
-:::
-@[ab-test: "Design C vs D", src-a: test.svg, src-b: test_xml.svg]
-:::
-@[/hstack]
-
-## Additional Examples
-@[hstack](class: "gap-lg start")
-:::
-Col 1
+Column A (Left Aligned)
 :::
 :::
-Col 2
+Column B (Left Aligned)
 :::
-@[/hstack]
+@[/hbox]

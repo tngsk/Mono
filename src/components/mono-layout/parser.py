@@ -8,17 +8,18 @@ class Parser(BaseComponentParser):
         return ["mono-layout"]
 
     def process(self, markdown_content: str) -> str:
-        # Pattern to match the innermost layout
-        # (?:(?!@\[(?:hstack|vstack|row|stack)).)*? ensures we don't match across nested layouts
-        LAYOUT_PATTERN = r"(?s)@\[(hstack|vstack|row|stack)(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?((?:(?!@\[(?:hstack|vstack|row|stack)).)*?)@\[(?:end|/(?:layout|hstack|vstack|row|stack))\]"
+        # Pattern to match the innermost layout (hbox / vbox as primary, hstack / vstack / row / stack as aliases)
+        LAYOUT_PATTERN = r"(?s)@\[(hbox|vbox|h-box|v-box|layout-h|layout-v|hstack|vstack|row|stack)(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?((?:(?!@\[(?:hbox|vbox|h-box|v-box|layout-h|layout-v|hstack|vstack|row|stack)).)*?)@\[(?:end|/(?:layout|hbox|vbox|h-box|v-box|layout-h|layout-v|hstack|vstack|row|stack))\]"
         pattern = re.compile(LAYOUT_PATTERN, re.IGNORECASE)
 
         def replacer(match: re.Match) -> str:
-            type_name = match.group(1).lower()
-            if type_name == 'row':
-                type_name = 'hstack'
-            elif type_name == 'stack':
-                type_name = 'vstack'
+            raw_type = match.group(1).lower()
+            if raw_type in ('hbox', 'h-box', 'layout-h', 'row', 'hstack'):
+                type_name = 'hbox'
+            elif raw_type in ('vbox', 'v-box', 'layout-v', 'stack', 'vstack'):
+                type_name = 'vbox'
+            else:
+                type_name = 'hbox'
             bracket_content = match.group(2)
             args_str = match.group(3)
             inner_content = match.group(4)

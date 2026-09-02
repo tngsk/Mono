@@ -93,7 +93,7 @@ Markdown 内で `@[コンポーネント名: ラベル](キー: "値")` 構文�
 | `mono-hero` | ブロック | フルブリードのヒーローバナー | `@[hero: タイトル](mode: "dark")` |
 | `mono-icon` | インライン | Lucide / Material アイコン表示 | `@[icon: star](size: "24", color: "primary")` |
 | `mono-image` | ブロック | キャプション・ズーム対応の最適化画像 | `@[image: 説明](src: "img.png")` |
-| `mono-layout` | ブロック | 横並び (`@[hstack]`) や縦並び (`@[vstack]`) | `@[hstack](class: "gap-md")\n:::左\n:::\n:::右\n:::\n@[/hstack]` |
+| `mono-layout` | ブロック | 水平枠 (`@[hbox]`) や垂直枠 (`@[vbox]`) | `@[hbox](class: "gap-md")\n:::左\n:::\n:::右\n:::\n@[/hbox]` |
 | `mono-link` | ブロック | OGPリッチリンクカード | `@[link: タイトル](url: "https://example.com")` |
 | `mono-media-grid` | ブロック | 複数メディアのレスポンシブグリッド | `@[media-grid](columns: "2")\n...画像...\n@[/media-grid]` |
 | `mono-mermaid` | ブロック | Mermaid.js 記法のダイアグラム | `@[mermaid]\ngraph TD; A-->B;\n@[/mermaid]` |
