@@ -57,7 +57,7 @@ body {
         -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
         "Segoe UI", "Yu Gothic Medium", "Hiragino Kaku Gothic ProN",
         "Noto Sans JP", Meiryo, sans-serif;
-    font-size: clamp(1.125rem, 0.95rem + 0.6vw, 1.85rem);
+    font-size: clamp(1.25rem, 1.05rem + 0.65vw, 2.0rem);
     line-height: 1.85;
     color: var(--font-color);
     background: var(--color-base-200, #f3f4f6);
