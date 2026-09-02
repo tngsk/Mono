@@ -33,48 +33,20 @@ class MonoZoom extends MonoBaseElement {
         this.boundHandleMouseLeave = this.handleMouseLeave.bind(this);
         this.boundHandleScroll = this.handleScroll.bind(this);
         this.boundHandleKeyDown = this.handleKeyDown.bind(this);
-        this.slideObserver = null;
     }
 
     connectedCallback() {
         super.mountTemplate('mono-zoom-template');
         this.setupElements();
         this.setupEventListeners();
-        this.setupFocusMode();
     }
 
     disconnectedCallback() {
         this.removeEventListeners();
-        if (this.slideObserver) {
-            this.slideObserver.disconnect();
-        }
         if (this.activeTarget) {
             this.activeTarget.removeEventListener('mouseleave', this.boundHandleMouseLeave);
             this.activeTarget = null;
         }
-    }
-
-    setupFocusMode() {
-        const slides = document.querySelectorAll('.mono-slide');
-        if (slides.length === 0) return;
-
-        // Auto-detect active slide based on viewport intersection
-        this.slideObserver = new IntersectionObserver((entries) => {
-            // Find the intersecting entry closest to the top
-            const intersecting = entries.filter(e => e.isIntersecting);
-            if (intersecting.length > 0) {
-                slides.forEach(s => s.classList.remove('active-slide'));
-                intersecting[0].target.classList.add('active-slide');
-            } else if (window.scrollY < 80 && slides[0]) {
-                slides.forEach(s => s.classList.remove('active-slide'));
-                slides[0].classList.add('active-slide');
-            }
-        }, {
-            rootMargin: '0px 0px -35% 0px',
-            threshold: 0.1
-        });
-
-        slides.forEach(s => this.slideObserver.observe(s));
     }
 
     setupElements() {
@@ -282,7 +254,7 @@ class MonoZoom extends MonoBaseElement {
             activeEl.isContentEditable
         );
 
-        // Toggle zoom on 'Z' key press (Pinpoint Zoom)
+        // Toggle zoom on 'Z' key press
         if (!isEditable && (e.key === 'z' || e.key === 'Z')) {
             if (this.isModalOpen) {
                 this.closeModal();
@@ -292,37 +264,6 @@ class MonoZoom extends MonoBaseElement {
                 this.openModal();
                 e.preventDefault();
                 return;
-            }
-        }
-
-        // Toggle Flat Mode on 'D' key press (switch between Immersive Focus and Plain Document view)
-        if (!isEditable && !this.isModalOpen && (e.key === 'd' || e.key === 'D')) {
-            document.body.classList.toggle('mono-flat-mode');
-            e.preventDefault();
-            return;
-        }
-
-        // Section navigation with J / K / ArrowDown / ArrowUp
-        if (!isEditable && !this.isModalOpen && (e.key === 'j' || e.key === 'J' || e.key === 'ArrowDown' || e.key === 'k' || e.key === 'K' || e.key === 'ArrowUp')) {
-            const slides = Array.from(document.querySelectorAll('.mono-slide'));
-            if (slides.length > 1) {
-                let currentIndex = slides.findIndex(s => s.classList.contains('active-slide'));
-                if (currentIndex === -1) currentIndex = 0;
-
-                let nextIndex = currentIndex;
-                if (e.key === 'j' || e.key === 'J' || e.key === 'ArrowDown') {
-                    nextIndex = Math.min(currentIndex + 1, slides.length - 1);
-                } else {
-                    nextIndex = Math.max(currentIndex - 1, 0);
-                }
-
-                if (nextIndex !== currentIndex || !slides[currentIndex].classList.contains('active-slide')) {
-                    slides.forEach(s => s.classList.remove('active-slide'));
-                    slides[nextIndex].classList.add('active-slide');
-                    slides[nextIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    e.preventDefault();
-                    return;
-                }
             }
         }
 
