@@ -1,157 +1,120 @@
 # Mono - Markdown to Monolithic Document
 
-Markdownファイルを、画像（Base64）やCSSが埋め込まれた**単一の自己完結型HTMLファイル**に変換するCLIツールです。ローカルでの配布や共有に最適です。
+Markdownファイルを、画像（Base64）やCSSが埋め込まれた**単一の自己完結型HTMLファイル（Single-File HTML）**に変換する高速CLIツールです。プロジェクターでのプレゼンテーションから配布用ドキュメントまで、ローカル・オフライン環境で完全動作します。
 
 ## セットアップ
 
-初回利用前に、以下のコマンドで必要な依存関係（Node.jsパッケージやPlaywrightブラウザなど）をインストールしてください。
-
-```bash
-make setup
-```
-
-## 特徴
-
-- **アクセシビリティ (a11y)**: WAI-ARIA対応、キーボード操作のサポート、およびロールベース設計に基づいたWeb Componentsを提供し、多様な環境での利用を想定しています。
-- **単一ファイル出力**: 画像をBase64として埋め込み、外部リソース依存のないHTMLを生成（共有が容易）。
-- **コードブロック**: Highlight.jsによるシンタックスハイライトと、ワンクリック「コピー」ボタンを自動付与。
-- **Colabリンク自動変換**: `.ipynb` を指すリンクを検知し、Google Colabの起動バッジ付きリンク（別タブで開く）へ自動変換。
-- **カスタム記法**: `{{テキスト}}` と記述すると、改行を防ぐ `nowrap` スパンに変換。
-- **画像の最適化と遅延読み込み**: 画像をWebPに変換・SVGをインライン化し、非同期注入戦略によって遅延読み込みを行うことでパフォーマンスを最適化。
-- **ファイルサイズ検証**: 出力ファイルのサイズを検証し、30MBを超える場合は警告・停止（`--force` でバイパス可能）。
-- **セキュリティ設定（CSP）**: `config.toml` から設定を読み込み、Content-Security-Policyタグを自動設定。
-- **Web Components対応**: 外部依存なしのVanilla JSによるWeb Componentsの埋め込みに対応。多彩なUIコンポーネントをMarkdown内に記述可能です。
-
-### 利用可能な Web Components 一覧
-
-Monoでは外部依存なしのVanilla JSによる多彩なWeb Componentsを埋め込むことができます。各コンポーネントはカスタムMarkdown記法で記述します。
-
-#### 明示的コンポーネント
-
-| コンポーネント | 概要 | 記述例 | オプション |
-|---|---|---|---|
-| `mono-ab-test` | A/Bテスト用のコンポーネント。2つの画像やコンテンツを並べて比較します。 | `@[ab-test](src-a: "img1.png", src-b: "img2.png")` | `url-a: "url"`<br>`url-b: "url"`<br>`title: "text"` |
-| `mono-account` | ログインなどのアカウント管理UIを表示します。 | `@[account]()` | なし |
-| `mono-badge` | バッジを表示します。 | `@[badge: "New!"](color: "red")` | `text: "text"`<br>`color: "red|blue|..."`<br>`soft: "true|false"`<br>`outline: "true|false"` |
-| `mono-clock` | 時計を表示します。 | `@[clock](display: "analog")` | `display: "analog|digital"`<br>`format: "24h|12h"` |
-| `mono-countdown` | カウントダウンタイマーを表示します。 | `@[countdown](time: "60", color: "red")` | `time: "10m|2024-12-31T23:59:59"`<br>`color: "red|blue|..."` |
-| `mono-dice` | サイコロを表示し、クリックで振ることができます。 | `@[dice](number: 2, faces: 6)` | `number: "1~6"`<br>`faces: "4|6|8|10|12|20"` |
-| `mono-drawer` | 引き出し式のサイドメニュー（ドロワー）を表示します。ブロック要素。 | `@[drawer](position: "left", open: "false")\n...コンテンツ...\n@[/drawer]` | `label: "text"`<br>`position: "left|right"`<br>`open: "true|false"` |
-| `mono-flipcard` | クリックまたはホバーで裏返るカード。 | `@[flipcard: "Front Text"](answer: "Back Text")` | `front_text: "text"`<br>`answer: "text"` |
-| `mono-flow` | フローチャート（ノードとエッジ）を表示します。 | `@[flow: "フロー"](direction: "LR")<br>A -> B<br>@[/flow]` | `title: "text"`<br>`direction: "TB|LR"` |
-| `mono-group-assignment` | グループ分けを行うコンポーネント。 | `@[group-assignment](title: "グループ分け")` | `title: "text"` |
-| `mono-hero` | ヒーローバナー領域を表示します。ブロック要素。 | `@[hero](bg-color: "#000", text-color: "#fff")\n...コンテンツ...\n@[/hero]` | `title: "text"`<br>`image: "url"`<br>`mode: "light|dark"`<br>`bg-color: "#HEX"`<br>`text-color: "#HEX"` |
-| `mono-icon` | アイコンを表示します。 | `@[icon: star](size: "24", color: "yellow")` | `name: "star|heart|..."`<br>`size: "16~128"`<br>`color: "red|#HEX"`<br>`display: "inline|block"` |
-| `mono-image` | 画像を表示します。 | `@[image]()` | `url: "url"`<br>`alt: "text"`<br>`width: "size"`<br>`height: "size"` |
-| `mono-layout` | 横並び（hstack）や縦並び（vstack）のレイアウトを構築します。ブロック要素。 | `@[hstack]\n:::\n左側コンテンツ\n:::\n右側コンテンツ\n@[/hstack]` | `label: "text"`<br>`class: "text"` |
-| `mono-link` | リンクカードを表示します。 | `@[link]()` | `url: "url"`<br>`style: "full|small|card"` |
-| `mono-media-grid` | 複数のメディアをグリッド状に配置して表示します。ブロック要素。 | `@[media-grid]()\n...コンテンツ...\n@[/media-grid]` | `label: "text"`<br>`columns: "number"`<br>`rows: "number"`<br>`gap: "css-size"`<br>`fit: "cover|contain"` |
-| `mono-mermaid` | Mermaid記法で図表を描画し、SVGとして埋め込みます。ブロック要素。 | `@[mermaid]\ngraph TD;\nA-->B;\n@[/mermaid]` | `title: "text"`<br>`theme: "default|dark|forest|neutral|base"`<br>`align: "center|left|right"`<br>`bg-color: "#HEX|color"`<br>`border: "true|false"`<br>`max-width: "size"` |
-| `mono-notebook` | 入力可能なノートブック領域を表示します。 | `@[notebook](title: "メモ", placeholder: "入力してください")` | `title: "text"`<br>`placeholder: "text"`<br>`id: "text"` |
-| `mono-poll` | 投票システムを表示します。 | `@[poll](title: "好きな言語は？", options: "Python, JavaScript")` | `title: "text"`<br>`options: "A,B,C"` |
-| `mono-reaction` | リアクション（いいね、など）ボタンを表示します。 | `@[reaction](options: "👍, 👎")` | `label: "text"`<br>`options: "👍,👎"` |
-| `mono-score` | 楽譜を表示します。 | `@[score](clef: "treble", notes: "C4 D4 E4")` | `notes: "C4 D4 E4"`<br>`clef: "treble|bass"`<br>`time: "4/4|3/4"`<br>`voices: '["C4 D4", "E4 F4"]'` |
-| `mono-section` | セクション領域を表示します。ブロック要素。 | `@[section](bg-color: "#f0f0f0")\n...コンテンツ...\n@[/section]` | `title: "text"`<br>`image: "url"`<br>`mode: "light|dark"`<br>`bg-color: "#HEX"`<br>`text-color: "#HEX"`<br>`height: "px|vh"`<br>`width: "px|vw"` |
-| `mono-session-join` | セッション（同期・データ収集）へ参加するボタン等を表示します。 | `@[session-join](title: "参加する")` | `title: "text"` |
-| `mono-sound` | 効果音や音声を再生するボタンを表示します。 | `@[sound: "https://example.com/audio.mp3"](label: "再生")` | `url: "url"`<br>`label: "text"` |
-| `mono-synth` | Tone.jsを用いたシンプルなシンセサイザー。OSC, Filter, ADSR, ミニ鍵盤を備えます。 | `@[mono-synth: sample="asset-test.wav"]()` | `url: "url"`<br>`label: "text"` |
-| `mono-textfield-input` | テキスト入力フィールドを表示します。 | `@[textfield](placeholder: "テキストを入力", size: "large")` | `label: "text"`<br>`id: "text"`<br>`placeholder: "text"`<br>`size: "small|medium|large"` |
-| `mono-theme` | テーマ切り替えコンポーネント。通常はMarkdownディレクティブでテーマを設定します。 | `@[theme: dark]()` | `theme_name: "light|dark"`<br>`show_ui: "true|false"`<br>`config: "json"`<br>`font_size: "16px"` |
-| `mono-zoom` | 説明なし | `@[zoom]()` | なし |
-
-#### 暗黙的・システムコンポーネント
-
-これらのコンポーネントはオプションやサーバー構成によって自動的に組み込まれます。
-
-- `mono-brush`: 描画オーバーレイ機能。暗黙的に全ページに組み込まれるか、特定条件で有効化されます。
-- `mono-code-block`: コードブロックコンポーネント。コードブロックが存在する場合に暗黙的に組み込まれます。
-- `mono-export`: 外部エクスポート機能。`--export`オプションで強制的に有効になります。
-- `mono-sync`: 状態同期・通信機能。サーバーとのSSE/HTTP通信を管理し、暗黙的に組み込まれます。
-
-## セットアップ
-
-依存管理に `uv` を使用します。
+依存関係の管理には `uv` を使用します。
 
 ```bash
 uv sync
 ```
 
+## 主な特徴 (Mono v2.0)
+
+- **完全オンデマンド注入 (Zero-JS)**: 使用されているWeb Componentsのみをツリーシェイキングして注入。静的ドキュメントはJavaScript不要の約10KBの極小HTMLを出力。
+- **フルスクリーン流体レイアウト**: 画面幅に応じて最大1750px（画面占有率91%〜92%）までダイナミックに伸縮し、大画面プロジェクターでも無駄な余白を排したスライド表示を実現。
+- **スクリーンフィリング・タイポグラフィ**: `.text-display` クラスにより、2〜3文字のキーワードが画面幅の約80%を埋め尽くす迫力のスライド見出しを生成。
+- **包括的デザイントークン**: DaisyUI着想の `themes.toml` により、ライト/ダーク/コーポレート/学習用などのテーマ切り替えに全コンポーネントが即時連動。
+- **単一ファイル自己完結**: 画像をWebP/Base64変換し、SVGをインライン化して単一HTML内に完結。
+- **アクセシビリティ (a11y)**: WAI-ARIA対応、キーボード操作（Tab/Enter/Space/Esc）、および44x44px以上のタッチターゲットを標準装備。
+- **印刷 & PDF 最適化**: `@media print` による静的フォールバックと正確な色再現（`print-color-adjust: exact`）を全コンポーネントに配備。
+
 ## 使い方
 
 ### 基本的な変換
-入力ファイル名に基づいて `document.html` が生成されます。
+
+入力ファイル名に基づいて単一HTMLが生成されます。
 
 ```bash
 uv run main.py document.md
 ```
 
-### カスタムCSSを埋め込む
-複数のCSSファイルを指定して埋め込むことができます。
+### 出力先とプロファイルの指定
+
+`-p` (`--profile`) で用途に応じたプリセットを選択できます。
 
 ```bash
-uv run main.py document.md -c style.css theme.css
+# プレゼンテーション用（オートズーム mono-zoom を自動有効化）
+uv run main.py slides.md -o output.html -p presentation
+
+# 完全静的ドキュメント用（Zero-JS 出力）
+uv run main.py doc.md -o output.html -p static
 ```
 
-### 出力ファイルの指定と詳細ログ
-`-o` で出力先を指定し、`-v` で変換プロセスの詳細なログを確認します。
+### テーマの指定
 
 ```bash
-uv run main.py document.md -o docs/index.html -v
+# テーマを直接指定して変換（light, dark, corporate, calm-study）
+uv run main.py document.md --theme dark
 ```
 
-### HTMLタグの除外処理
-指定したタグ（およびその中身）を出力HTMLから削除します。
+### PDF エクスポート
+
+単一の縦長 monolithic PDF として書き出します（Playwrightが必要です）。
 
 ```bash
-uv run main.py document.md -e hr div
+uv run main.py document.md --pdf -o document.pdf
 ```
 
-### カスタムテンプレートを使用する
-カスタムのHTMLテンプレートを指定して変換します。
+### ファイルサイズ制限のバイパス
 
-```bash
-uv run main.py document.md -t custom_template.html
-```
-
-### ファイルサイズ制限をバイパスする
 出力HTMLが30MBを超える場合、デフォルトではエラーになりますが `--force` で強制的に保存できます。
 
 ```bash
 uv run main.py document.md --force
 ```
 
-### 同期・データ収集サーバーの起動
-同期機能（スクロール同期など）やデータ収集（投票結果など）を使用する場合は、付属のFastAPIサーバーを起動します。
+### リアルタイム同期・データ収集サーバーの起動
 
 ```bash
 uv run server.py
 ```
-サーバーはデフォルトで `http://0.0.0.0:8000` で起動し、API (`/api/sync/stream`) とデータ収集API (`/api/data`) を提供します。
 
 ---
 
-すべてのオプションを確認するにはヘルプを参照してください：
+## 利用可能な Web Components 一覧
 
-```bash
-uv run main.py --help
-```
+Markdown 内で `@[コンポーネント名: ラベル](キー: "値")` 構文を用いて埋め込みます。
 
-## 変更ログ
+| コンポーネント | 種類 | 概要 | 記述例 |
+|---|---|---|---|
+| `mono-ab-test` | ブロック | 2つの画像やコンテンツを並べて比較・投票 | `@[ab-test](src-a: "a.png", src-b: "b.png")` |
+| `mono-account` | インライン | ログイン・セッション管理UI | `@[account]()` |
+| `mono-badge` | インライン | バッジ・タグ表示 | `@[badge: 重要](type: "error")` |
+| `mono-clock` | ブロック | アナログ/デジタル時計 | `@[clock](format: "24h")` |
+| `mono-code-block` | 自動変換 | シンタックスハイライトとコピーボタン付きコードブロック | 通常のコードブロック（```）から自動変換 |
+| `mono-countdown` | ブロック | カウントダウンタイマー | `@[countdown](minutes: "5")` |
+| `mono-dice` | ブロック | クリックで振れるサイコロ | `@[dice](sides: "6")` |
+| `mono-drawer` | ブロック | 引き出し式サイドメニュー | `@[drawer: メニュー]()\n...コンテンツ...\n@[/drawer]` |
+| `mono-flipcard` | ブロック | 表裏が反転するフラッシュカード | `@[flipcard: 問題](back: "解答")` |
+| `mono-flow` | ブロック | ノードと矢印による軽量フローチャート | `@[flow]\nA -> B\n@[/flow]` |
+| `mono-group-assignment` | ブロック | 参加者のランダムグループ分け | `@[group-assignment](groups: "4")` |
+| `mono-hero` | ブロック | フルブリードのヒーローバナー | `@[hero: タイトル](mode: "dark")` |
+| `mono-icon` | インライン | Lucide / Material アイコン表示 | `@[icon: star](size: "24", color: "primary")` |
+| `mono-image` | ブロック | キャプション・ズーム対応の最適化画像 | `@[image: 説明](src: "img.png")` |
+| `mono-layout` | ブロック | 横並び (`@[hstack]`) や縦並び (`@[vstack]`) | `@[hstack](class: "gap-md")\n:::左\n:::\n:::右\n:::\n@[/hstack]` |
+| `mono-link` | ブロック | OGPリッチリンクカード | `@[link: タイトル](url: "https://example.com")` |
+| `mono-media-grid` | ブロック | 複数メディアのレスポンシブグリッド | `@[media-grid](columns: "2")\n...画像...\n@[/media-grid]` |
+| `mono-mermaid` | ブロック | Mermaid.js 記法のダイアグラム | `@[mermaid]\ngraph TD; A-->B;\n@[/mermaid]` |
+| `mono-notebook` | ブロック | 永続化メモ・ノートブック領域 | `@[notebook: メモ](id: "note-1")` |
+| `mono-poll` | ブロック | リアルタイム・ローカル投票コンポーネント | `@[poll: 質問](options: "選択肢A, 選択肢B")` |
+| `mono-reaction` | ブロック | 絵文字リアクションバー | `@[reaction](emojis: "👍,🎉,❤️")` |
+| `mono-score` | インライン | ABC記譜法による楽譜レンダリング | `@[score](notes: "C D E F")` |
+| `mono-section` | ブロック | フルブリード背景セクション領域 | `@[section](padding: "md")\n...コンテンツ...\n@[/section]` |
+| `mono-session-join` | ブロック | 講義・セッション参加ボタン | `@[session-join](room: "101")` |
+| `mono-sound` | インライン | 音声・効果音再生ボタン | `@[sound: 再生](src: "sound.mp3")` |
+| `mono-synth` | ブロック | Web Audio による対話型シンセサイザー | `@[mono-synth]()` |
+| `mono-textfield-input` | インライン | 入力データ収集テキストフィールド | `@[textfield-input: 氏名](id: "user-name")` |
+| `mono-theme` | インライン | テーマ切り替えセレクター | `@[theme: dark]()` |
+| `mono-zoom` | 自動/明示 | 大画面オートズーム拡大機能（Zキー / クリック） | `@[zoom]()` または `-p presentation` |
 
-- `mono-icon`コンポーネントの追加
-- `mono-spacer`コンポーネントによる水平/垂直スペーシングのサポート
-- デスクトップアプリの設計ドキュメントの最終化
-- GIFアニメーションサポートツールの設計ドキュメント追加
-- 効果音コンポーネント `mono-sound` の追加
-- ディレクトリ構造の `src/` 配下へのリファクタリング
-- 描画オーバーレイのための `mono-brush` コンポーネント追加
-- 方向ベースのレイアウトシステム `mono-layout` の追加
+## 拡張 Markdown 記法
 
-### セキュリティ設定と環境変数
-
-FastAPI サーバー (`server.py`) は、`config.toml` によって CORS ポリシーを設定できますが、環境変数 `ENVIRONMENT` を用いてセキュリティレベルを動的に変更します。
-
-- **ローカル開発時 (デフォルト設定)**:
-  `ENVIRONMENT` が設定されていない、または `development` などの場合、ローカルでの動作やテストを優先し、すべてのメソッド・ヘッダーを許可し、`config.toml` に設定された任意のオリジン（`null` などを含む）を受け入れます。
-- **本番環境への展開 (`ENVIRONMENT=production`)**:
-  サーバーを本番環境やリモートにデプロイする際は、必ず環境変数 `ENVIRONMENT=production` を設定してください。これにより、`config.toml` から危険なオリジン（`*` や `null`）が自動的に除外され、許可される HTTP メソッド (`GET`, `POST`, `OPTIONS`) やヘッダーが厳格に制限されます。
+- **改行禁止 (Nowrap)**: `{{絶対に改行させないテキスト}}`
+- **テキストサイズ変更 (流体スケール)**:
+  - `[特大スライド見出し]{.text-display}` （画面幅の約80%を埋め尽くす可変フォント）
+  - `[大文字キーワード]{.text-xlarge}`
+  - `[リード文]{.text-large}`
+  - `[注釈]{.text-small}`
+- **Colabリンク自動変換**: `.ipynb` ファイルへのリンクを記述すると、自動的に Google Colab 起動バッジ付きリンクへ変換されます。

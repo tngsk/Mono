@@ -1,51 +1,51 @@
 # Components & Extensions Development Guide
 
-This document defines the core specification for developing interactive Web Components and Markdown extensions for the Mono framework.
+This document defines the core specification for developing interactive Web Components and Markdown extensions for the Mono framework (v2.0).
 
 ## 1. Extension Development Guidelines
 
-To extend the standard Python-Markdown processing, add modules to `src/extensions/`.
+To extend standard Python-Markdown processing, add modules to `src/extensions/`.
 
-1.  Create a new Python file in `src/extensions/` (e.g., `my_extension.py`).
-2.  Create a class inheriting from `markdown.extensions.Extension` and implement the `extendMarkdown` method to register processors.
-3.  Define a `makeExtension(**kwargs)` function at the end of the module that returns an instance of your extension.
-4.  Ensure it is loaded by adding it to the `MARKDOWN_EXTENSIONS` list in `src/constants.py` or loading it dynamically.
+1. Create a new Python file in `src/extensions/` (e.g., `my_extension.py`).
+2. Create a class inheriting from `markdown.extensions.Extension` and implement the `extendMarkdown` method to register processors.
+3. Define a `makeExtension(**kwargs)` function at the end of the module that returns an instance of your extension.
+4. Ensure it is registered in `MARKDOWN_EXTENSIONS` list in `src/constants.py`.
 
 ## 2. Component Development Architecture
 
-Custom UI elements are built as Web Components inside `src/components/`.
+Custom UI elements are built as encapsulated Web Components inside `src/components/`.
 
 ### 2.1. Directory Structure
 Component directories must use kebab-case (e.g., `mono-my-component`) and include:
-*   `parser.py`: Python logic to parse the custom Markdown directive into an HTML tag.
-*   `script.js`: Vanilla JS implementation (Shadow DOM or Light DOM logic).
-*   `style.css`: Styles for the component's encapsulated Shadow DOM.
-*   `content.css`: Global styles scoped to the component's tag name for styling slotted Light DOM elements.
-*   `template.html`: The HTML template, wrapped in `<template id="[component-name]-template">`.
+* `parser.py`: Python logic to parse the custom Markdown directive into an HTML tag (`<mono-my-component>`).
+* `script.js`: Vanilla JS implementation extending `MonoInteractiveElement` or `MonoBaseElement`.
+* `style.css`: Styles for the component's encapsulated Shadow DOM.
+* `template.html`: The HTML template, wrapped in `<template id="[component-name]-template">`.
+* `content.css` (Optional): Global styles scoped to the component's tag name for styling slotted Light DOM elements.
 
-### 2.2. CSS Architecture Specification (Shadow vs. Light DOM)
-To resolve styling conflicts between encapsulated UI and slotted Markdown content:
+### 2.2. Design System & Design Tokens
+All component styling must strictly reference design tokens defined in `themes.toml` and `base.css`:
+* **Border Radii:** `var(--radius-sm, 0.125rem)`, `var(--radius-md, 0.25rem)`, `var(--radius-lg, 0.5rem)`
+* **Shadows:** `var(--shadow-sm)`, `var(--shadow-md)`, `var(--shadow-lg)`
+* **Colors:** `var(--color-base-content)`, `var(--color-base-100)`, `var(--color-base-200)`, `var(--color-primary)`, `var(--border-color)`
+* **Spacing:** `var(--spacing-xs)`, `var(--spacing-sm)`, `var(--spacing-md)`, `var(--spacing-lg)`, `var(--spacing-xl)`
 
-*   **`style.css` (Shadow DOM):** Defines styles for the component itself (`:host`) and its internal UI structure. Avoid `::slotted` for styling deeply nested children.
-*   **`content.css` (Light DOM):** Defines styles for the Markdown content slotted into the component (e.g., `h1`, `p`, `pre`).
-    *   **Rule:** You **MUST** scope these styles using the component's tag name as the parent selector to prevent global CSS leaks.
-    *   **Good:** `mono-hero h1 { font-size: 3rem; }`
-    *   **Bad:** `h1 { font-size: 3rem; }`
-*   **Build Injection:** Python injects `style.css` into `{COMPONENTS_CSS}` within the component's template, while `content.css` from all used components are aggregated and injected globally into the `<head>`.
+### 2.3. Print & PDF Standardization
+All components must include `@media print` rules in their `style.css`:
+* Apply `-webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;` to background elements.
+* Hide purely interactive/transient UI controls (`display: none`) and render clean static visual fallbacks.
 
 ## 3. Markdown Directive Syntax
 
 Components are invoked using the `@[]` syntax.
 
-**Inline or Empty Components:**
-`@[component-name: optional_label, key1: "value1"](style_key: "value2")`
-*   `[...]`: Component-specific configuration options.
-*   `(...)`: Style-related options (e.g., `class`, `padding`).
+**Inline Components:**
+`@[component-name: optional_label](key: "value")`
 
 **Block-level Components:**
-Use an explicit closing tag that includes the component name. Avoid ambiguous tags like `@[end]`.
+Use an explicit closing tag with the component name:
 ```markdown
-@[my-component](bg-color: "#f0f0f0")
+@[my-component](option: "value")
 Inner Markdown content here.
 @[/my-component]
 ```
@@ -66,20 +66,14 @@ class Parser(BaseComponentParser):
         return ["mono-my-component"]
 
     def process(self, markdown_content: str) -> str:
-        # Custom logic utilizing self.parse_key_value_args...
+        # Parsing logic...
         pass
 ```
 
-## 4. Component Behavior (State Machine)
+## 4. Component Behavior & State Management
 
-Interactive components extend `MonoInteractiveElement` (or `MonoBaseElement`) for consistent lifecycle management.
-
-1.  **Initialization (`connectedCallback`)**: Attaches to the DOM, parses attributes, and restores prior state using `this.loadState(key)`. Do not call `super.connectedCallback()` when extending `MonoBaseElement`.
-2.  **Authentication (`mono-auth-changed`)**: Listens for global authentication events to enable/disable features.
-3.  **Interaction**: User interaction updates the state.
-4.  **Storage / Sync**: State changes are saved locally using `this.saveState(key, data)` (which handles Mono versioning) and broadcast via CustomEvents (e.g., `mono:vote` or `mono-data`) to be picked up by `mono-sync` for server transmission.
-
-## 5. System Components vs Explicit Components
-
-*   **Explicit Components:** Components like `mono-poll`, `mono-hero`, and `mono-layout` require explicit `@[]` syntax in the Markdown.
-*   **Implicit/System Components:** Components like `mono-brush`, `mono-code-block`, `mono-sync`, and `mono-export` are automatically injected by the system based on content or flags. Note: The system injection approach for some components is planned for deprecation in favor of explicit architectural approaches.
+Interactive components must extend `MonoInteractiveElement` (`src/templates/core/mono-interactive-element.js`):
+1. **Lifecycle (`connectedCallback`)**: Attaches Shadow DOM and initializes state.
+2. **Persistent Storage**: Save data into `localStorage` using keys prefixed with `mono_`.
+3. **Graceful Degradation**: Enclose storage and dynamic operations in `try...catch` blocks to ensure standalone operation in restricted environments.
+4. **Touch Target Accessibility**: Interactive clickable elements must maintain a minimum bounding size of `44x44px` (`min-width: 2.75rem; min-height: 2.75rem`).
