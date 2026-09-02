@@ -16,14 +16,7 @@ class SlideSectionTreeprocessor(Treeprocessor):
         # Check if there is at least one hr element
         has_hr = any(child.tag == "hr" for child in children)
         if not has_hr:
-            # If no hr, wrap entire content in a single slide container for consistency
-            sec = etree.Element("section")
-            sec.set("class", "mono-slide")
-            sec.set("data-slide-index", "0")
-            for child in children:
-                sec.append(child)
-            root.clear()
-            root.append(sec)
+            # If no hr, do not alter the DOM structure to maintain standard document flow
             return root
 
         new_children = []

@@ -98,10 +98,10 @@ body > * {
 }
 
 /* コンテナ境界のクリーンアップ（先頭の上マージン・末尾の下マージンを相殺し二重加算を根絶） */
-:where(body > :first-child, [class*="card"] > :first-child, [class*="preview"] > :first-child, section > :first-child, div > :first-child) {
+:where(body > :first-child, [class*="card"] > :first-child, [class*="preview"] > :first-child, section:not(.mono-slide) > :first-child, div > :first-child) {
     margin-block-start: 0 !important;
 }
-:where(body > :last-child, [class*="card"] > :last-child, [class*="preview"] > :last-child, section > :last-child, div > :last-child) {
+:where(body > :last-child, [class*="card"] > :last-child, [class*="preview"] > :last-child, section:not(.mono-slide) > :last-child, div > :last-child) {
     margin-block-end: 0 !important;
 }
 
@@ -139,6 +139,7 @@ mono-section + mono-section {
 .mono-slide {
     position: relative;
     width: 100%;
+    margin-block: var(--spacing-flow);
     transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), filter 0.35s ease;
 }
 

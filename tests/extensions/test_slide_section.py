@@ -25,7 +25,7 @@ Content of slide 2"""
 Single section content"""
 
         html = markdown.markdown(md_text, extensions=[SlideSectionExtension()])
-        self.assertIn('<section class="mono-slide" data-slide-index="0">', html)
+        self.assertNotIn('<section class="mono-slide"', html)
         self.assertIn('<h1>Single Document</h1>', html)
 
 
