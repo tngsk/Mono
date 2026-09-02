@@ -1,0 +1,69 @@
+/* ==========================================================================
+   Mono Zoom Content CSS (Light DOM & Deep Nested Elements Styling)
+   ========================================================================== */
+
+mono-zoom h1 {
+    font-size: clamp(4.5rem, 9vw, 9rem) !important;
+    line-height: 1.15 !important;
+    text-align: center !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+    max-width: min(94vw, 1750px) !important;
+}
+
+mono-zoom h2 {
+    font-size: clamp(3.5rem, 7.5vw, 7.5rem) !important;
+    line-height: 1.2 !important;
+    text-align: center !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+    max-width: min(94vw, 1700px) !important;
+}
+
+mono-zoom h3,
+mono-zoom h4 {
+    font-size: clamp(2.5rem, 5.5vw, 5.5rem) !important;
+    line-height: 1.25 !important;
+    text-align: center !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+    max-width: min(94vw, 1650px) !important;
+}
+
+mono-zoom p {
+    font-size: clamp(1.8rem, 3.2vw, 3.8rem) !important;
+    line-height: 1.75 !important;
+    width: 100% !important;
+    max-width: min(94vw, 1650px) !important;
+    margin: 0 auto !important;
+}
+
+mono-zoom table {
+    width: 100% !important;
+    max-width: min(94vw, 1700px) !important;
+    font-size: clamp(1.5rem, 2.6vw, 3rem) !important;
+    margin: 0 auto !important;
+}
+
+mono-zoom blockquote {
+    font-size: clamp(2.2rem, 4.2vw, 4.8rem) !important;
+    line-height: 1.5 !important;
+    width: 100% !important;
+    max-width: min(94vw, 1650px) !important;
+    margin: 0 auto !important;
+}
+
+mono-zoom pre,
+mono-zoom mono-code-block {
+    font-size: clamp(1.4rem, 2.4vw, 2.8rem) !important;
+    width: 100% !important;
+    max-width: min(94vw, 1700px) !important;
+    margin: 0 auto !important;
+}
+
+mono-zoom mono-flipcard {
+    width: min(85vw, 850px) !important;
+    min-height: clamp(300px, 45vh, 550px) !important;
+    font-size: clamp(2.2rem, 4.5vw, 4.2rem) !important;
+    margin: 0 auto !important;
+}
