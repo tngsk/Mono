@@ -19,6 +19,7 @@ class MonoZoom extends MonoBaseElement {
             'mono-score:not(.no-zoom)',
             'mono-section:not(.no-zoom)',
             'mono-hero:not(.no-zoom)',
+            '.mono-slide:not(.no-zoom)',
             '.column:not(.no-zoom)',
             'mono-media-grid:not(.no-zoom)',
             'mono-drawer:not(.no-zoom)',
