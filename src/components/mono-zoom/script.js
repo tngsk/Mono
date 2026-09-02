@@ -58,17 +58,20 @@ class MonoZoom extends MonoBaseElement {
         const slides = document.querySelectorAll('.mono-slide');
         if (slides.length === 0) return;
 
-        // Auto-detect active slide on scroll
+        // Auto-detect active slide based on viewport intersection
         this.slideObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    slides.forEach(s => s.classList.remove('active-slide'));
-                    entry.target.classList.add('active-slide');
-                }
-            });
+            // Find the intersecting entry closest to the top
+            const intersecting = entries.filter(e => e.isIntersecting);
+            if (intersecting.length > 0) {
+                slides.forEach(s => s.classList.remove('active-slide'));
+                intersecting[0].target.classList.add('active-slide');
+            } else if (window.scrollY < 80 && slides[0]) {
+                slides.forEach(s => s.classList.remove('active-slide'));
+                slides[0].classList.add('active-slide');
+            }
         }, {
-            rootMargin: '-30% 0px -30% 0px',
-            threshold: 0
+            rootMargin: '0px 0px -35% 0px',
+            threshold: 0.1
         });
 
         slides.forEach(s => this.slideObserver.observe(s));
@@ -292,20 +295,9 @@ class MonoZoom extends MonoBaseElement {
             }
         }
 
-        // Toggle Presentation Focus Mode on 'P' key press
-        if (!isEditable && !this.isModalOpen && (e.key === 'p' || e.key === 'P')) {
-            document.body.classList.toggle('mono-focus-mode');
-            const isFocus = document.body.classList.contains('mono-focus-mode');
-            if (isFocus) {
-                // Ensure currently visible slide is marked active
-                const slides = Array.from(document.querySelectorAll('.mono-slide'));
-                if (slides.length > 0) {
-                    const currentActive = slides.find(s => s.classList.contains('active-slide'));
-                    if (!currentActive) {
-                        slides[0].classList.add('active-slide');
-                    }
-                }
-            }
+        // Toggle Flat Mode on 'D' key press (switch between Immersive Focus and Plain Document view)
+        if (!isEditable && !this.isModalOpen && (e.key === 'd' || e.key === 'D')) {
+            document.body.classList.toggle('mono-flat-mode');
             e.preventDefault();
             return;
         }

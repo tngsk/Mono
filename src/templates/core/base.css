@@ -133,30 +133,29 @@ mono-section + mono-section {
 }
 
 /* ==========================================================================
-   Presentation Focus Mode (P-Key: 境界なきスライド・周辺減光フォーカス)
+   Default Immersive Focus (デフォルト没頭型フォーカス・Dキーでフラット表示切替)
    ========================================================================== */
 
 .mono-slide {
     position: relative;
     width: 100%;
     margin-block: var(--spacing-flow);
-    transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), filter 0.35s ease;
+    opacity: 0.22;
+    filter: blur(0.3px);
+    transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), filter 0.35s ease, transform 0.35s ease;
 }
 
-/* Pキー起動時の周辺減光（Spotlight Dimming） */
-body.mono-focus-mode .mono-slide {
-    opacity: 0.18;
-    filter: blur(0.5px);
-}
-
-body.mono-focus-mode .mono-slide.active-slide,
-body.mono-focus-mode .mono-slide:hover {
+/* カレントセクションおよびホバー時は明度100%（鮮明表示） */
+.mono-slide.active-slide,
+.mono-slide:hover {
     opacity: 1.0;
     filter: none;
 }
 
-body.mono-focus-mode hr.mono-slide-divider {
-    opacity: 0.15;
+/* Dキー押下時：フラットモード（全セクション100%均一表示） */
+body.mono-flat-mode .mono-slide {
+    opacity: 1.0 !important;
+    filter: none !important;
 }
 
 /* 水平罫線（スライド区切り・話題の区切り） */
@@ -168,7 +167,7 @@ hr.mono-slide-divider {
     margin-inline: auto;
     border: none;
     border-top: 0.125rem dotted var(--border-color, #d1d5db);
-    opacity: 0.6;
+    opacity: 0.5;
 }
 
 /* 見出し -------------------------------------------------- */
