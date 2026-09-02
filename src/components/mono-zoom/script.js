@@ -200,7 +200,8 @@ class MonoZoom extends MonoBaseElement {
             clone.style.position = 'relative';
             clone.style.top = 'auto';
             clone.style.left = 'auto';
-            clone.style.margin = '0 auto';
+            clone.style.marginLeft = 'auto';
+            clone.style.marginRight = 'auto';
         }
 
         // Prevent duplicate IDs in the DOM tree

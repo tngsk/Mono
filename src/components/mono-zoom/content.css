@@ -6,7 +6,7 @@ mono-zoom h1 {
     font-size: clamp(4.5rem, 9vw, 9rem) !important;
     line-height: 1.15 !important;
     text-align: center !important;
-    margin: 0 auto !important;
+    margin: 0 auto clamp(2rem, 3.5vw, 4rem) auto !important;
     width: 100% !important;
     max-width: min(94vw, 1750px) !important;
 }
@@ -15,7 +15,7 @@ mono-zoom h2 {
     font-size: clamp(3.5rem, 7.5vw, 7.5rem) !important;
     line-height: 1.2 !important;
     text-align: center !important;
-    margin: 0 auto !important;
+    margin: clamp(1.5rem, 2.5vw, 3rem) auto clamp(1.5rem, 2.5vw, 2.5rem) auto !important;
     width: 100% !important;
     max-width: min(94vw, 1700px) !important;
 }
@@ -25,7 +25,7 @@ mono-zoom h4 {
     font-size: clamp(2.5rem, 5.5vw, 5.5rem) !important;
     line-height: 1.25 !important;
     text-align: center !important;
-    margin: 0 auto !important;
+    margin: clamp(1.2rem, 2vw, 2.5rem) auto clamp(1rem, 1.8vw, 2rem) auto !important;
     width: 100% !important;
     max-width: min(94vw, 1650px) !important;
 }
@@ -35,14 +35,28 @@ mono-zoom p {
     line-height: 1.75 !important;
     width: 100% !important;
     max-width: min(94vw, 1650px) !important;
-    margin: 0 auto !important;
+    margin: 0 auto clamp(1.5rem, 2.5vw, 2.5rem) auto !important;
+}
+
+mono-zoom ul,
+mono-zoom ol {
+    font-size: clamp(1.8rem, 3.2vw, 3.8rem) !important;
+    line-height: 1.85 !important;
+    padding-left: clamp(2rem, 4vw, 4rem) !important;
+    margin: 0 auto clamp(1.5rem, 2.5vw, 2.5rem) auto !important;
+    width: 100% !important;
+    max-width: min(94vw, 1650px) !important;
+}
+
+mono-zoom li + li {
+    margin-top: clamp(0.75rem, 1.2vw, 1.5rem) !important;
 }
 
 mono-zoom table {
     width: 100% !important;
     max-width: min(94vw, 1700px) !important;
     font-size: clamp(1.5rem, 2.6vw, 3rem) !important;
-    margin: 0 auto !important;
+    margin: 0 auto clamp(1.5rem, 2.5vw, 2.5rem) auto !important;
 }
 
 mono-zoom blockquote {
@@ -50,7 +64,7 @@ mono-zoom blockquote {
     line-height: 1.5 !important;
     width: 100% !important;
     max-width: min(94vw, 1650px) !important;
-    margin: 0 auto !important;
+    margin: clamp(1.5rem, 2.5vw, 2.5rem) auto !important;
 }
 
 mono-zoom pre,
@@ -58,7 +72,7 @@ mono-zoom mono-code-block {
     font-size: clamp(1.4rem, 2.4vw, 2.8rem) !important;
     width: 100% !important;
     max-width: min(94vw, 1700px) !important;
-    margin: 0 auto !important;
+    margin: 0 auto clamp(1.5rem, 2.5vw, 2.5rem) auto !important;
 }
 
 mono-zoom mono-flipcard {
@@ -75,4 +89,8 @@ mono-zoom .column {
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
+}
+
+mono-zoom .column > * + * {
+    margin-top: clamp(1.5rem, 2.5vw, 2.5rem) !important;
 }
