@@ -14,6 +14,10 @@ class MonoCountdown extends MonoBaseElement {
         this.timeDisplayElement = this.shadowRoot.querySelector('.time-display');
         this.circle = this.shadowRoot.querySelector('.progress-ring-circle');
 
+        // Add accessibility attributes
+        this.setAttribute('role', 'timer');
+        this.setAttribute('aria-live', 'off'); // 'off' so it doesn't spam screen readers on tick
+        
         if (this.circle) {
             const radius = this.circle.r.baseVal.value;
             this.circumference = radius * 2 * Math.PI;
@@ -89,7 +93,10 @@ class MonoCountdown extends MonoBaseElement {
 
     updateDisplay() {
         if (this.timeDisplayElement) {
-            this.timeDisplayElement.textContent = this.formatTime(this.remainingSeconds);
+            const formatted = this.formatTime(this.remainingSeconds);
+            this.timeDisplayElement.textContent = formatted;
+            this.setAttribute('aria-label', `Time remaining: ${formatted}`);
+            
             if (this.remainingSeconds >= 86400) {
                 this.classList.add('has-days');
             } else {
@@ -129,6 +136,10 @@ class MonoCountdown extends MonoBaseElement {
             this._intervalId = null;
         }
         this.classList.add('time-up');
+        this.setAttribute('aria-label', 'Time is up');
+        // Announce time up to screen readers explicitly
+        this.setAttribute('aria-live', 'assertive');
+        
         // Dispatch an event so other components can react
         this.dispatchEvent(new CustomEvent('timeup', { bubbles: true, composed: true }));
     }

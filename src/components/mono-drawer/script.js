@@ -20,12 +20,29 @@ class MonoDrawer extends MonoBaseElement {
     handleLabel.textContent = label;
 
     container.classList.add(position);
+    
+    // Add accessibility attributes
+    handle.setAttribute('role', 'button');
+    handle.setAttribute('tabindex', '0');
+    handle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    handle.setAttribute('aria-label', `Toggle ${label} drawer`);
+
+    // Add keyboard support (Enter/Space to toggle)
+    handle.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            const isNowOpen = container.classList.toggle('open');
+            handle.setAttribute('aria-expanded', isNowOpen ? 'true' : 'false');
+        }
+    });
+
     if (isOpen) {
       container.classList.add('open');
     }
 
     handle.addEventListener('click', () => {
-      container.classList.toggle('open');
+      const isNowOpen = container.classList.toggle('open');
+      handle.setAttribute('aria-expanded', isNowOpen ? 'true' : 'false');
     });
   }
 }

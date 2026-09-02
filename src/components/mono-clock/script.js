@@ -13,6 +13,10 @@ class MonoClock extends MonoBaseElement {
         this.minuteHand = this.shadowRoot.querySelector('.minute-hand');
         this.secondHand = this.shadowRoot.querySelector('.second-hand');
 
+        // Add accessibility attributes
+        this.setAttribute('role', 'timer');
+        this.setAttribute('aria-live', 'off'); // 'off' to avoid spamming screen readers every second
+
         const displayType = this.getAttribute('display');
         this.isAnalog = displayType === 'analog';
 
@@ -42,13 +46,17 @@ class MonoClock extends MonoBaseElement {
 
     updateClock() {
         const now = new Date();
+        const seconds = now.getSeconds();
+        const minutes = now.getMinutes();
+        const hours = now.getHours();
+        
+        // Update aria-label for accessibility regardless of mode
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const hours12 = hours % 12 || 12;
+        this.setAttribute('aria-label', `Current time is ${hours12}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm}`);
 
         if (this.isAnalog) {
             if (!this.hourHand || !this.minuteHand || !this.secondHand) return;
-
-            const seconds = now.getSeconds();
-            const minutes = now.getMinutes();
-            const hours = now.getHours();
 
             const secondDegrees = (seconds / 60) * 360;
             const minuteDegrees = ((minutes + seconds / 60) / 60) * 360;
@@ -66,9 +74,9 @@ class MonoClock extends MonoBaseElement {
                 'YY': String(now.getFullYear()).slice(-2),
                 'MM': String(now.getMonth() + 1).padStart(2, '0'),
                 'DD': String(now.getDate()).padStart(2, '0'),
-                'HH': String(now.getHours()).padStart(2, '0'),
-                'mm': String(now.getMinutes()).padStart(2, '0'),
-                'ss': String(now.getSeconds()).padStart(2, '0')
+                'HH': String(hours).padStart(2, '0'),
+                'mm': String(minutes).padStart(2, '0'),
+                'ss': String(seconds).padStart(2, '0')
             };
 
             let output = this.format;

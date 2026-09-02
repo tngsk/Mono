@@ -13,6 +13,23 @@ class MonoDice extends MonoInteractiveElement {
 
     connectedCallback() {
         super.mountTemplate('mono-dice-template');
+        
+        // Add accessibility attributes
+        if (this.refs.dice) {
+            this.refs.dice.setAttribute('role', 'button');
+            this.refs.dice.setAttribute('tabindex', '0');
+            this.refs.dice.setAttribute('aria-label', `Roll ${this.faces}-sided dice`);
+            this.refs.dice.setAttribute('aria-live', 'polite');
+            
+            // Add keyboard support (Enter/Space to roll)
+            this.refs.dice.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.roll();
+                }
+            });
+        }
+        
         this.setupEventListeners();
     }
 
@@ -28,6 +45,7 @@ class MonoDice extends MonoInteractiveElement {
 
         if (this.refs.dice) {
             this.refs.dice.classList.add("rolling");
+            this.refs.dice.setAttribute('aria-label', `Rolling dice...`);
         }
 
         if (this.refs.number) {
@@ -48,6 +66,7 @@ class MonoDice extends MonoInteractiveElement {
 
             if (this.refs.dice) {
                 this.refs.dice.classList.remove("rolling");
+                this.refs.dice.setAttribute('aria-label', `Rolled ${result} on a ${this.faces}-sided dice`);
             }
             if (this.refs.number) {
                 this.refs.number.textContent = result;

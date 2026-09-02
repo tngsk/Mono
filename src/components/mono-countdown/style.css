@@ -3,11 +3,11 @@
     align-items: center;
     justify-content: center;
     position: relative;
-    width: var(--countdown-size, 80px);
-    height: var(--countdown-size, 80px);
-    font-family: monospace;
-    --countdown-color: var(--color-primary, #3b82f6);
-    --countdown-bg-color: var(--color-base-300, #e5e7eb);
+    width: var(--countdown-size, 5rem);
+    height: var(--countdown-size, 5rem);
+    font-family: inherit;
+    --countdown-color: var(--color-primary);
+    --countdown-bg-color: var(--color-base-300);
 }
 
 .countdown-container {
@@ -44,7 +44,7 @@
 .time-display {
     position: relative;
     z-index: 1;
-    font-size: calc(var(--countdown-size, 80px) * 0.25);
+    font-size: calc(var(--countdown-size, 5rem) * 0.25);
     font-weight: bold;
     color: inherit;
     user-select: none;
@@ -55,16 +55,16 @@
 }
 
 :host(.has-days) .time-display {
-    font-size: calc(var(--countdown-size, 80px) * 0.15);
+    font-size: calc(var(--countdown-size, 5rem) * 0.15);
 }
 
 :host(.time-up) .progress-ring-circle {
-    stroke: var(--color-error, #ef4444);
+    stroke: var(--color-error);
     animation: pulse 1.5s infinite;
 }
 
 :host(.time-up) .time-display {
-    color: var(--color-error, #ef4444);
+    color: var(--color-error);
 }
 
 @keyframes pulse {
@@ -76,5 +76,24 @@
     }
     100% {
         opacity: 1;
+    }
+}
+
+/* Print specific styles */
+@media print {
+    .progress-ring-circle {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        animation: none !important;
+        transition: none !important;
+    }
+    .progress-ring-bg {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    :host(.time-up) .time-display {
+        color: var(--color-error) !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
 }

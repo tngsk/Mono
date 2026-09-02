@@ -16,6 +16,10 @@ class MonoSound extends MonoBaseElement {
     const label = this.getAttribute("label");
     if (label && this.labelEl) {
       this.labelEl.textContent = label;
+      // Add more descriptive ARIA label if a text label is provided
+      if (this.playBtn) {
+        this.playBtn.setAttribute("aria-label", `Play ${label}`);
+      }
     }
 
     const rawSrc = this.getAttribute("src");
@@ -54,6 +58,10 @@ class MonoSound extends MonoBaseElement {
       this.audio.addEventListener("ended", () => this.onEnded());
       this.audio.addEventListener("pause", () => this.onPause());
       this.audio.addEventListener("play", () => this.onPlay());
+      
+      // Accessibility improvements
+      this.playBtn.setAttribute('role', 'button');
+      this.playBtn.setAttribute('aria-pressed', 'false');
     }
   }
 
@@ -69,12 +77,22 @@ class MonoSound extends MonoBaseElement {
     this.isPlaying = true;
     if (this.iconPlay) this.iconPlay.style.display = "none";
     if (this.iconPause) this.iconPause.style.display = "block";
+    if (this.playBtn) {
+        this.playBtn.setAttribute('aria-pressed', 'true');
+        const label = this.getAttribute("label");
+        this.playBtn.setAttribute("aria-label", label ? `Pause ${label}` : "Pause sound");
+    }
   }
 
   onPause() {
     this.isPlaying = false;
     if (this.iconPlay) this.iconPlay.style.display = "block";
     if (this.iconPause) this.iconPause.style.display = "none";
+    if (this.playBtn) {
+        this.playBtn.setAttribute('aria-pressed', 'false');
+        const label = this.getAttribute("label");
+        this.playBtn.setAttribute("aria-label", label ? `Play ${label}` : "Play sound");
+    }
   }
 
   onEnded() {

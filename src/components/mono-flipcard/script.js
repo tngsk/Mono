@@ -16,6 +16,19 @@ class MonoFlipcard extends MonoBaseElement {
         if (frontEl) frontEl.textContent = frontText;
         if (backEl) backEl.textContent = backText;
 
+        // Accessibility attributes
+        this.setAttribute('role', 'button');
+        this.setAttribute('tabindex', '0');
+        this.setAttribute('aria-pressed', this.hasAttribute('flipped') ? 'true' : 'false');
+        
+        // Add keyboard support (Enter/Space to flip)
+        this.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.toggleFlip();
+            }
+        });
+
         this.addEventListener('click', this.toggleFlip);
     }
 
@@ -26,8 +39,10 @@ class MonoFlipcard extends MonoBaseElement {
     toggleFlip() {
         if (this.hasAttribute('flipped')) {
             this.removeAttribute('flipped');
+            this.setAttribute('aria-pressed', 'false');
         } else {
             this.setAttribute('flipped', '');
+            this.setAttribute('aria-pressed', 'true');
         }
     }
 }

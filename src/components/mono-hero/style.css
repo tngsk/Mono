@@ -6,7 +6,7 @@
     position: relative;
     min-height: 100vh;
     /* Offset top padding from body if present */
-    margin-top: calc(-1 * var(--body-padding-y, 5rem));
+    margin-top: calc(-1 * var(--body-padding-y, 4.5rem));
 
     overflow: hidden;
     background-color: var(--hero-bg-color, transparent);
@@ -55,4 +55,21 @@
 .hero-content p {
     font-size: clamp(1rem, 2.5vw, 1.5rem);
     margin: 1rem 0;
+}
+
+/* Print specific styles */
+@media print {
+    :host {
+        min-height: auto;
+        margin-top: 0;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    
+    .hero-container {
+        min-height: auto;
+        padding: var(--padding-lg) 0;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
 }

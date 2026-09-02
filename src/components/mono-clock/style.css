@@ -62,11 +62,19 @@
 }
 
 .second-hand {
-    stroke: var(--color-error, red);
+    stroke: var(--color-error, #ef4444);
     stroke-width: 2;
     stroke-linecap: round;
 }
 
 .center-dot {
     fill: currentColor;
+}
+
+/* Print specific styles */
+@media print {
+    .second-hand {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
 }
