@@ -132,15 +132,44 @@ mono-section + mono-section {
     margin-top: 0;
 }
 
-hr {
+/* ==========================================================================
+   Presentation Focus Mode (P-Key: 境界なきスライド・周辺減光フォーカス)
+   ========================================================================== */
+
+.mono-slide {
+    position: relative;
     width: 100%;
-    max-width: 20%;
+    transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), filter 0.35s ease;
+}
+
+/* Pキー起動時の周辺減光（Spotlight Dimming） */
+body.mono-focus-mode .mono-slide {
+    opacity: 0.18;
+    filter: blur(0.5px);
+}
+
+body.mono-focus-mode .mono-slide.active-slide,
+body.mono-focus-mode .mono-slide:hover {
+    opacity: 1.0;
+    filter: none;
+}
+
+body.mono-focus-mode hr.mono-slide-divider {
+    opacity: 0.15;
+}
+
+/* 水平罫線（スライド区切り） */
+hr,
+hr.mono-slide-divider {
+    width: 100%;
+    max-width: 25%;
     margin-top: var(--body-padding-y);
     margin-bottom: var(--body-padding-y);
     margin-left: auto;
     margin-right: auto;
     border: none;
     border-top: 0.125rem dotted var(--border-color, #d1d5db);
+    opacity: 0.6;
 }
 
 /* 見出し -------------------------------------------------- */
