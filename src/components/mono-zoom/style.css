@@ -174,15 +174,6 @@
     max-width: var(--zoom-max-width-md, min(94vw, 1650px));
 }
 
-::slotted(.mono-slide) {
-    width: 100% !important;
-    max-width: var(--zoom-max-width-xl, min(94vw, 1750px)) !important;
-    margin: 0 auto !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-}
-
 ::slotted(.column) {
     width: 100% !important;
     max-width: var(--zoom-max-width-lg, min(94vw, 1700px)) !important;

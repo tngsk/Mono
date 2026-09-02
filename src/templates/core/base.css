@@ -132,34 +132,15 @@ mono-section + mono-section {
     margin-top: 0;
 }
 
-/* ==========================================================================
-   Slide Section & Spotlight Dimming (境界なきスライド・フォーカス機能)
-   ========================================================================== */
-
-.mono-slide {
-    position: relative;
+hr {
     width: 100%;
-    margin-block: var(--spacing-flow);
-    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
-}
-
-/* ホバー時の Spotlight Dimming: いずれかのスライドにホバーされた際、それ以外のスライドを穏やかに減光 */
-body:has(.mono-slide:hover) .mono-slide:not(:hover) {
-    opacity: 0.35;
-    filter: blur(0.2px);
-}
-
-hr,
-hr.mono-slide-divider {
-    width: 100%;
-    max-width: 25%;
+    max-width: 20%;
     margin-top: var(--body-padding-y);
     margin-bottom: var(--body-padding-y);
     margin-left: auto;
     margin-right: auto;
     border: none;
     border-top: 0.125rem dotted var(--border-color, #d1d5db);
-    opacity: 0.6;
 }
 
 /* 見出し -------------------------------------------------- */

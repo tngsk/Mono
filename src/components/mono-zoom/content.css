@@ -121,15 +121,6 @@ mono-zoom mono-flipcard {
     margin: 0 auto !important;
 }
 
-mono-zoom .mono-slide {
-    width: 100% !important;
-    max-width: var(--zoom-max-width-xl) !important;
-    margin: 0 auto !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-}
-
 mono-zoom .column {
     width: 100% !important;
     max-width: var(--zoom-max-width-lg) !important;

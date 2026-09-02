@@ -126,7 +126,6 @@ MARKDOWN_EXTENSIONS = [
     "src.extensions.colab",
     "src.extensions.code_block",
     "src.extensions.math",
-    "src.extensions.slide_section",
 ]
 
 
