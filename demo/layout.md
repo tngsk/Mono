@@ -6,7 +6,7 @@ The `mono-layout` component creates flexbox-based layouts: horizontal rows (`@[h
 
 **Horizontal Box (`@[hbox]`):**
 ```markdown
-@[hbox](class: "gap-md")
+@[hbox](class: "gap-group")
 :::
 Left column content...
 :::
@@ -31,7 +31,7 @@ Bottom section...
 ## Simple Demos
 
 ### Two-Column Horizontal Box
-@[hbox](class: "gap-md")
+@[hbox](class: "gap-group")
 :::
 **Column 1**
 Content for the first column with modern spacing.
@@ -43,7 +43,7 @@ Content for the second column with equal flex distribution.
 @[/hbox]
 
 ### Vertical Box Layout
-@[vbox](class: "gap-sm")
+@[vbox](class: "gap-item")
 :::
 **Top Section**
 Content at the top.
@@ -57,9 +57,9 @@ Content at the bottom.
 ## Advanced Demos
 
 ### Dashboard Layout with Nested Boxes
-@[hbox](class: "gap-md")
+@[hbox](class: "gap-group")
 :::
-@[vbox](class: "gap-sm")
+@[vbox](class: "gap-item")
 :::
 **Current Time**
 @[clock]
@@ -77,7 +77,7 @@ Content at the bottom.
 @[/hbox]
 
 ## Modifiers
-@[hbox](class: "gap-lg start")
+@[hbox](class: "gap-flow start")
 :::
 Column A (Left Aligned)
 :::
