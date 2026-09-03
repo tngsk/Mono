@@ -90,47 +90,27 @@ body:not(.mono-flat-mode) > .mono-ambient-dimmed:hover {
 }
 
 /* ==========================================================================
-   共通タグマージンシステム（デフォルト最大余白 xl 基準・近接原則確立）
+   モノリシック均一マージンシステム（全要素間完全等間隔・100%均一リズム）
    ========================================================================== */
 
-/* トップレベル全ブロック要素の共通一方向（下部）フロー・マージン（デフォルト: xl） */
+/* トップレベル全要素の完全均一・一方向（下部）フロー余白（要素種別に関わらず完全同一） */
 body > * {
-    margin-block-start: 0;
-    margin-block-end: var(--spacing-flow);
-}
-
-/* トップレベル見出しの垂直階層マージン（body > * の詳細度と一致させ確実に適用） */
-body > :is(h1) {
-    margin-block-start: clamp(3.0rem, 5vw, 5.5rem);
-    margin-block-end: var(--spacing-md);
-}
-
-body > :is(h2) {
-    margin-block-start: clamp(2.25rem, 3.5vw, 4.0rem);
-    margin-block-end: var(--spacing-md);
-}
-
-body > :is(h3, h4, h5, h6) {
-    margin-block-start: clamp(1.25rem, 2vw, 2.5rem);
-    margin-block-end: var(--spacing-sm);
-}
-
-/* ネストコンテナ内部（カラム・カード等）のコンパクトな垂直フロー・マージン */
-:where(.column, [class*="card"], [class*="preview"], blockquote) > :is(p, ul, ol, dl, table, pre, figure, blockquote) {
-    margin-block-start: 0;
-    margin-block-end: var(--spacing-md);
-}
-
-:where(.column, [class*="card"], [class*="preview"], blockquote) > :is(h1, h2, h3, h4) {
-    margin-block-start: var(--spacing-sm);
-    margin-block-end: var(--spacing-xs);
-}
-
-/* コンテナ境界のクリーンアップ（先頭の上マージン・末尾の下マージンを相殺し二重加算を根絶） */
-:where(body, .column, [class*="card"], [class*="preview"], section, div) > :first-child {
     margin-block-start: 0 !important;
+    margin-block-end: var(--spacing-flow) !important;
 }
-:where(body, .column, [class*="card"], [class*="preview"], section, div) > :last-child {
+
+/* 最末尾要素のみ下部余白を除去 */
+body > :last-child {
+    margin-block-end: 0 !important;
+}
+
+/* ネストコンテナ内部（カラム・カード等）の均一な垂直フロー・マージン */
+:where(.column, [class*="card"], [class*="preview"], blockquote) > * {
+    margin-block-start: 0 !important;
+    margin-block-end: var(--spacing-md) !important;
+}
+
+:where(.column, [class*="card"], [class*="preview"], blockquote) > :last-child {
     margin-block-end: 0 !important;
 }
 
