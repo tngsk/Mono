@@ -214,7 +214,7 @@ demo/*.html
 doc/*.html
 /watch_and_run.sh
 .vscode/
-.zed/snippets/markdown.json
+.zed/
 *.pdf
 
 # Node.js
