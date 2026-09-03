@@ -45,8 +45,8 @@ Monoは標準のMarkdownを拡張し、専用のWeb Components（UI要素）を�
 ### D. テキストフォーマット・拡張機能
 * **改行禁止 (Nowrap):** テキストを `{{ }}` で囲むと、その部分での改行が禁止されます。
   * 例: `これは {{絶対に改行されない}} 文字列です。`
-* **テキストサイズ変更 (3段階流体スケール):** `attr_list` 拡張を使用し、指定のクラスを付与します。
-  * 利用可能なクラス (Typography Trinity):
+* **テキストサイズ変更 (3段階流体スケール - Typography Trinity):** `attr_list` 拡張を使用し、指定のクラスを付与します。
+  * 利用可能なクラス:
     * `.text-display` (看板): 2〜4文字の特大スライド見出し（画面幅を大胆に占有）
     * `.text-body` (主文): 標準の本文・段落スケール（24px基準）
     * `.text-compact` (凝縮): カラム内テキスト、注釈、キャプション（18〜20px基準）
@@ -59,48 +59,60 @@ Monoは標準のMarkdownを拡張し、専用のWeb Components（UI要素）を�
     [注釈・凝縮テキスト]{.text-compact}
     ```
 
+* **レイアウト余白 (3段階スペーシング - Spacing Trinity):** `mono-layout`（`@[hbox]`, `@[vbox]`）の gap 指定。
+  * `.gap-flow`: トップレベル均一余白（約112px）
+  * `.gap-group`: カラム間・コンテナ余白（約48〜64px、デフォルト）
+  * `.gap-item`: 微小余白（約16〜24px）
+  * 例: `@[hbox]{.gap-group}`
+
 ---
 
 ## 2. 利用可能なコンポーネント一覧 (Available Components)
 
-AIは、**以下のリストに存在しないコンポーネントやパラメータを捏造（ハルシネーション）してはなりません。**
+コンポーネントはライフサイクルおよび機能カテゴリに応じて明確に区分されています。
 
-| コンポーネント | 種類 | 説明 | 引数 (OPTIONS) |
+### A. コア・アクティブコンポーネント（優先利用）
+Mono のモノリシック・プレゼンテーション表現の中核を担う、最新 3×3 トークンに完全適合したコンポーネントです。
+
+| コンポーネント | 種類 | 説明 | 記法例・引数 |
 |---|---|---|---|
-| `mono-ab-test` | Block | A/Bテスト用のコンポーネント。2つの画像やコンテンツを並べて比較します。 | `url-a: "url"`, `url-b: "url"`, `title: "text"` |
-| `mono-account` | Inline | ログインなどのアカウント管理UIを表示します。 | なし |
-| `mono-badge` | Inline | バッジを表示します。 | `text: "text"`, `type: "info&#124;success&#124;warning&#124;error"`, `color: "red&#124;blue&#124;..."` |
-| `mono-clock` | Block | 時計を表示します。 | `display: "analog&#124;digital"`, `format: "24h&#124;12h"` |
-| `mono-code-block` | Auto | コードブロックコンポーネント。フェンスコードブロックから自動変換されます。 | なし |
-| `mono-countdown` | Block | カウントダウンタイマーを表示します。 | `minutes: "5"`, `time: "10m&#124;2024-12-31T23:59:59"`, `color: "red&#124;blue&#124;..."` |
-| `mono-dice` | Block | サイコロを表示し、クリックで振ることができます。 | `sides: "6"`, `number: "1~6"` |
-| `mono-drawer` | Block | 引き出し式のサイドメニュー（ドロワー）を表示します。ブロック要素。 | `label: "text"`, `position: "left&#124;right"`, `open: "true&#124;false"` |
-| `mono-flipcard` | Block | クリックまたはホバーで裏返るカード。 | `front_text: "text"`, `back: "text"`, `answer: "text"` |
-| `mono-flow` | Block | フローチャート（ノードとエッジ）を表示します。 | `title: "text"`, `direction: "TB&#124;LR"` |
-| `mono-group-assignment` | Block | グループ分けを行うコンポーネント。 | `groups: "4"`, `title: "text"` |
-| `mono-hero` | Block | ヒーローバナー領域を表示します。ブロック要素。 | `title: "text"`, `image: "url"`, `mode: "light&#124;dark"` |
-| `mono-icon` | Inline | アイコンを表示します。 | `name: "star&#124;heart&#124;..."`, `size: "16~128"`, `color: "primary&#124;success&#124;..."` |
-| `mono-image` | Block | 画像を表示します。 | `src: "url"`, `alt: "text"`, `width: "size"`, `height: "size"` |
-| `mono-layout` | Block | 水平枠（hbox）や垂直枠（vbox）のレイアウトを構築します。ブロック要素。 | `label: "text"`, `class: "text"` |
-| `mono-link` | Block | リンクカードを表示します。 | `url: "url"`, `style: "full&#124;small&#124;card"`, `description: "text"`, `image: "url"` |
-| `mono-media-grid` | Block | 複数のメディアをグリッド状に配置して表示します。ブロック要素。 | `columns: "number"`, `rows: "number"`, `gap: "css-size"`, `fit: "cover&#124;contain"` |
-| `mono-mermaid` | Block | Mermaid記法で図表を描画し、SVGとして埋め込みます。ブロック要素。 | `title: "text"`, `theme: "default&#124;dark&#124;forest&#124;..."` |
-| `mono-notebook` | Block | 入力可能なノートブック領域を表示します。 | `title: "text"`, `placeholder: "text"`, `id: "text"` |
-| `mono-poll` | Block | 投票システムを表示します。 | `title: "text"`, `options: "A,B,C"` |
-| `mono-reaction` | Block | リアクション（いいね、など）ボタンを表示します。 | `emojis: "👍,🎉,❤️"`, `label: "text"` |
-| `mono-score` | Inline | 楽譜を表示します。 | `notes: "C4 D4 E4"`, `clef: "treble&#124;bass"`, `time: "4/4&#124;3/4"` |
-| `mono-section` | Block | セクション領域を表示します。ブロック要素。 | `title: "text"`, `image: "url"`, `mode: "light&#124;dark"`, `padding: "sm&#124;md&#124;lg"` |
-| `mono-session-join` | Block | セッション（同期・データ収集）へ参加するボタン等を表示します。 | `room: "text"`, `title: "text"` |
-| `mono-sound` | Inline | 効果音や音声を再生するボタンを表示します。 | `src: "url"`, `label: "text"` |
-| `mono-synth` | Block | Web Audio による対話型シンセサイザー。 | `label: "text"` |
-| `mono-textfield-input` | Inline | テキスト入力フィールドを表示します。 | `label: "text"`, `id: "text"`, `placeholder: "text"`, `size: "small&#124;medium&#124;large"` |
-| `mono-theme` | Inline | テーマ切り替えコンポーネント。 | `theme_name: "light&#124;dark&#124;corporate&#124;calm-study"` |
-| `mono-zoom` | Auto/Inline | オートズームコンポーネント（Zキーまたはクリックで拡大）。 | なし |
+| `mono-layout` | Block | 水平（`@[hbox]`）や垂直（`@[vbox]`）のレイアウト | `@[hbox]{.gap-group}\n::: 左\n:::\n::: 右\n:::\n@[/hbox]` |
+| `mono-section` | Block | フルブリード背景・セクション区切り | `@[section](padding: "group")\n...コンテンツ...\n@[/section]` |
+| `mono-zoom` | Auto/Inline | クリックまたは Z キーでの全画面モーダルズーム | `@[zoom]()` または `-p presentation` |
+| `mono-code-block` | Auto | シンタックスハイライト・コピー付きコードブロック | フェンスコードブロック（```）から自動変換 |
+| `mono-mermaid` | Block | Mermaid記法によるダイアグラム動的描画 | `@[mermaid]\ngraph TD; A-->B;\n@[/mermaid]` |
+| `mono-theme` | Inline | カラーテーマ・フォント切り替えUI | `@[theme: corporate]()` |
+| `mono-badge` | Inline | ステータスやカテゴリを示すバッジ | `@[badge: 重要](type: "error")` |
+| `mono-icon` | Inline | Google Material Symbols ベクターアイコン表示 | `@[icon: star](size: "24", color: "primary")` |
+| `mono-link` | Block | OGPリッチリンクカード | `@[link: タイトル](url: "https://example.com")` |
+| `mono-brush` | Auto/Inline | 画面上への手書き描画（非推奨予定・プレゼン用） | `-p presentation` |
+| `mono-image` | Inline/Block | Markdown画像記法 sugar syntax パーサー | `@[image: 説明](src: "img.png")` |
 
-## 3. AIによる生成時の注意点 (AI Generation Directives)
+### B. インタラクティブ・教育系パッケージ (`@interactive`)
+講義、双方向ワークショップ、データ収集用のオプトイン・コンポーネント群です。
 
-1. **存在しない機能を作らない:** 上記リストにないコンポーネント（例: `@[video]`, `@[spacer]`, `@[tabs]`）は使えません。
-2. **フォーマットの厳守:** 引数のフォーマットは `キー: "値"` であり、`=` やシングルクォート `'` は避けてください。
-3. **ブロック要素のネスト:** `@[hstack]` 内に別のブロック要素を配置する場合は、正しく `:::` 内に収め、構造を破壊しないよう気をつけてください。
-4. **IDの一意性:** `mono-textfield-input` や `mono-notebook` など、`id` を要求するコンポーネントを複数配置する場合は、それぞれに一意のIDを割り当ててください。
-5. **プロファイルへの配慮:** プレゼンテーション用スライドを生成する場合は、大見出しに `.text-display` や `.text-xlarge` を活用し、オートズーム（`mono-zoom`）が映える視覚的構造を意識してください。
+| コンポーネント | 種類 | 説明 | 記法例・引数 |
+|---|---|---|---|
+| `mono-poll` | Block | リアルタイム単一・複数選択アンケート | `@[poll: 質問](options: "選択肢A, 選択肢B")` |
+| `mono-reaction` | Block | 絵文字リアクションバー | `@[reaction](emojis: "👍,🎉,❤️")` |
+| `mono-ab-test` | Block | A/Bテスト条件分岐提示・比較 | `@[ab-test](src-a: "a.png", src-b: "b.png")` |
+| `mono-notebook` | Block | ブラウザ内メモ・ノートパッド | `@[notebook: メモ](id: "note-1")` |
+| `mono-textfield-input` | Inline | 自由テキスト入力フォーム | `@[textfield-input: 氏名](id: "user-name")` |
+| `mono-group-assignment` | Block | 参加者のランダムグループ分け | `@[group-assignment](groups: "4")` |
+| `mono-session-join` | Block | セッション参加情報・QRコード表示 | `@[session-join](room: "101")` |
+| `mono-account` | Inline | ユーザー認証およびセッション管理 | `@[account]()` |
+| `mono-export` | Auto | 入力データ（localStorage）のJSONL/CSV書き出し | インタラクティブ要素存在時に自動付与 |
+
+### C. 開発保留コンポーネント（新規スライドでの多用は非推奨）
+既存の動作互換性のため維持されていますが、新規設計ではコアコンポーネントの利用を推奨します。
+* `mono-clock`, `mono-countdown`, `mono-dice`, `mono-score`, `mono-sound`, `mono-synth` (ツール系)
+* `mono-drawer`, `mono-hero`, `mono-media-grid` (レイアウト系保留)
+* `mono-flipcard`, `mono-flow` (プレゼンテーション系保留)
+
+## 3. AIによる生成時の禁止・遵守事項 (AI Generation Directives)
+
+1. **削除済み・存在しない機能を使わない:** 削除された `mono-sync`, `mono-spacer` や、未実装の `@[video]`, `@[tabs]` 等は絶対に出力してはなりません。
+2. **3×3 デザイントークンの遵守:** 余白には `.gap-flow`, `.gap-group`, `.gap-item` を、文字サイズには `.text-display`, `.text-body`, `.text-compact` を優先的に使用してください。
+3. **フォーマットの厳守:** 引数のフォーマットは `キー: "値"` であり、`=` やシングルクォート `'` は避けてください。
+4. **ブロック要素のネスト:** `@[hbox]` 内に別のブロック要素を配置する場合は、正しく `:::` 内に収め、構造を破壊しないよう気をつけてください。
+5. **IDの一意性:** `mono-textfield-input` や `mono-notebook` など、`id` を要求するコンポーネントを複数配置する場合は、それぞれに一意のIDを割り当ててください。

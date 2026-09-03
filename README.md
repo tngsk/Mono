@@ -77,46 +77,42 @@ uv run server.py
 
 Markdown 内で `@[コンポーネント名: ラベル](オプション){.クラス}` 構文を用いて埋め込みます（`(...)` は機能オプション、`{...}` はCSSクラス）。
 
+### 主要コンポーネント（Mono コア）
+
 | コンポーネント | 種類 | 概要 | 記述例 |
 |---|---|---|---|
-| `mono-ab-test` | ブロック | 2つの画像やコンテンツを並べて比較・投票 | `@[ab-test](src-a: "a.png", src-b: "b.png")` |
-| `mono-account` | インライン | ログイン・セッション管理UI | `@[account]()` |
-| `mono-badge` | インライン | バッジ・タグ表示 | `@[badge: 重要](type: "error")` |
-| `mono-clock` | ブロック | アナログ/デジタル時計 | `@[clock](format: "24h")` |
+| `mono-layout` | ブロック | 水平枠 (`@[hbox]`) や垂直枠 (`@[vbox]`) の配置 | `@[hbox]{.gap-group}\n::: 左\n:::\n::: 右\n:::\n@[/hbox]` |
+| `mono-section` | ブロック | フルブリード背景・セクション領域 | `@[section](padding: "group")\n...コンテンツ...\n@[/section]` |
+| `mono-zoom` | 自動/明示 | 大画面オートズーム拡大機能（Zキー / クリック） | `@[zoom]()` または `-p presentation` |
 | `mono-code-block` | 自動変換 | シンタックスハイライトとコピーボタン付きコードブロック | 通常のコードブロック（```）から自動変換 |
-| `mono-countdown` | ブロック | カウントダウンタイマー | `@[countdown](minutes: "5")` |
-| `mono-dice` | ブロック | クリックで振れるサイコロ | `@[dice](sides: "6")` |
-| `mono-drawer` | ブロック | 引き出し式サイドメニュー | `@[drawer: メニュー]()\n...コンテンツ...\n@[/drawer]` |
-| `mono-flipcard` | ブロック | 表裏が反転するフラッシュカード | `@[flipcard: 問題](back: "解答")` |
-| `mono-flow` | ブロック | ノードと矢印による軽量フローチャート | `@[flow]\nA -> B\n@[/flow]` |
-| `mono-group-assignment` | ブロック | 参加者のランダムグループ分け | `@[group-assignment](groups: "4")` |
-| `mono-hero` | ブロック | フルブリードのヒーローバナー | `@[hero: タイトル](mode: "dark")` |
-| `mono-icon` | インライン | Lucide / Material アイコン表示 | `@[icon: star](size: "24", color: "primary")` |
-| `mono-image` | ブロック | キャプション・ズーム対応の最適化画像 | `@[image: 説明](src: "img.png")` |
-| `mono-layout` | ブロック | 水平枠 (`@[hbox]`) や垂直枠 (`@[vbox]`) | `@[hbox](class: "gap-md")\n:::左\n:::\n:::右\n:::\n@[/hbox]` |
-| `mono-link` | ブロック | OGPリッチリンクカード | `@[link: タイトル](url: "https://example.com")` |
-| `mono-media-grid` | ブロック | 複数メディアのレスポンシブグリッド | `@[media-grid](columns: "2")\n...画像...\n@[/media-grid]` |
 | `mono-mermaid` | ブロック | Mermaid.js 記法のダイアグラム | `@[mermaid]\ngraph TD; A-->B;\n@[/mermaid]` |
-| `mono-notebook` | ブロック | 永続化メモ・ノートブック領域 | `@[notebook: メモ](id: "note-1")` |
+| `mono-theme` | インライン | テーマ切り替えセレクター | `@[theme: dark]()` |
+| `mono-badge` | インライン | バッジ・タグ表示 | `@[badge: 重要](type: "error")` |
+| `mono-icon` | インライン | Google Material Symbols アイコン表示 | `@[icon: star](size: "24", color: "primary")` |
+| `mono-link` | ブロック | OGPリッチリンクカード | `@[link: タイトル](url: "https://example.com")` |
+| `mono-image` | インライン/ブロック | 最適化画像パーサー | `@[image: 説明](src: "img.png")` |
+
+### インタラクティブ・教育パッケージ（`-p interactive` または個別指定）
+
+| コンポーネント | 種類 | 概要 | 記述例 |
+|---|---|---|---|
 | `mono-poll` | ブロック | リアルタイム・ローカル投票コンポーネント | `@[poll: 質問](options: "選択肢A, 選択肢B")` |
 | `mono-reaction` | ブロック | 絵文字リアクションバー | `@[reaction](emojis: "👍,🎉,❤️")` |
-| `mono-score` | インライン | ABC記譜法による楽譜レンダリング | `@[score](notes: "C D E F")` |
-| `mono-section` | ブロック | フルブリード背景セクション領域 | `@[section](padding: "md")\n...コンテンツ...\n@[/section]` |
-| `mono-session-join` | ブロック | 講義・セッション参加ボタン | `@[session-join](room: "101")` |
-| `mono-sound` | インライン | 音声・効果音再生ボタン | `@[sound: 再生](src: "sound.mp3")` |
-| `mono-synth` | ブロック | Web Audio による対話型シンセサイザー | `@[mono-synth]()` |
+| `mono-ab-test` | ブロック | 2つの画像やコンテンツを並べて比較・投票 | `@[ab-test](src-a: "a.png", src-b: "b.png")` |
+| `mono-notebook` | ブロック | 永続化メモ・ノートブック領域 | `@[notebook: メモ](id: "note-1")` |
 | `mono-textfield-input` | インライン | 入力データ収集テキストフィールド | `@[textfield-input: 氏名](id: "user-name")` |
-| `mono-theme` | インライン | テーマ切り替えセレクター | `@[theme: dark]()` |
-| `mono-zoom` | 自動/明示 | 大画面オートズーム拡大機能（Zキー / クリック） | `@[zoom]()` または `-p presentation` |
+| `mono-group-assignment` | ブロック | 参加者のランダムグループ分け | `@[group-assignment](groups: "4")` |
+| `mono-session-join` | ブロック | 講義・セッション参加ボタン | `@[session-join](room: "101")` |
+| `mono-account` | インライン | ログイン・セッション管理UI | `@[account]()` |
 
 ## 拡張 Markdown 記法
 
 - **改行禁止 (Nowrap)**: `{{絶対に改行させないテキスト}}`
-- **テキストサイズ変更 (流体スケール)**:
-  - `[特大スライド見出し]{.text-display}` （画面幅の約80%を埋め尽くす可変フォント）
-  - `[大文字キーワード]{.text-xlarge}`
-  - `[リード文]{.text-large}`
-  - `[注釈]{.text-small}`
+- **3×3 デザイントークン (流体タイポグラフィ & 余白)**:
+  - `[特大スライド見出し]{.text-display}` （看板スケール）
+  - `[標準本文]{.text-body}` （24px基準）
+  - `[カラム内・注釈]{.text-compact}` （18〜20px基準）
+  - レイアウト余白: `@[hbox]{.gap-flow}` / `{.gap-group}` / `{.gap-item}`
 - **Colabリンク自動変換**: `.ipynb` ファイルへのリンクを記述すると、自動的に Google Colab 起動バッジ付きリンクへ変換されます。
 
 ## プレゼンテーション・読書キーボードショートカット
