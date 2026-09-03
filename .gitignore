@@ -230,6 +230,7 @@ doc/
 tools/
 watch_and_run.sh
 educational_templates/
+scripts/
 Makefile
 package.json
 package-lock.json
