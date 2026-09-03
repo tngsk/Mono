@@ -107,7 +107,7 @@ tuner_markdown = """# Mono Component Live Visual Tuner
 </div>
 """
 
-tools_dir = Path("/Users/ngsklab/Code/Mono/tools")
+tools_dir = Path(__file__).resolve().parent
 tools_dir.mkdir(parents=True, exist_ok=True)
 md_file = tools_dir / "tuner_base.md"
 md_file.write_text(tuner_markdown, encoding="utf-8")
