@@ -301,6 +301,20 @@ class TestHTMLDocumentBuilder(unittest.TestCase):
         self.assertIn("mono-brush", names)
         self.assertNotIn("mono-poll", names)
 
+    def test_get_used_component_dirs_with_category_profile(self):
+        """プロファイルで@category（例: @interactive）が指定された場合に対象群が一括抽出されることをテスト"""
+        result = self.builder._get_used_component_dirs(
+            found_mono_tags=set(),
+            should_enable_export=False,
+            profile_components=["@interactive"]
+        )
+        names = [d.name for d in result]
+        self.assertIn("mono-poll", names)
+        self.assertIn("mono-reaction", names)
+        self.assertIn("mono-account", names)
+        self.assertIn("mono-export", names)
+        self.assertNotIn("mono-zoom", names)
+        self.assertNotIn("mono-clock", names)
 
 if __name__ == '__main__':
     unittest.main()

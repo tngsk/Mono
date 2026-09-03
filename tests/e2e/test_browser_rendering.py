@@ -117,3 +117,89 @@ def test_lazy_loaded_image_rendered(temp_markdown_file, tmp_path):
             assert not src.startswith("data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="), "Image src was not replaced by lazy load script"
 
         browser.close()
+
+def test_browser_vertical_margins_uniformity(tmp_path):
+    """Playwright実機レンダリングで、トップレベル要素の垂直マージンが要素間で寸分狂わず均一であり、大画面で112px上限にクランプされることをテスト"""
+    md_file = tmp_path / "margins.md"
+    md_file.write_text("""# Heading 1
+Paragraph 1
+
+## Heading 2
+Paragraph 2
+""")
+    output_html_path = tmp_path / "margins.html"
+    config = ConversionConfig(input_file=Path(md_file), output_file=output_html_path, css_files=[])
+    logger = configure_logging(verbose=False)
+    converter = MarkdownToHTMLConverter(config, logger)
+    converter.convert()
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+
+        # 1. 1440px（6vw = 86.4px）での均一性検証
+        page_1440 = browser.new_page(viewport={"width": 1440, "height": 900})
+        page_1440.goto(f"file://{output_html_path.absolute()}")
+        margins_1440 = page_1440.evaluate("""() => {
+            const elements = Array.from(document.querySelectorAll('body > *:not(script):not(style):not(template)'));
+            return elements.map(el => parseFloat(window.getComputedStyle(el).marginBottom));
+        }""")
+        assert len(margins_1440) >= 3
+        # 中間要素間でマージンが完全一致すること（末尾要素は:last-childで0）
+        content_margins_1440 = margins_1440[:-1]
+        assert len(set(round(m, 1) for m in content_margins_1440)) == 1
+        for m in content_margins_1440:
+            assert abs(m - 86.4) < 0.2, f"1440px margin {m} should be ~86.4px"
+        assert margins_1440[-1] == 0.0, "Last element should have 0 bottom margin"
+
+        # 2. 1920px（上限7rem = 112.0px）での均一性検証
+        page_1920 = browser.new_page(viewport={"width": 1920, "height": 1080})
+        page_1920.goto(f"file://{output_html_path.absolute()}")
+        margins_1920 = page_1920.evaluate("""() => {
+            const elements = Array.from(document.querySelectorAll('body > *:not(script):not(style):not(template)'));
+            return elements.map(el => parseFloat(window.getComputedStyle(el).marginBottom));
+        }""")
+        assert len(margins_1920) >= 3
+        content_margins_1920 = margins_1920[:-1]
+        assert len(set(round(m, 1) for m in content_margins_1920)) == 1
+        for m in content_margins_1920:
+            assert abs(m - 112.0) < 0.2, f"1920px margin {m} should be ~112.0px"
+        assert margins_1920[-1] == 0.0, "Last element should have 0 bottom margin"
+
+        browser.close()
+
+def test_browser_fluid_scaling_monotonic(tmp_path):
+    """Playwright実機レンダリングで、画面幅拡大に伴いフォントサイズが単調増加し、順序秩序が保たれることをテスト"""
+    md_file = tmp_path / "scaling.md"
+    md_file.write_text("""# 大見出し
+本文テキスト
+""")
+    output_html_path = tmp_path / "scaling.html"
+    config = ConversionConfig(input_file=Path(md_file), output_file=output_html_path, css_files=[])
+    logger = configure_logging(verbose=False)
+    converter = MarkdownToHTMLConverter(config, logger)
+    converter.convert()
+
+    viewports = [375, 768, 1440, 1920]
+    h1_sizes = []
+    p_sizes = []
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page()
+
+        for width in viewports:
+            page.set_viewport_size({"width": width, "height": 900})
+            page.goto(f"file://{output_html_path.absolute()}")
+            h1_size = page.evaluate("() => parseFloat(window.getComputedStyle(document.querySelector('h1')).fontSize)")
+            p_size = page.evaluate("() => parseFloat(window.getComputedStyle(document.querySelector('p')).fontSize)")
+            h1_sizes.append(h1_size)
+            p_sizes.append(p_size)
+            assert h1_size > p_size, f"At {width}px, h1 ({h1_size}px) must be larger than p ({p_size}px)"
+
+        browser.close()
+
+    # 単調増加の検証（画面幅が広がるにつれてフォントサイズも拡大する）
+    for i in range(len(viewports) - 1):
+        assert h1_sizes[i] < h1_sizes[i+1], f"h1 size did not increase from {viewports[i]} to {viewports[i+1]}"
+        assert p_sizes[i] < p_sizes[i+1], f"p size did not increase from {viewports[i]} to {viewports[i+1]}"
+

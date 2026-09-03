@@ -253,3 +253,18 @@ Inline `@[icon: inside_inline]` testing.
         expected_html2 = '<mono-icon name="search" size="24px" color="red" display="block"></mono-icon>'
         result2 = self._get_parser("mono-icon").process(md_content2)
         self.assertEqual(result2, expected_html2)
+
+    def test_typography_trinity_classes(self):
+        """Typography Trinity (.text-display, .text-body, .text-compact) がattr_list拡張でHTMLクラスに変換されることをテスト"""
+        md_content = """# 看板見出し {.text-display}
+
+標準本文テキスト
+{: .text-body}
+
+凝縮注釈テキスト
+{: .text-compact}"""
+        html_output = self.processor.convert_markdown_to_html(md_content)
+        self.assertIn('class="text-display"', html_output)
+        self.assertIn('class="text-body"', html_output)
+        self.assertIn('class="text-compact"', html_output)
+

@@ -85,3 +85,18 @@ Top
     html2 = parser.process(markdown2)
     assert '<mono-layout type="vbox" class="items-center"' in html2
 
+def test_mono_layout_3x3_spacing_tokens(parser):
+    """3x3 Spacing Trinity (gap-flow, gap-group, gap-item) が適切に属性反映されることをテスト"""
+    for gap in ["gap-flow", "gap-group", "gap-item"]:
+        md = f"""@[hbox]{{.{gap}}}
+:::
+Col 1
+:::
+:::
+Col 2
+:::
+@[/hbox]"""
+        html = parser.process(md)
+        assert f'<mono-layout type="hbox" class="{gap}"' in html
+
+
