@@ -11,6 +11,9 @@ from typing import Dict
 # File Paths & Directories
 # ============================================================================
 
+# バージョン情報
+__version__ = "2.0.0"
+
 # テンプレートディレクトリ
 TEMPLATES_DIR = Path(__file__).parent / "templates"
 

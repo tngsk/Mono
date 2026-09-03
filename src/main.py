@@ -15,6 +15,7 @@ from pathlib import Path
 from src.config import ConversionConfig
 from src.converter import MarkdownToHTMLConverter
 from src.logger import configure_logging
+from src.constants import __version__
 
 
 def create_argument_parser() -> argparse.ArgumentParser:
@@ -125,6 +126,14 @@ def create_argument_parser() -> argparse.ArgumentParser:
         const=True,
         default=None,
         help="出力されたHTMLからPDFを生成します。ファイルパスを指定しない場合、{入力ファイル名}.pdf になります。",
+    )
+
+    parser.add_argument(
+        "-V",
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
+        help="Monoのバージョンを表示します",
     )
 
     return parser
