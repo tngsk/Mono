@@ -37,9 +37,9 @@
     --space-item: clamp(0.75rem, 1.2vw, 1.5rem);  /* 微小・要素内/インライン（約16〜24px） */
 
     /* 2. Typography Trinity (タイポグラフィ3層体系) */
-    --font-display: clamp(3.5rem, min(36vw, 40cqi), 8.5rem); /* 看板・特大見出し（スライド主役） */
-    --font-body: clamp(1.5rem, 1.25rem + 0.8vw, 2.4rem);      /* 主旋律・標準本文（24px基準） */
-    --font-compact: clamp(1.125rem, 1.0rem + 0.5vw, 1.25rem); /* 伴奏・box内/注釈（18〜20px） */
+    --font-display: clamp(2.5rem, 1.8rem + 3.5vw, 5.5rem);     /* 看板・大見出し（モバイル40px〜FHD88px） */
+    --font-body: clamp(1.5rem, 1.25rem + 0.8vw, 2.4rem);         /* 主旋律・標準本文（モバイル24px〜FHD35.4px） */
+    --font-compact: clamp(1.25rem, 1.05rem + 0.65vw, 2.0rem);   /* 伴奏・box内/注釈（モバイル20px〜FHD29.3px） */
 
     /* 後方互換性エイリアス */
     --spacing-flow: var(--space-flow);
@@ -191,14 +191,14 @@ h1 {
 }
 
 h2 {
-    font-size: calc(var(--font-body) * 1.35);
+    font-size: clamp(2.0rem, 1.5rem + 1.8vw, 3.8rem);
     font-weight: 700;
     line-height: 1.25;
     scroll-margin-top: 2.5rem;
 }
 
 h3 {
-    font-size: var(--font-body);
+    font-size: clamp(1.65rem, 1.35rem + 1.2vw, 2.8rem);
     font-weight: 600;
     color: var(--font-color-light);
     line-height: 1.35;
