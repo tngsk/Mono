@@ -64,6 +64,10 @@ class ComponentRegistry:
     def get_components_requiring_icons(self) -> List[str]:
         return [name for name, meta in self._components_meta.items() if meta.get("requires_icons", False)]
 
+    def is_web_component(self, component_name: str) -> bool:
+        meta = self._components_meta.get(component_name, {})
+        return meta.get("is_web_component", True)
+
     def get_component_meta(self, component_name: str) -> dict:
         return self._components_meta.get(component_name, {})
 
@@ -81,6 +85,9 @@ def get_always_include_components() -> List[str]:
 
 def get_components_requiring_icons() -> List[str]:
     return _registry.get_components_requiring_icons()
+
+def is_web_component(component_name: str) -> bool:
+    return _registry.is_web_component(component_name)
 
 def get_component_meta(component_name: str) -> dict:
     return _registry.get_component_meta(component_name)

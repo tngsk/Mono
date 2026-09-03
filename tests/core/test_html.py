@@ -169,10 +169,10 @@ class TestHTMLDocumentBuilder(unittest.TestCase):
         # Create mock paths using MagicMock so they are sortable
         from unittest.mock import MagicMock
 
-        mock_sync = MagicMock()
-        mock_sync.name = 'mono-sync'
-        mock_sync.is_dir.return_value = True
-        mock_sync.__lt__.side_effect = lambda other: mock_sync.name < other.name
+        mock_zoom = MagicMock()
+        mock_zoom.name = 'mono-zoom'
+        mock_zoom.is_dir.return_value = True
+        mock_zoom.__lt__.side_effect = lambda other: mock_zoom.name < other.name
 
         mock_brush = MagicMock()
         mock_brush.name = 'mono-brush'
@@ -199,13 +199,13 @@ class TestHTMLDocumentBuilder(unittest.TestCase):
         mock_not_dir.is_dir.return_value = False
         mock_not_dir.__lt__.side_effect = lambda other: mock_not_dir.name < other.name
 
-        mock_iterdir.return_value = [mock_sync, mock_brush, mock_export, mock_poll, mock_unknown, mock_not_dir]
+        mock_iterdir.return_value = [mock_zoom, mock_brush, mock_export, mock_poll, mock_unknown, mock_not_dir]
 
         # Test 1: enable_export=False, html_body has <mono-poll> (On-demand only)
         result1 = self.builder._get_used_component_dirs(found_mono_tags={"mono-poll"}, should_enable_export=False)
         names1 = [p.name for p in result1]
         self.assertIn('mono-poll', names1)  # Found in HTML
-        self.assertNotIn('mono-sync', names1)  # Not in profile or HTML
+        self.assertNotIn('mono-zoom', names1)  # Not in profile or HTML
         self.assertNotIn('mono-brush', names1) # Not in profile or HTML
         self.assertNotIn('mono-export', names1) # Export not enabled
         self.assertNotIn('mono-unknown', names1) # Not found in HTML
@@ -216,16 +216,16 @@ class TestHTMLDocumentBuilder(unittest.TestCase):
         names2 = [p.name for p in result2]
         self.assertIn('mono-export', names2) # Export enabled
         self.assertNotIn('mono-poll', names2)
-        self.assertNotIn('mono-sync', names2)
+        self.assertNotIn('mono-zoom', names2)
 
         # Test 3: with profile_components
         result3 = self.builder._get_used_component_dirs(
             found_mono_tags=set(),
             should_enable_export=False,
-            profile_components=["mono-sync", "mono-brush"]
+            profile_components=["mono-zoom", "mono-brush"]
         )
         names3 = [p.name for p in result3]
-        self.assertIn('mono-sync', names3)
+        self.assertIn('mono-zoom', names3)
         self.assertIn('mono-brush', names3)
         self.assertNotIn('mono-poll', names3)
 

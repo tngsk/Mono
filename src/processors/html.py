@@ -345,6 +345,10 @@ class HTMLDocumentBuilder:
 
             name = component_dir.name
 
+            # Web Component非保持（パーサー専用モジュール等）はアセット探索から除外
+            if not registry.is_web_component(name):
+                continue
+
             # プロファイルによる指定
             if include_all or name in profile_components:
                 used_dirs.append(component_dir)

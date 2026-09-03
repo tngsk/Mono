@@ -1,5 +1,7 @@
 {
   "name": "mono-image",
+  "description": "Markdown画像記法 sugar syntax パーサー（Web Component非保持）",
+  "is_web_component": false,
   "interactive": false,
   "always_include": false,
   "requires_icons": false
