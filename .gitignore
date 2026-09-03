@@ -219,3 +219,9 @@ doc/*.html
 
 # Node.js
 node_modules/
+
+# Local-only Agent Rules & Development Documentation
+AGENTS.md
+doc/
+.agents/
+.jules/
