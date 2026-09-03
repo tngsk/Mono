@@ -1,5 +1,9 @@
 {
   "name": "mono-media-grid",
+  "description": "レスポンシブ・メディアグリッド（開発保留）",
+  "status": "frozen",
+  "category": "layout",
+  "is_web_component": true,
   "interactive": false,
   "always_include": false,
   "requires_icons": false

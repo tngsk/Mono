@@ -1,5 +1,9 @@
 {
   "name": "mono-section",
+  "description": "セクション区切りおよびフルブリード背景スタイル",
+  "status": "active",
+  "category": "layout",
+  "is_web_component": true,
   "interactive": false,
   "always_include": false,
   "requires_icons": false

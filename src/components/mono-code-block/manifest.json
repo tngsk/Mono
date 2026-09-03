@@ -1,5 +1,9 @@
 {
   "name": "mono-code-block",
+  "description": "シンタックスハイライトおよびコピーボタン付与（Light DOM強化）",
+  "status": "active",
+  "category": "presentation",
+  "is_web_component": true,
   "interactive": false,
   "always_include": false,
   "requires_icons": false

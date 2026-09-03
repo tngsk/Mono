@@ -1,5 +1,9 @@
 {
   "name": "mono-hero",
+  "description": "全画面・特大ヒーローバナー（開発保留）",
+  "status": "frozen",
+  "category": "layout",
+  "is_web_component": true,
   "interactive": false,
   "always_include": false,
   "requires_icons": false

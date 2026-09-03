@@ -1,5 +1,9 @@
 {
   "name": "mono-mermaid",
+  "description": "Mermaid記法によるダイアグラム動的描画",
+  "status": "active",
+  "category": "presentation",
+  "is_web_component": true,
   "interactive": false,
   "always_include": false,
   "requires_icons": false

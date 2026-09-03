@@ -71,6 +71,9 @@ class ComponentRegistry:
     def get_components_by_category(self, category: str) -> List[str]:
         return [name for name, meta in self._components_meta.items() if meta.get("category") == category]
 
+    def get_components_by_status(self, status: str) -> List[str]:
+        return [name for name, meta in self._components_meta.items() if meta.get("status") == status]
+
     def get_component_meta(self, component_name: str) -> dict:
         return self._components_meta.get(component_name, {})
 
@@ -94,6 +97,9 @@ def is_web_component(component_name: str) -> bool:
 
 def get_components_by_category(category: str) -> List[str]:
     return _registry.get_components_by_category(category)
+
+def get_components_by_status(status: str) -> List[str]:
+    return _registry.get_components_by_status(status)
 
 def get_component_meta(component_name: str) -> dict:
     return _registry.get_component_meta(component_name)
