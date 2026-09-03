@@ -4,14 +4,14 @@
 
 .theme-switcher-container {
     margin: 0;
-    padding: var(--padding-md);
+    padding: var(--space-item) var(--space-group);
     border: 0.0625rem solid var(--border-color, #ccc);
     border-radius: var(--radius-md, 0.25rem);
     background-color: var(--color-base-100, #fff);
     color: var(--color-base-content, #333);
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--space-item);
 }
 
 .theme-switcher-container.hidden {
