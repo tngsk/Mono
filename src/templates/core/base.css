@@ -125,18 +125,30 @@ body > :last-child {
     margin-block-end: 0 !important;
 }
 
-/* 共通コンポーネントパディング属性 */
-[padding="sm"] { padding: var(--padding-sm) !important; }
-[padding="md"] { padding: var(--padding-md) !important; }
-[padding="lg"] { padding: var(--padding-lg) !important; }
+/* 共通コンポーネントパディング属性 (3段階スペーシング体系に完全統合) */
+[padding="flow"] { padding: var(--space-flow) !important; }
+[padding="group"] { padding: var(--space-group) !important; }
+[padding="item"] { padding: var(--space-item) !important; }
 
-[padding-x="sm"] { padding-left: var(--padding-sm) !important; padding-right: var(--padding-sm) !important; }
-[padding-x="md"] { padding-left: var(--padding-md) !important; padding-right: var(--padding-md) !important; }
-[padding-x="lg"] { padding-left: var(--padding-lg) !important; padding-right: var(--padding-lg) !important; }
+[padding="lg"] { padding: var(--space-group) !important; }
+[padding="md"] { padding: var(--space-group) !important; }
+[padding="sm"] { padding: var(--space-item) !important; }
 
-[padding-y="sm"] { padding-top: var(--padding-sm) !important; padding-bottom: var(--padding-sm) !important; }
-[padding-y="md"] { padding-top: var(--padding-md) !important; padding-bottom: var(--padding-md) !important; }
-[padding-y="lg"] { padding-top: var(--padding-lg) !important; padding-bottom: var(--padding-lg) !important; }
+[padding-x="flow"] { padding-left: var(--space-flow) !important; padding-right: var(--space-flow) !important; }
+[padding-x="group"] { padding-left: var(--space-group) !important; padding-right: var(--space-group) !important; }
+[padding-x="item"] { padding-left: var(--space-item) !important; padding-right: var(--space-item) !important; }
+
+[padding-x="lg"] { padding-left: var(--space-group) !important; padding-right: var(--space-group) !important; }
+[padding-x="md"] { padding-left: var(--space-group) !important; padding-right: var(--space-group) !important; }
+[padding-x="sm"] { padding-left: var(--space-item) !important; padding-right: var(--space-item) !important; }
+
+[padding-y="flow"] { padding-top: var(--space-flow) !important; padding-bottom: var(--space-flow) !important; }
+[padding-y="group"] { padding-top: var(--space-group) !important; padding-bottom: var(--space-group) !important; }
+[padding-y="item"] { padding-top: var(--space-item) !important; padding-bottom: var(--space-item) !important; }
+
+[padding-y="lg"] { padding-top: var(--space-group) !important; padding-bottom: var(--space-group) !important; }
+[padding-y="md"] { padding-top: var(--space-group) !important; padding-bottom: var(--space-group) !important; }
+[padding-y="sm"] { padding-top: var(--space-item) !important; padding-bottom: var(--space-item) !important; }
 
 /*
   Specific exceptional spacing for Mono Section.
@@ -172,31 +184,34 @@ h6 {
 }
 
 h1 {
-    font-size: clamp(2.4rem, 1.8rem + 2.4vw, 4.8rem);
-    font-weight: 700;
-    line-height: 1.25;
+    font-size: var(--font-display);
+    font-weight: 800;
+    line-height: 1.15;
     scroll-margin-top: 2rem;
 }
 
 h2 {
-    font-size: clamp(2.0rem, 1.5rem + 1.8vw, 3.8rem);
-    font-weight: 600;
-    line-height: 1.3;
+    font-size: calc(var(--font-body) * 1.35);
+    font-weight: 700;
+    line-height: 1.25;
     scroll-margin-top: 2.5rem;
 }
 
 h3 {
-    font-size: clamp(1.65rem, 1.35rem + 1.2vw, 2.8rem);
+    font-size: var(--font-body);
     font-weight: 600;
     color: var(--font-color-light);
-    line-height: 1.4;
+    line-height: 1.35;
     scroll-margin-top: 2rem;
 }
 
-h4 {
-    font-size: clamp(1.35rem, 1.15rem + 0.8vw, 2.2rem);
+h4,
+h5,
+h6 {
+    font-size: var(--font-compact);
     font-weight: 600;
     color: var(--font-color-light);
+    line-height: 1.4;
 }
 
 /* 段落・テキスト（最適文字数 38〜42文字制御・モダン組版・両端揃え） --------- */
@@ -350,17 +365,17 @@ th {
     container-type: inline-size;
 }
 
-/* カラム内・レイアウト内のテキスト最適化（本文連動流体スケール: モバイル20px 〜 FHD29.3px） */
+/* カラム内・レイアウト内のテキスト最適化（--font-compact に完全統合） */
 .column,
 mono-layout {
-    font-size: clamp(1.25rem, 1.05rem + 0.65vw, 2.0rem);
+    font-size: var(--font-compact);
     line-height: 1.75;
 }
 
-.column h1 { font-size: clamp(1.8rem, 1.4rem + 1.4vw, 2.8rem); }
-.column h2 { font-size: clamp(1.5rem, 1.2rem + 1.1vw, 2.3rem); }
-.column h3 { font-size: clamp(1.35rem, 1.15rem + 0.8vw, 1.9rem); }
-.column h4 { font-size: clamp(1.2rem, 1.05rem + 0.6vw, 1.6rem); }
+.column h1 { font-size: calc(var(--font-compact) * 1.5); }
+.column h2 { font-size: calc(var(--font-compact) * 1.3); }
+.column h3 { font-size: calc(var(--font-compact) * 1.15); }
+.column h4 { font-size: var(--font-compact); }
 
 /* Colab -------------------------------------------------- */
 .colab-badge {
