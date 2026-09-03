@@ -59,6 +59,7 @@ body {
         "Noto Sans JP", Meiryo, sans-serif;
     font-size: clamp(1.25rem, 1.05rem + 0.65vw, 2.0rem);
     line-height: 1.85;
+    font-feature-settings: "palt" 1;
     color: var(--font-color);
     background: var(--color-base-200, #f3f4f6);
 
@@ -196,9 +197,12 @@ h4 {
     color: var(--font-color-light);
 }
 
-/* 段落・テキスト（最適文字数 38〜42文字制御・モダン組版） --------- */
+/* 段落・テキスト（最適文字数 38〜42文字制御・モダン組版・両端揃え） --------- */
 p {
     max-width: min(100%, 42em);
+    text-align: justify;
+    text-justify: inter-ideograph;
+    text-align-last: left;
     text-wrap: pretty;
     line-break: strict;
     overflow-wrap: break-word;
@@ -259,6 +263,9 @@ li + li {
 li {
     margin-bottom: var(--spacing-xs);
     max-width: min(100%, 42em);
+    text-align: justify;
+    text-justify: inter-ideograph;
+    text-align-last: left;
     text-wrap: pretty;
 }
 
@@ -387,6 +394,12 @@ th {
     overflow-wrap: normal;
     word-break: keep-all;
 }
+
+/* テキスト配置ユーティリティ ------------------------------------ */
+.text-left { text-align: left !important; text-align-last: left !important; }
+.text-center { text-align: center !important; text-align-last: center !important; }
+.text-right { text-align: right !important; text-align-last: right !important; }
+.text-justify { text-align: justify !important; text-justify: inter-ideograph !important; text-align-last: left !important; }
 
 /* Print specific global adjustments */
 @media print {
