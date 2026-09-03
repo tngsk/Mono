@@ -225,3 +225,11 @@ AGENTS.md
 doc/
 .agents/
 .jules/
+
+# Local-only Development Tools & Templates
+tools/
+watch_and_run.sh
+educational_templates/
+Makefile
+package.json
+package-lock.json
