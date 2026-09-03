@@ -26,15 +26,27 @@
     flex-direction: column;
 }
 
-/* モディファイア対応 (狭める・広げるオプション) */
+/* 3段階スペーシング体系 (Spacing Trinity: flow, group, item) */
 .layout-wrapper.center { justify-content: center; align-items: center; }
-.layout-wrapper.gap-xs { gap: var(--spacing-xs, 0.5rem); }
-.layout-wrapper.gap-sm { gap: var(--spacing-sm, 1.5rem); }
-.layout-wrapper.gap-md { gap: var(--spacing-md, 2.5rem); }
-.layout-wrapper.gap-lg { gap: var(--spacing-lg, 4rem); }
-.layout-wrapper.gap-xl { gap: var(--spacing-xl, 6rem); }
 .layout-wrapper.start { justify-content: flex-start; align-items: flex-start; }
 .layout-wrapper.end { justify-content: flex-end; align-items: flex-end; }
+
+.layout-wrapper.gap-flow,
+.layout-wrapper.gap-xl {
+    gap: var(--space-flow, var(--spacing-xl, 6rem));
+}
+
+.layout-wrapper.gap-group,
+.layout-wrapper.gap-lg,
+.layout-wrapper.gap-md {
+    gap: var(--space-group, var(--spacing-md, 2.5rem));
+}
+
+.layout-wrapper.gap-item,
+.layout-wrapper.gap-sm,
+.layout-wrapper.gap-xs {
+    gap: var(--space-item, var(--spacing-sm, 1.25rem));
+}
 
 /* モバイルフォールバック */
 @media (max-width: 768px) {

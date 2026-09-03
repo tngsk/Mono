@@ -27,20 +27,31 @@
     --z-index-overlay: 999;
     --z-index-modal: 1000;
 
-    /* Fluid Spacing Scale */
-    --spacing-xs: clamp(0.25rem, 0.5vw, 0.75rem);
-    --spacing-sm: clamp(0.875rem, 1.3vw, 1.75rem);
-    --spacing-md: clamp(1.5rem, 2.5vw, 3rem);
-    --spacing-lg: clamp(2.5rem, 4vw, 4.5rem);
-    --spacing-xl: clamp(3.5rem, 6vw, 7rem);
+    /* ========================================================================
+       Mono 3x3 Minimalist Design Tokens (制約による最大の表現力)
+       ======================================================================== */
 
-    /* 共通タグマージン（デフォルトで最も広い xl 基準、必要に応じて狭める設計方針） */
-    --spacing-flow: var(--spacing-xl);
+    /* 1. Spacing Trinity (スペーシング3層体系) */
+    --space-flow: clamp(3.5rem, 6vw, 7rem);      /* 巨視的・トップレベル要素間（約112px） */
+    --space-group: clamp(2.0rem, 3.5vw, 4.0rem);  /* 中間的・コンテナ/カラム間（約48〜64px） */
+    --space-item: clamp(0.75rem, 1.2vw, 1.5rem);  /* 微小・要素内/インライン（約16〜24px） */
 
-    /* Fluid Padding Scale */
-    --padding-sm: clamp(0.5rem, 1vw, 1rem);
-    --padding-md: clamp(1.125rem, 2vw, 2.25rem);
-    --padding-lg: clamp(1.75rem, 3.5vw, 3.5rem);
+    /* 2. Typography Trinity (タイポグラフィ3層体系) */
+    --font-display: clamp(3.5rem, min(36vw, 40cqi), 8.5rem); /* 看板・特大見出し（スライド主役） */
+    --font-body: clamp(1.5rem, 1.25rem + 0.8vw, 2.4rem);      /* 主旋律・標準本文（24px基準） */
+    --font-compact: clamp(1.125rem, 1.0rem + 0.5vw, 1.25rem); /* 伴奏・box内/注釈（18〜20px） */
+
+    /* 後方互換性エイリアス */
+    --spacing-flow: var(--space-flow);
+    --spacing-xl: var(--space-flow);
+    --spacing-lg: var(--space-group);
+    --spacing-md: var(--space-group);
+    --spacing-sm: var(--space-item);
+    --spacing-xs: var(--space-item);
+
+    --padding-lg: var(--space-group);
+    --padding-md: var(--space-group);
+    --padding-sm: var(--space-item);
 }
 
 html {
@@ -364,39 +375,31 @@ mono-layout {
     text-decoration: none;
 }
 
-/* テキストサイズバリエーション ------------------------------------ */
-.text-small {
-    font-size: 0.85em;
-}
-
-.text-large {
-    font-size: clamp(1.35rem, 1.1rem + 1.2vw, 2.8rem);
-    line-height: 1.5;
-}
-
-.text-xlarge {
-    /* 4〜8文字のキーワード用スケール */
-    font-size: clamp(2rem, min(14vw, 15cqi), 12rem);
-    line-height: 1.15;
-    font-weight: 800;
-    text-align: center;
-    margin-block: clamp(2rem, 3.5vw, 4rem);
-    overflow-wrap: break-word;
-}
-
+/* テキストサイズ 3段階体系 (Typography Trinity) ----------------- */
 .text-display,
-.text-hero {
-    /* 2〜3文字がコンテナ・画面幅を約80〜90%埋め尽くす特大流体スケール (上下マージン2倍拡張) */
+.text-hero,
+.text-xlarge {
     display: block;
     width: 100%;
-    font-size: clamp(3.5rem, min(36vw, 40cqi), 45rem);
-    line-height: 1.0;
+    font-size: var(--font-display);
+    line-height: 1.05;
     font-weight: 900;
     letter-spacing: -0.02em;
     text-align: center;
-    margin-block: clamp(3.5rem, 6.5vw, 7.5rem);
     overflow-wrap: normal;
     word-break: keep-all;
+}
+
+.text-body,
+.text-large {
+    font-size: var(--font-body);
+    line-height: 1.85;
+}
+
+.text-compact,
+.text-small {
+    font-size: var(--font-compact);
+    line-height: 1.65;
 }
 
 /* テキスト配置ユーティリティ ------------------------------------ */
