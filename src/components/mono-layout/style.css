@@ -3,8 +3,8 @@
     display: flex;
     width: 100%;
     box-sizing: border-box;
-    /* デフォルトで最も広い余白 lg を適用（必要に応じて gap-sm, gap-md で狭める方針） */
-    gap: var(--spacing-lg, 3rem);
+    /* デフォルトで広大な余白 xl を適用（大画面での呼吸感と可読性の確保） */
+    gap: var(--spacing-xl, clamp(3.5rem, 5.5vw, 6rem));
 }
 /* 方向制御 */
 :host([type="hbox"]),
@@ -26,12 +26,13 @@
     flex-direction: column;
 }
 
-/* モディファイア対応 (狭めるオプション) */
+/* モディファイア対応 (狭める・広げるオプション) */
 .layout-wrapper.center { justify-content: center; align-items: center; }
-.layout-wrapper.gap-xs { gap: var(--spacing-xs, 0.25rem); }
-.layout-wrapper.gap-sm { gap: var(--spacing-sm, 1.25rem); }
-.layout-wrapper.gap-md { gap: var(--spacing-md, 2rem); }
-.layout-wrapper.gap-lg { gap: var(--spacing-lg, 3.5rem); }
+.layout-wrapper.gap-xs { gap: var(--spacing-xs, 0.5rem); }
+.layout-wrapper.gap-sm { gap: var(--spacing-sm, 1.5rem); }
+.layout-wrapper.gap-md { gap: var(--spacing-md, 2.5rem); }
+.layout-wrapper.gap-lg { gap: var(--spacing-lg, 4rem); }
+.layout-wrapper.gap-xl { gap: var(--spacing-xl, 6rem); }
 .layout-wrapper.start { justify-content: flex-start; align-items: flex-start; }
 .layout-wrapper.end { justify-content: flex-end; align-items: flex-end; }
 
