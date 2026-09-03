@@ -61,3 +61,27 @@ A
 @[/row]"""
     html_row = parser.process(markdown_row)
     assert '<mono-layout type="hbox"' in html_row
+
+
+def test_mono_layout_attr_list_syntax(parser):
+    # 1. Pure attr_list curly brace syntax
+    markdown1 = """@[hbox]{.gap-lg .center}
+:::
+Left
+:::
+:::
+Right
+:::
+@[/hbox]"""
+    html1 = parser.process(markdown1)
+    assert '<mono-layout type="hbox" class="gap-lg center"' in html1
+
+    # 2. Options with trailing attr_list
+    markdown2 = """@[vbox](gap: "md"){.items-center}
+:::
+Top
+:::
+@[/vbox]"""
+    html2 = parser.process(markdown2)
+    assert '<mono-layout type="vbox" class="items-center"' in html2
+

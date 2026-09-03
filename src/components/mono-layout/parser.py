@@ -9,7 +9,7 @@ class Parser(BaseComponentParser):
 
     def process(self, markdown_content: str) -> str:
         # Pattern to match the innermost layout (hbox / vbox as primary, hstack / vstack / row / stack as aliases)
-        LAYOUT_PATTERN = r"(?s)@\[(hbox|vbox|h-box|v-box|layout-h|layout-v|hstack|vstack|row|stack)(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?((?:(?!@\[(?:hbox|vbox|h-box|v-box|layout-h|layout-v|hstack|vstack|row|stack)).)*?)@\[(?:end|/(?:layout|hbox|vbox|h-box|v-box|layout-h|layout-v|hstack|vstack|row|stack))\]"
+        LAYOUT_PATTERN = r"(?s)@\[(hbox|vbox|h-box|v-box|layout-h|layout-v|hstack|vstack|row|stack)(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?(?:\s*\{([^}]*)\})?((?:(?!@\[(?:hbox|vbox|h-box|v-box|layout-h|layout-v|hstack|vstack|row|stack)).)*?)@\[(?:end|/(?:layout|hbox|vbox|h-box|v-box|layout-h|layout-v|hstack|vstack|row|stack))\]"
         pattern = re.compile(LAYOUT_PATTERN, re.IGNORECASE)
 
         def replacer(match: re.Match) -> str:
@@ -22,21 +22,27 @@ class Parser(BaseComponentParser):
                 type_name = 'hbox'
             bracket_content = match.group(2)
             args_str = match.group(3)
-            inner_content = match.group(4)
+            attr_str = match.group(4)
+            inner_content = match.group(5)
 
             label, specific_args = self.parse_bracket_content(bracket_content)
             common_args = self.parse_key_value_args(args_str)
-            args = {**specific_args, **common_args}
+            attr_args = self.parse_attr_list(attr_str) if attr_str else {}
+            args = {**specific_args, **common_args, **attr_args}
 
             classes = label.strip() if label else ""
             if 'class' in args:
-                classes = args['class']
+                if classes and classes not in args['class']:
+                    classes = f"{classes} {args['class']}"
+                else:
+                    classes = args['class']
 
             attr = f' type="{type_name}"'
             if classes:
                 attr += f' class="{classes}"'
 
-            common_attr = self.get_common_attributes(args)
+            args_for_common = {k: v for k, v in args.items() if k != 'class'}
+            common_attr = self.get_common_attributes(args_for_common)
             if common_attr:
                 attr += common_attr
 

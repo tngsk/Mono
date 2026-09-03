@@ -55,3 +55,24 @@ def test_parse_bracket_content():
     label, args = parser.parse_bracket_content('')
     assert label == ""
     assert args == {}
+
+
+def test_parse_attr_list():
+    parser = BaseComponentParser()
+
+    # 1. Simple classes
+    res1 = parser.parse_attr_list("{.gap-md .center}")
+    assert res1 == {"class": "gap-md center"}
+
+    # 2. Class and ID
+    res2 = parser.parse_attr_list("{#main-nav .container}")
+    assert res2 == {"class": "container", "id": "main-nav"}
+
+    # 3. Kramdown style colon with key-value
+    res3 = parser.parse_attr_list('{: .highlight data-role="modal"}')
+    assert res3 == {"class": "highlight", "data-role": "modal"}
+
+    # 4. In parse_key_value_args directly
+    res4 = parser.parse_key_value_args("{.gap-lg .center}")
+    assert res4 == {"class": "gap-lg center"}
+

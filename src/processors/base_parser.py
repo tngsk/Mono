@@ -32,6 +32,68 @@ class BaseComponentParser:
         return html.escape(text.strip())
 
     @staticmethod
+    def parse_attr_list(attr_str: str) -> dict[str, str]:
+        """
+        Parse Markdown standard attr_list string inside `{...}` or `{: ...}`.
+        Supports:
+        - Classes: `.class-name`
+        - ID: `#element-id`
+        - Key-value pairs: `key="value"`, `key='value'`, `key=value`, `key: "value"`
+        Returns dict of attributes, e.g. {'class': 'gap-md center', 'id': 'main'}
+        """
+        if not attr_str:
+            return {}
+
+        content = attr_str.strip()
+        if content.startswith('{') and content.endswith('}'):
+            content = content[1:-1].strip()
+        if content.startswith(':'):
+            content = content[1:].strip()
+
+        if not content:
+            return {}
+
+        classes = []
+        elem_id = None
+        attrs = {}
+
+        has_quote = '"' in content or "'" in content
+        tokens = []
+        if not has_quote:
+            tokens = [t for t in content.split() if t]
+        else:
+            import shlex
+            try:
+                tokens = shlex.split(content)
+            except ValueError:
+                tokens = [t for t in content.split() if t]
+
+        for token in tokens:
+            if token.startswith('.'):
+                cls = token[1:].strip()
+                if cls:
+                    classes.append(cls)
+            elif token.startswith('#'):
+                elem_id = token[1:].strip()
+            elif '=' in token:
+                k, v = token.split('=', 1)
+                k = k.strip()
+                v = v.strip().strip('"\'')
+                attrs[k] = v
+            elif ':' in token:
+                k, v = token.split(':', 1)
+                k = k.strip()
+                v = v.strip().strip('"\'')
+                attrs[k] = v
+
+        if classes:
+            attrs['class'] = ' '.join(classes)
+        if elem_id:
+            attrs['id'] = elem_id
+
+        return attrs
+
+    @staticmethod
     def parse_bracket_content(content: str) -> tuple[str, dict]:
         """
         Parse the content inside `[]` which can be:
@@ -201,8 +263,18 @@ class BaseComponentParser:
 
     @staticmethod
     def parse_key_value_args(args_str: str) -> dict:
-        if not args_str or (':' not in args_str and '=' not in args_str):
+        if not args_str:
             return {}
+
+        args_str_stripped = args_str.strip()
+        if args_str_stripped.startswith('{') and args_str_stripped.endswith('}'):
+            return BaseComponentParser.parse_attr_list(args_str_stripped)
+
+        if ':' not in args_str and '=' not in args_str:
+            if '.' in args_str or '#' in args_str:
+                return BaseComponentParser.parse_attr_list(args_str)
+            return {}
+
         result = {}
 
         has_paren = '(' in args_str
