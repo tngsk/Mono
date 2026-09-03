@@ -25,8 +25,8 @@ description = "プレゼンテーションモード（自動ズーム、ブラ�
 components = ["mono-zoom", "mono-brush"]
 
 [profiles.interactive]
-description = "インタラクティブ講義モード（投票、リアクション、アカウントを常時有効化）"
-components = ["mono-poll", "mono-reaction", "mono-account"]
+description = "インタラクティブ講義モード（教育・セッション系コンポーネントパッケージを一括有効化）"
+components = ["@interactive"]
 
 [profiles.all]
 description = "フルモード（全コンポーネントを有効化）"

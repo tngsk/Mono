@@ -338,6 +338,15 @@ class HTMLDocumentBuilder:
         profile_components = profile_components or []
         include_all = "*" in profile_components
 
+        # カテゴリ指定（例: @interactive）のオプトイン展開
+        expanded_profiles = set()
+        for comp in profile_components:
+            if comp.startswith("@"):
+                cat_name = comp[1:]
+                expanded_profiles.update(registry.get_components_by_category(cat_name))
+            else:
+                expanded_profiles.add(comp)
+
         used_dirs = []
         for component_dir in sorted(components_dir.iterdir()):
             if not component_dir.is_dir():
@@ -350,7 +359,7 @@ class HTMLDocumentBuilder:
                 continue
 
             # プロファイルによる指定
-            if include_all or name in profile_components:
+            if include_all or name in expanded_profiles:
                 used_dirs.append(component_dir)
                 continue
 

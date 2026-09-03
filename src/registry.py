@@ -68,6 +68,9 @@ class ComponentRegistry:
         meta = self._components_meta.get(component_name, {})
         return meta.get("is_web_component", True)
 
+    def get_components_by_category(self, category: str) -> List[str]:
+        return [name for name, meta in self._components_meta.items() if meta.get("category") == category]
+
     def get_component_meta(self, component_name: str) -> dict:
         return self._components_meta.get(component_name, {})
 
@@ -88,6 +91,9 @@ def get_components_requiring_icons() -> List[str]:
 
 def is_web_component(component_name: str) -> bool:
     return _registry.is_web_component(component_name)
+
+def get_components_by_category(category: str) -> List[str]:
+    return _registry.get_components_by_category(category)
 
 def get_component_meta(component_name: str) -> dict:
     return _registry.get_component_meta(component_name)
