@@ -345,7 +345,20 @@ th {
     flex: 1;
     min-width: 0;
     overflow: hidden;
+    container-type: inline-size;
 }
+
+/* カラム内・レイアウト内のテキスト最適化（18px〜20px / コンテナ可変スケール） */
+.column,
+mono-layout {
+    font-size: clamp(1.125rem, 1.0rem + 0.5cqi, 1.25rem); /* 18px 〜 20px */
+    line-height: 1.75;
+}
+
+.column h1 { font-size: clamp(1.6rem, 1.3rem + 1.2cqi, 2.2rem); }
+.column h2 { font-size: clamp(1.35rem, 1.15rem + 1.0cqi, 1.85rem); }
+.column h3 { font-size: clamp(1.2rem, 1.05rem + 0.8cqi, 1.5rem); }
+.column h4 { font-size: clamp(1.1rem, 1.0rem + 0.5cqi, 1.3rem); }
 
 /* Colab -------------------------------------------------- */
 .colab-badge {
