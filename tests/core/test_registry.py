@@ -20,11 +20,12 @@ class TestComponentRegistry(unittest.TestCase):
         active = get_components_by_status("active")
         frozen = get_components_by_status("frozen")
         
-        # Verify 10 active components
+        # Verify 11 active components
         self.assertIn("mono-layout", active)
         self.assertIn("mono-zoom", active)
         self.assertIn("mono-section", active)
-        self.assertEqual(len(active), 10)
+        self.assertIn("mono-presenter", active)
+        self.assertEqual(len(active), 11)
         
         # Verify 11 frozen components
         self.assertIn("mono-clock", frozen)

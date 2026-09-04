@@ -129,6 +129,7 @@ MARKDOWN_EXTENSIONS = [
     "src.extensions.colab",
     "src.extensions.code_block",
     "src.extensions.math",
+    "src.extensions.notes",
 ]
 
 
@@ -145,7 +146,7 @@ SIZE_UNIT_THRESHOLD = 1024
 # ============================================================================
 
 # Monoコンパイラのバージョン
-MONO_VERSION = "0.1.0"
+MONO_VERSION = __version__
 
 # CLIのヘッダー表示
 HEADER_TEXT = f"""

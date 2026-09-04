@@ -111,7 +111,8 @@ body > * {
 }
 
 /* 最末尾要素のみ下部余白を除去 */
-body > :last-child {
+body > :last-child,
+body > :nth-last-child(1 of :not(script):not(style):not(template)) {
     margin-block-end: 0 !important;
 }
 
