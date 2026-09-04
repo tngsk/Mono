@@ -20,7 +20,7 @@
   font-size: var(--font-compact, 0.95rem);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  opacity: 0.4;
+  opacity: 0.85;
   transition: opacity 0.2s ease, transform 0.15s ease, background-color 0.2s ease;
 }
 
