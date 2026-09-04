@@ -1,6 +1,6 @@
 {
   "name": "mono-presenter",
   "category": "presentation",
-  "status": "active",
-  "description": "プレゼンター専用別ウィンドウプレビュー・トークスクリプト・経過時間タイマー同期コンポーネント"
+  "status": "wip",
+  "description": "プレゼンター専用別ウィンドウプレビュー・トークスクリプト同期コンポーネント（開発中）"
 }

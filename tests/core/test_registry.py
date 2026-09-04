@@ -19,13 +19,17 @@ class TestComponentRegistry(unittest.TestCase):
     def test_status_categorization(self):
         active = get_components_by_status("active")
         frozen = get_components_by_status("frozen")
+        wip = get_components_by_status("wip")
         
-        # Verify 11 active components
+        # Verify 10 active components
         self.assertIn("mono-layout", active)
         self.assertIn("mono-zoom", active)
         self.assertIn("mono-section", active)
-        self.assertIn("mono-presenter", active)
-        self.assertEqual(len(active), 11)
+        self.assertEqual(len(active), 10)
+        
+        # Verify wip components (mono-presenter is in development)
+        self.assertIn("mono-presenter", wip)
+        self.assertEqual(len(wip), 1)
         
         # Verify 11 frozen components
         self.assertIn("mono-clock", frozen)

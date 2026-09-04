@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- 蛍光マーカー記法（`==テキスト=={color}`）および蛍光アンダーライン記法（`++テキスト++{color}`）の軽量インライン構文（5色対応: yellow, pink, green, cyan, orange）
+- 複数行改行に対応したグラデーション強調描画スタイル（`box-decoration-break: clone`）
+
+### Changed
+- プレゼンター機能（`mono-presenter`）のステータスを開発中（wip / experimental）へ変更
+
 ## [2.0.0] - 2026-09-03
 
 ### Added
