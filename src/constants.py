@@ -130,6 +130,7 @@ MARKDOWN_EXTENSIONS = [
     "src.extensions.code_block",
     "src.extensions.math",
     "src.extensions.notes",
+    "src.extensions.highlight",
 ]
 
 

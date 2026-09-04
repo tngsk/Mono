@@ -424,6 +424,70 @@ mono-layout {
 .text-right { text-align: right !important; text-align-last: right !important; }
 .text-justify { text-align: justify !important; text-justify: inter-ideograph !important; text-align-last: left !important; }
 
+/* 蛍光マーカー・アンダーライン強調 -------------------------------- */
+:root {
+    --mono-marker-yellow: rgba(254, 240, 138, 0.7);
+    --mono-marker-pink: rgba(251, 207, 232, 0.7);
+    --mono-marker-green: rgba(187, 247, 208, 0.7);
+    --mono-marker-cyan: rgba(186, 230, 253, 0.7);
+    --mono-marker-orange: rgba(254, 215, 170, 0.7);
+
+    --mono-underline-yellow: rgba(250, 204, 21, 0.75);
+    --mono-underline-pink: rgba(244, 114, 182, 0.75);
+    --mono-underline-green: rgba(74, 222, 128, 0.75);
+    --mono-underline-cyan: rgba(56, 189, 248, 0.75);
+    --mono-underline-orange: rgba(251, 146, 60, 0.75);
+}
+
+[data-theme="dark"],
+[data-theme="black"],
+[data-theme="business"],
+[data-theme="night"],
+[data-theme="dracula"] {
+    --mono-marker-yellow: rgba(234, 179, 8, 0.38);
+    --mono-marker-pink: rgba(236, 72, 153, 0.38);
+    --mono-marker-green: rgba(34, 197, 94, 0.38);
+    --mono-marker-cyan: rgba(14, 165, 233, 0.38);
+    --mono-marker-orange: rgba(249, 115, 22, 0.38);
+
+    --mono-underline-yellow: rgba(250, 204, 21, 0.8);
+    --mono-underline-pink: rgba(244, 114, 182, 0.8);
+    --mono-underline-green: rgba(74, 222, 128, 0.8);
+    --mono-underline-cyan: rgba(56, 189, 248, 0.8);
+    --mono-underline-orange: rgba(251, 146, 60, 0.8);
+}
+
+.mono-marker {
+    background: linear-gradient(transparent 15%, var(--marker-bg, var(--mono-marker-yellow)) 15%);
+    padding: 0.1em 0.25em;
+    margin: 0 0.08em;
+    border-radius: 0.2em;
+    color: inherit;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+}
+
+.mono-marker-yellow { --marker-bg: var(--mono-marker-yellow); }
+.mono-marker-pink   { --marker-bg: var(--mono-marker-pink); }
+.mono-marker-green  { --marker-bg: var(--mono-marker-green); }
+.mono-marker-cyan   { --marker-bg: var(--mono-marker-cyan); }
+.mono-marker-orange { --marker-bg: var(--mono-marker-orange); }
+
+.mono-underline {
+    background: linear-gradient(transparent 65%, var(--underline-bg, var(--mono-underline-yellow)) 65%);
+    padding: 0 0.12em;
+    margin: 0 0.04em;
+    color: inherit;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+}
+
+.mono-underline-yellow { --underline-bg: var(--mono-underline-yellow); }
+.mono-underline-pink   { --underline-bg: var(--mono-underline-pink); }
+.mono-underline-green  { --underline-bg: var(--mono-underline-green); }
+.mono-underline-cyan   { --underline-bg: var(--mono-underline-cyan); }
+.mono-underline-orange { --underline-bg: var(--mono-underline-orange); }
+
 /* Print specific global adjustments */
 @media print {
     html,
