@@ -95,21 +95,24 @@ class MonoPresenter extends MonoBaseElement {
     }
 
     setupChannel() {
+        this.boundHandleIncomingMessage = (event) => {
+            const data = event.data;
+            if (!data) return;
+            if (data.type === 'navigate') {
+                this.navigateToSlide(data.index);
+            } else if (data.type === 'request-init') {
+                this.syncToPresenter();
+            }
+        };
+
         try {
             this.channel = new BroadcastChannel('mono-presenter-channel');
-            this.channel.onmessage = (event) => {
-                const data = event.data;
-                if (!data) return;
-
-                if (data.type === 'navigate') {
-                    this.navigateToSlide(data.index);
-                } else if (data.type === 'request-init') {
-                    this.syncToPresenter();
-                }
-            };
+            this.channel.onmessage = this.boundHandleIncomingMessage;
         } catch (e) {
             // BroadcastChannel非対応環境のフォールバック
         }
+
+        window.addEventListener('message', this.boundHandleIncomingMessage);
     }
 
     setupEventListeners() {
@@ -187,7 +190,6 @@ class MonoPresenter extends MonoBaseElement {
     }
 
     syncToPresenter() {
-        if (!this.channel) return;
         const current = this.slides[this.currentSlideIndex] ? {
             index: this.slides[this.currentSlideIndex].index,
             title: this.slides[this.currentSlideIndex].title,
@@ -201,13 +203,20 @@ class MonoPresenter extends MonoBaseElement {
             note: this.slides[this.currentSlideIndex + 1].note
         } : null;
 
-        this.channel.postMessage({
+        const payload = {
             type: 'state-sync',
             currentIndex: this.currentSlideIndex,
             totalSlides: this.slides.length,
             currentSlide: current,
             nextSlide: next
-        });
+        };
+
+        if (this.channel) {
+            try { this.channel.postMessage(payload); } catch (e) {}
+        }
+        if (this.presenterWindow && !this.presenterWindow.closed) {
+            try { this.presenterWindow.postMessage(payload, '*'); } catch (e) {}
+        }
     }
 
     openPresenterWindow() {
@@ -223,7 +232,7 @@ class MonoPresenter extends MonoBaseElement {
         const top = window.screen.height ? (window.screen.height - height) / 2 : 50;
 
         this.presenterWindow = window.open(
-            '',
+            'about:blank',
             'mono_presenter_view',
             `width=${width},height=${height},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no,resizable=yes`
         );
@@ -371,10 +380,23 @@ class MonoPresenter extends MonoBaseElement {
     </div>
   </main>
   <script>
-    const channel = new BroadcastChannel('mono-presenter-channel');
+    let channel = null;
+    try {
+      channel = new BroadcastChannel('mono-presenter-channel');
+    } catch(e) {}
+
     let currentIndex = 0;
     let totalSlides = 1;
     let noteFontSize = 1.25;
+
+    function sendMessage(msg) {
+      if (channel) {
+        try { channel.postMessage(msg); } catch(e) {}
+      }
+      if (window.opener) {
+        try { window.opener.postMessage(msg, '*'); } catch(e) {}
+      }
+    }
 
     // タイマー管理
     let timerSeconds = 0;
@@ -430,12 +452,12 @@ class MonoPresenter extends MonoBaseElement {
     // ナビゲーション
     function goPrev() {
       if (currentIndex > 0) {
-        channel.postMessage({ type: 'navigate', index: currentIndex - 1 });
+        sendMessage({ type: 'navigate', index: currentIndex - 1 });
       }
     }
     function goNext() {
       if (currentIndex < totalSlides - 1) {
-        channel.postMessage({ type: 'navigate', index: currentIndex + 1 });
+        sendMessage({ type: 'navigate', index: currentIndex + 1 });
       }
     }
     document.getElementById('btn-prev').addEventListener('click', goPrev);
@@ -451,8 +473,7 @@ class MonoPresenter extends MonoBaseElement {
       }
     });
 
-    channel.onmessage = (event) => {
-      const data = event.data;
+    function handleStateSync(data) {
       if (!data || data.type !== 'state-sync') return;
 
       currentIndex = data.currentIndex;
@@ -477,10 +498,15 @@ class MonoPresenter extends MonoBaseElement {
       } else {
         nextEl.innerHTML = '<span style="color: #64748b;">（最後のスライドです）</span>';
       }
-    };
+    }
+
+    if (channel) {
+      channel.onmessage = (event) => handleStateSync(event.data);
+    }
+    window.addEventListener('message', (event) => handleStateSync(event.data));
 
     // 親画面へ初期化同期を要求
-    channel.postMessage({ type: 'request-init' });
+    sendMessage({ type: 'request-init' });
   ${'<'}/script>
 </body>
 </html>`;
