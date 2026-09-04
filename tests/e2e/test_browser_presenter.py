@@ -48,13 +48,21 @@ def test_presenter_browser_interaction(tmp_path):
     
     input_file.write_text("""# スライド1
 <!-- スクリプト1 -->
-内容1
+内容1-1
+
+内容1-2
+
+内容1-3
 
 ---
 
 # スライド2
 <!-- スクリプト2 -->
-内容2
+内容2-1
+
+内容2-2
+
+内容2-3
 """, encoding="utf-8")
     
     config = ConversionConfig(
@@ -117,13 +125,21 @@ def test_presenter_dual_window_sync(tmp_path):
     
     input_file.write_text("""# スライドA
 <!-- ノートA -->
-スライドAの内容
+スライドAの内容1
+
+スライドAの内容2
+
+スライドAの内容3
 
 ---
 
 # スライドB
 <!-- ノートB -->
-スライドBの内容
+スライドBの内容1
+
+スライドBの内容2
+
+スライドBの内容3
 """, encoding="utf-8")
     
     config = ConversionConfig(
@@ -160,5 +176,12 @@ def test_presenter_dual_window_sync(tmp_path):
         # プレゼンター側のノートが更新されたことを確認
         note = pres_page.evaluate("document.querySelector('mono-presenter').shadowRoot.getElementById('script-content').textContent")
         assert "ノートB" in note
+        
+        # プレゼンター側での一方通行スクロール同期テスト
+        pres_page.evaluate("window.scrollTo(0, 400)")
+        pres_page.wait_for_timeout(400)
+        
+        main_scroll = main_page.evaluate("window.scrollY")
+        assert abs(main_scroll - 400) <= 5
         
         browser.close()
