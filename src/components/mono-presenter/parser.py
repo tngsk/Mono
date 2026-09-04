@@ -6,8 +6,11 @@ class Parser(BaseComponentParser):
     """@[presenter]() ディレクティブを <mono-presenter> タグに変換するパーサー"""
     PATTERN = r"@\[(?:presenter)\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
 
-    def parse(self, text: str) -> str:
+    def process(self, markdown_content: str) -> str:
         def replace(match):
             return "<mono-presenter></mono-presenter>"
 
-        return re.sub(self.PATTERN, replace, text)
+        return re.sub(self.PATTERN, replace, markdown_content)
+
+    def parse(self, text: str) -> str:
+        return self.process(text)

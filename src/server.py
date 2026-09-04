@@ -6,6 +6,7 @@ import asyncio
 from typing import List
 from contextlib import asynccontextmanager
 from functools import lru_cache
+from pathlib import Path
 import os
 
 from fastapi import FastAPI, Request
@@ -24,18 +25,23 @@ def get_security_config() -> dict:
         "max_upload_size": 1024 * 1024  # Default 1MB
     }
 
-    # Load from config.toml
-    try:
-        with open("config.toml", "rb") as f:
-            config_data = tomllib.load(f)
-            if "security" in config_data:
-                sec = config_data["security"]
-                if "cors-allowed-origins" in sec:
-                    config["origins"] = sec["cors-allowed-origins"]
-                if "max-upload-size" in sec:
-                    config["max_upload_size"] = sec["max-upload-size"]
-    except Exception as e:
-        logger.warning(f"Could not load security config from config.toml: {e}")
+    config_paths = [
+        Path.cwd() / "config.toml",
+        Path(__file__).resolve().parent.parent / "config.toml",
+    ]
+    config_path = next((p for p in config_paths if p.is_file()), None)
+    if config_path:
+        try:
+            with open(config_path, "rb") as f:
+                config_data = tomllib.load(f)
+                if "security" in config_data:
+                    sec = config_data["security"]
+                    if "cors-allowed-origins" in sec:
+                        config["origins"] = sec["cors-allowed-origins"]
+                    if "max-upload-size" in sec:
+                        config["max_upload_size"] = sec["max-upload-size"]
+        except Exception as e:
+            logger.warning(f"Could not load security config from config.toml: {e}")
 
     # Enforce production security rules
     is_production = os.environ.get("ENVIRONMENT", "").lower() == "production"

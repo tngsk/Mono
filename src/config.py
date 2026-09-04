@@ -64,20 +64,26 @@ class ConversionConfig:
     def __post_init__(self):
         self.csp_additions = {}
         self.profile_components = []
-        try:
-            with open("config.toml", "rb") as f:
-                config_data = tomllib.load(f)
-                security = config_data.get("security", {})
-                self.connect_src = security.get("connect-src", "")
-                self.csp_additions = security.get("csp-additions", {})
-                
-                # Profiles resolving
-                profiles = config_data.get("profiles", {})
-                active_profile_name = self.profile or profiles.get("default", "standard")
-                if active_profile_name in profiles and isinstance(profiles[active_profile_name], dict):
-                    self.profile_components = profiles[active_profile_name].get("components", [])
-        except Exception:
-            pass
+        config_paths = [
+            Path.cwd() / "config.toml",
+            Path(__file__).resolve().parent.parent / "config.toml",
+        ]
+        config_path = next((p for p in config_paths if p.is_file()), None)
+        if config_path:
+            try:
+                with open(config_path, "rb") as f:
+                    config_data = tomllib.load(f)
+                    security = config_data.get("security", {})
+                    self.connect_src = security.get("connect-src", "")
+                    self.csp_additions = security.get("csp-additions", {})
+                    
+                    # Profiles resolving
+                    profiles = config_data.get("profiles", {})
+                    active_profile_name = self.profile or profiles.get("default", "standard")
+                    if active_profile_name in profiles and isinstance(profiles[active_profile_name], dict):
+                        self.profile_components = profiles[active_profile_name].get("components", [])
+            except Exception:
+                pass
 
     def resolve_output_file(self) -> Path:
         """出力ファイルパスを決定する（未指定時は入力ファイル名から生成）"""
