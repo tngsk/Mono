@@ -1,0 +1,5 @@
+/* Presenter mode styles for main document body */
+html[data-mono-presenter-mode="true"] body {
+  margin-right: clamp(320px, 36vw, 550px) !important;
+  transition: margin-right 0.2s ease;
+}

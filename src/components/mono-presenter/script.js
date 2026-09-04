@@ -2,12 +2,13 @@ class MonoPresenter extends MonoBaseElement {
     constructor() {
         super();
         this.channel = null;
-        this.presenterWindow = null;
-        this.slides = []; // Array of { index: number, title: string, html: string, note: string }
+        this.slides = [];
         this.currentSlideIndex = 0;
         this.notes = {};
+        this.isPresenterMode = false;
         this.boundHandleKeyDown = this.handleKeyDown.bind(this);
         this.boundHandleScroll = this.handleScroll.bind(this);
+        this.boundHandleHashChange = this.handleHashChange.bind(this);
         this.scrollTicking = false;
     }
 
@@ -16,12 +17,14 @@ class MonoPresenter extends MonoBaseElement {
         this.loadNotes();
         this.extractSlides();
         this.setupChannel();
+        this.checkPresenterMode();
         this.setupEventListeners();
     }
 
     disconnectedCallback() {
         document.removeEventListener('keydown', this.boundHandleKeyDown);
         window.removeEventListener('scroll', this.boundHandleScroll);
+        window.removeEventListener('hashchange', this.boundHandleHashChange);
         if (this.channel) {
             this.channel.close();
             this.channel = null;
@@ -57,8 +60,7 @@ class MonoPresenter extends MonoBaseElement {
                         index: slideIndex,
                         title: currentTitle,
                         firstElement: currentElements[0],
-                        html: currentElements.map(e => e.outerHTML).join('\n'),
-                        note: this.notes[slideIndex] || this.notes[String(slideIndex)] || '（トークスクリプトはありません）'
+                        note: this.notes[slideIndex] || this.notes[String(slideIndex)] || ''
                     });
                     slideIndex++;
                     currentElements = [];
@@ -70,8 +72,7 @@ class MonoPresenter extends MonoBaseElement {
                         index: slideIndex,
                         title: currentTitle,
                         firstElement: currentElements[0],
-                        html: currentElements.map(e => e.outerHTML).join('\n'),
-                        note: this.notes[slideIndex] || this.notes[String(slideIndex)] || '（トークスクリプトはありません）'
+                        note: this.notes[slideIndex] || this.notes[String(slideIndex)] || ''
                     });
                     slideIndex++;
                     currentElements = [];
@@ -88,20 +89,53 @@ class MonoPresenter extends MonoBaseElement {
                 index: slideIndex,
                 title: currentTitle,
                 firstElement: currentElements[0],
-                html: currentElements.map(e => e.outerHTML).join('\n'),
-                note: this.notes[slideIndex] || this.notes[String(slideIndex)] || '（トークスクリプトはありません）'
+                note: this.notes[slideIndex] || this.notes[String(slideIndex)] || ''
             });
         }
+    }
+
+    checkPresenterMode() {
+        const isPresenter = window.location.hash === '#presenter';
+        this.isPresenterMode = isPresenter;
+
+        if (isPresenter) {
+            this.setAttribute('active', '');
+            document.documentElement.setAttribute('data-mono-presenter-mode', 'true');
+            this.updatePresenterPanel();
+            // 親画面へ最新状態の初期同期を要求
+            if (this.channel) {
+                this.channel.postMessage({ type: 'request-init' });
+            }
+        } else {
+            this.removeAttribute('active');
+            document.documentElement.removeAttribute('data-mono-presenter-mode');
+        }
+    }
+
+    handleHashChange() {
+        this.checkPresenterMode();
     }
 
     setupChannel() {
         this.boundHandleIncomingMessage = (event) => {
             const data = event.data;
             if (!data) return;
+
             if (data.type === 'navigate') {
-                this.navigateToSlide(data.index);
+                this.navigateToSlide(data.index, false);
+            } else if (data.type === 'state-sync') {
+                if (this.isPresenterMode && data.currentIndex !== undefined) {
+                    this.currentSlideIndex = data.currentIndex;
+                    this.updatePresenterPanel();
+                    const slide = this.slides[this.currentSlideIndex];
+                    if (slide && slide.firstElement) {
+                        slide.firstElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
             } else if (data.type === 'request-init') {
-                this.syncToPresenter();
+                if (!this.isPresenterMode) {
+                    this.syncToPresenter();
+                }
             }
         };
 
@@ -109,7 +143,7 @@ class MonoPresenter extends MonoBaseElement {
             this.channel = new BroadcastChannel('mono-presenter-channel');
             this.channel.onmessage = this.boundHandleIncomingMessage;
         } catch (e) {
-            // BroadcastChannel非対応環境のフォールバック
+            // BroadcastChannel非対応環境
         }
 
         window.addEventListener('message', this.boundHandleIncomingMessage);
@@ -122,9 +156,11 @@ class MonoPresenter extends MonoBaseElement {
         }
         document.addEventListener('keydown', this.boundHandleKeyDown);
         window.addEventListener('scroll', this.boundHandleScroll, { passive: true });
+        window.addEventListener('hashchange', this.boundHandleHashChange);
     }
 
     handleScroll() {
+        if (this.isPresenterMode) return;
         if (this.scrollTicking) return;
         this.scrollTicking = true;
         requestAnimationFrame(() => {
@@ -171,352 +207,118 @@ class MonoPresenter extends MonoBaseElement {
         );
         if (isEditable) return;
 
-        // 'P' キーでプレゼンターウィンドウを開く
-        if (e.key === 'p' || e.key === 'P') {
-            this.openPresenterWindow();
-            e.preventDefault();
+        if (this.isPresenterMode) {
+            // プレゼンターウィンドウ内のスライド移動
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ' || e.key === 'PageDown' || e.key === 'j' || e.key === 'J') {
+                this.nextSlide();
+                e.preventDefault();
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp' || e.key === 'k' || e.key === 'K') {
+                this.prevSlide();
+                e.preventDefault();
+            }
+        } else {
+            // 投射画面でのプレゼンターウィンドウ起動
+            if (e.key === 'p' || e.key === 'P') {
+                this.openPresenterWindow();
+                e.preventDefault();
+            }
         }
     }
 
-    navigateToSlide(targetIndex) {
+    nextSlide() {
+        if (this.currentSlideIndex < this.slides.length - 1) {
+            this.navigateToSlide(this.currentSlideIndex + 1, true);
+        }
+    }
+
+    prevSlide() {
+        if (this.currentSlideIndex > 0) {
+            this.navigateToSlide(this.currentSlideIndex - 1, true);
+        }
+    }
+
+    navigateToSlide(targetIndex, broadcast = true) {
         if (targetIndex < 0 || targetIndex >= this.slides.length) return;
         this.currentSlideIndex = targetIndex;
-        
+
         const targetSlide = this.slides[targetIndex];
         if (targetSlide && targetSlide.firstElement) {
             targetSlide.firstElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-        this.syncToPresenter();
+
+        if (this.isPresenterMode) {
+            this.updatePresenterPanel();
+        }
+
+        if (broadcast) {
+            const payload = {
+                type: 'navigate',
+                index: targetIndex
+            };
+            if (this.channel) {
+                try { this.channel.postMessage(payload); } catch (e) {}
+            }
+            if (window.opener && !window.opener.closed) {
+                try { window.opener.postMessage(payload, '*'); } catch (e) {}
+            }
+        }
     }
 
     syncToPresenter() {
-        const current = this.slides[this.currentSlideIndex] ? {
-            index: this.slides[this.currentSlideIndex].index,
-            title: this.slides[this.currentSlideIndex].title,
-            html: this.slides[this.currentSlideIndex].html,
-            note: this.slides[this.currentSlideIndex].note
-        } : null;
-        const next = this.slides[this.currentSlideIndex + 1] ? {
-            index: this.slides[this.currentSlideIndex + 1].index,
-            title: this.slides[this.currentSlideIndex + 1].title,
-            html: this.slides[this.currentSlideIndex + 1].html,
-            note: this.slides[this.currentSlideIndex + 1].note
-        } : null;
-
         const payload = {
             type: 'state-sync',
             currentIndex: this.currentSlideIndex,
-            totalSlides: this.slides.length,
-            currentSlide: current,
-            nextSlide: next
+            totalSlides: this.slides.length
         };
 
         if (this.channel) {
             try { this.channel.postMessage(payload); } catch (e) {}
         }
-        if (this.presenterWindow && !this.presenterWindow.closed) {
-            try { this.presenterWindow.postMessage(payload, '*'); } catch (e) {}
+    }
+
+    updatePresenterPanel() {
+        const indicator = this.shadowRoot.getElementById('slide-indicator');
+        const content = this.shadowRoot.getElementById('script-content');
+        if (!indicator || !content) return;
+
+        const total = this.slides.length || 1;
+        const current = this.currentSlideIndex + 1;
+        indicator.textContent = `スライド ${current} / ${total}`;
+
+        const slide = this.slides[this.currentSlideIndex];
+        const noteText = slide && slide.note ? slide.note.trim() : '';
+
+        if (noteText) {
+            content.textContent = noteText;
+            content.classList.remove('script-empty');
+        } else {
+            content.textContent = '（トークスクリプトはありません）';
+            content.classList.add('script-empty');
         }
     }
 
     openPresenterWindow() {
-        if (this.presenterWindow && !this.presenterWindow.closed) {
-            this.presenterWindow.focus();
-            this.syncToPresenter();
-            return;
-        }
+        const baseHref = window.location.href.split('#')[0];
+        const presenterUrl = `${baseHref}#presenter`;
 
-        const width = 1150;
-        const height = 750;
+        const width = 1200;
+        const height = 800;
         const left = window.screen.width ? (window.screen.width - width) / 2 : 50;
         const top = window.screen.height ? (window.screen.height - height) / 2 : 50;
 
-        this.presenterWindow = window.open(
-            'about:blank',
+        const win = window.open(
+            presenterUrl,
             'mono_presenter_view',
             `width=${width},height=${height},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no,resizable=yes`
         );
 
-        if (!this.presenterWindow) {
+        if (!win) {
             alert('ポップアップウィンドウが開けませんでした。ブラウザのポップアップブロックを許可してください。');
             return;
         }
 
-        // プレゼンターウィンドウ用HTML
-        const presenterHtml = `<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <title>Mono プレゼンタービュー</title>
-  <style>
-    :root {
-      --bg-color: #0f172a;
-      --panel-bg: #1e293b;
-      --text-color: #f8fafc;
-      --text-muted: #94a3b8;
-      --border-color: #334155;
-      --accent-color: #38bdf8;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      font-family: system-ui, -apple-system, sans-serif;
-      height: 100vh;
-      display: grid;
-      grid-template-rows: 56px 1fr;
-      overflow: hidden;
-    }
-    header {
-      background-color: var(--panel-bg);
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 1.5rem;
-    }
-    .header-left { display: flex; align-items: center; gap: 1rem; font-weight: 600; font-size: 1.1rem; }
-    .timer-panel { display: flex; align-items: center; gap: 1.25rem; font-family: monospace; font-size: 1.25rem; }
-    .timer-display { font-weight: bold; color: var(--accent-color); }
-    .btn {
-      background: var(--border-color);
-      color: var(--text-color);
-      border: none;
-      padding: 0.35rem 0.75rem;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
-    .btn:hover { background: #475569; }
-    main {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      padding: 1rem;
-      height: calc(100vh - 56px);
-    }
-    .column-left { display: grid; grid-template-rows: 1fr 1fr; gap: 1rem; height: 100%; }
-    .card {
-      background-color: var(--panel-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    .card-header {
-      background-color: rgba(0, 0, 0, 0.2);
-      padding: 0.5rem 1rem;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: 500;
-    }
-    .preview-container {
-      flex: 1;
-      padding: 1rem;
-      overflow-y: auto;
-      background: #ffffff;
-      color: #1f2937;
-      font-size: 0.85rem;
-      line-height: 1.5;
-    }
-    .notes-container {
-      flex: 1;
-      padding: 1.5rem;
-      overflow-y: auto;
-      font-size: 1.25rem;
-      line-height: 1.8;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-    .nav-controls {
-      display: flex;
-      gap: 0.5rem;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <div class="header-left">
-      <span>Mono Presenter</span>
-      <span id="slide-counter" style="color: var(--text-muted); font-size: 0.95rem;">- / -</span>
-    </div>
-    <div class="timer-panel">
-      <div>経過時間: <span id="timer" class="timer-display">00:00:00</span></div>
-      <button id="btn-timer-toggle" class="btn">一時停止</button>
-      <button id="btn-timer-reset" class="btn">リセット</button>
-      <div style="font-size: 1rem; color: var(--text-muted);">現在時刻: <span id="clock">00:00</span></div>
-    </div>
-  </header>
-  <main>
-    <div class="column-left">
-      <div class="card">
-        <div class="card-header">
-          <span>現在のスライド</span>
-          <div class="nav-controls">
-            <button id="btn-prev" class="btn">◀ 前へ (K)</button>
-            <button id="btn-next" class="btn">次へ (J/Space) ▶</button>
-          </div>
-        </div>
-        <div id="current-preview" class="preview-container">読み込み中...</div>
-      </div>
-      <div class="card">
-        <div class="card-header">次のスライド（先読み）</div>
-        <div id="next-preview" class="preview-container">（次のスライドはありません）</div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header">
-        <span>トークスクリプト（スピーカーノート）</span>
-        <div>
-          <button id="btn-font-dec" class="btn">A-</button>
-          <button id="btn-font-inc" class="btn">A+</button>
-        </div>
-      </div>
-      <div id="notes-content" class="notes-container">トークスクリプトを読み込んでいます...</div>
-    </div>
-  </main>
-  <script>
-    let channel = null;
-    try {
-      channel = new BroadcastChannel('mono-presenter-channel');
-    } catch(e) {}
-
-    let currentIndex = 0;
-    let totalSlides = 1;
-    let noteFontSize = 1.25;
-
-    function sendMessage(msg) {
-      if (channel) {
-        try { channel.postMessage(msg); } catch(e) {}
-      }
-      if (window.opener) {
-        try { window.opener.postMessage(msg, '*'); } catch(e) {}
-      }
-    }
-
-    // タイマー管理
-    let timerSeconds = 0;
-    let timerInterval = null;
-    let isTimerRunning = true;
-
-    function startTimer() {
-      if (timerInterval) clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        if (isTimerRunning) {
-          timerSeconds++;
-          updateTimerDisplay();
-        }
-      }, 1000);
-    }
-
-    function updateTimerDisplay() {
-      const h = String(Math.floor(timerSeconds / 3600)).padStart(2, '0');
-      const m = String(Math.floor((timerSeconds % 3600) / 60)).padStart(2, '0');
-      const s = String(timerSeconds % 60).padStart(2, '0');
-      document.getElementById('timer').textContent = \`\${h}:\${m}:\${s}\`;
-    }
-
-    function updateClock() {
-      const now = new Date();
-      const h = String(now.getHours()).padStart(2, '0');
-      const m = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('clock').textContent = \`\${h}:\${m}\`;
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
-    startTimer();
-
-    document.getElementById('btn-timer-toggle').addEventListener('click', () => {
-      isTimerRunning = !isTimerRunning;
-      document.getElementById('btn-timer-toggle').textContent = isTimerRunning ? '一時停止' : '再開';
-    });
-    document.getElementById('btn-timer-reset').addEventListener('click', () => {
-      timerSeconds = 0;
-      updateTimerDisplay();
-    });
-
-    // フォントサイズ調整
-    document.getElementById('btn-font-inc').addEventListener('click', () => {
-      noteFontSize = Math.min(noteFontSize + 0.15, 2.5);
-      document.getElementById('notes-content').style.fontSize = \`\${noteFontSize}rem\`;
-    });
-    document.getElementById('btn-font-dec').addEventListener('click', () => {
-      noteFontSize = Math.max(noteFontSize - 0.15, 0.9);
-      document.getElementById('notes-content').style.fontSize = \`\${noteFontSize}rem\`;
-    });
-
-    // ナビゲーション
-    function goPrev() {
-      if (currentIndex > 0) {
-        sendMessage({ type: 'navigate', index: currentIndex - 1 });
-      }
-    }
-    function goNext() {
-      if (currentIndex < totalSlides - 1) {
-        sendMessage({ type: 'navigate', index: currentIndex + 1 });
-      }
-    }
-    document.getElementById('btn-prev').addEventListener('click', goPrev);
-    document.getElementById('btn-next').addEventListener('click', goNext);
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'j' || e.key === 'J' || e.key === ' ' || e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-        goNext();
-        e.preventDefault();
-      } else if (e.key === 'k' || e.key === 'K' || e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-        goPrev();
-        e.preventDefault();
-      }
-    });
-
-    function handleStateSync(data) {
-      if (!data || data.type !== 'state-sync') return;
-
-      currentIndex = data.currentIndex;
-      totalSlides = data.totalSlides;
-
-      document.getElementById('slide-counter').textContent = \`スライド \${currentIndex + 1} / \${totalSlides}\`;
-      
-      const currentEl = document.getElementById('current-preview');
-      const nextEl = document.getElementById('next-preview');
-      const notesEl = document.getElementById('notes-content');
-
-      if (data.currentSlide) {
-        currentEl.innerHTML = data.currentSlide.html;
-        notesEl.textContent = data.currentSlide.note || '（トークスクリプトはありません）';
-      } else {
-        currentEl.innerHTML = 'スライドがありません';
-        notesEl.textContent = '';
-      }
-
-      if (data.nextSlide) {
-        nextEl.innerHTML = data.nextSlide.html;
-      } else {
-        nextEl.innerHTML = '<span style="color: #64748b;">（最後のスライドです）</span>';
-      }
-    }
-
-    if (channel) {
-      channel.onmessage = (event) => handleStateSync(event.data);
-    }
-    window.addEventListener('message', (event) => handleStateSync(event.data));
-
-    // 親画面へ初期化同期を要求
-    sendMessage({ type: 'request-init' });
-  ${'<'}/script>
-</body>
-</html>`;
-
-        this.presenterWindow.document.open();
-        this.presenterWindow.document.write(presenterHtml);
-        this.presenterWindow.document.close();
-
-        // 描画完了後に即時同期
-        setTimeout(() => this.syncToPresenter(), 200);
+        win.focus();
+        setTimeout(() => this.syncToPresenter(), 300);
     }
 }
 
