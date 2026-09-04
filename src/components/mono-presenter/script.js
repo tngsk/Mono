@@ -154,17 +154,40 @@ class MonoPresenter extends MonoBaseElement {
         if (btn) {
             btn.addEventListener('click', () => this.openPresenterWindow());
         }
+
+        const panel = this.shadowRoot.getElementById('presenter-panel');
+        if (panel) {
+            panel.addEventListener('wheel', (e) => {
+                const body = this.shadowRoot.querySelector('.panel-body');
+                if (!body) return;
+
+                const isScrollable = body.scrollHeight > body.clientHeight;
+                if (!isScrollable) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return;
+                }
+
+                const atTop = body.scrollTop <= 0 && e.deltaY < 0;
+                const atBottom = (body.scrollTop + body.clientHeight >= body.scrollHeight - 1) && e.deltaY > 0;
+                if (atTop || atBottom) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            }, { passive: false });
+        }
+
         document.addEventListener('keydown', this.boundHandleKeyDown);
         window.addEventListener('scroll', this.boundHandleScroll, { passive: true });
         window.addEventListener('hashchange', this.boundHandleHashChange);
     }
 
     handleScroll() {
-        if (!this.isPresenterMode && this.isProgrammaticScroll) return;
+        if (this.isProgrammaticScroll) return;
         if (this.scrollTicking) return;
         this.scrollTicking = true;
         requestAnimationFrame(() => {
-            if (!this.isPresenterMode && this.isProgrammaticScroll) {
+            if (this.isProgrammaticScroll) {
                 this.scrollTicking = false;
                 return;
             }
@@ -325,6 +348,11 @@ class MonoPresenter extends MonoBaseElement {
         } else {
             content.textContent = '（トークスクリプトはありません）';
             content.classList.add('script-empty');
+        }
+
+        const panelBody = this.shadowRoot.querySelector('.panel-body');
+        if (panelBody) {
+            panelBody.scrollTop = 0;
         }
     }
 

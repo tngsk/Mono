@@ -128,7 +128,7 @@ class NotesPostprocessor(Postprocessor):
             .replace("&", "\\u0026")
         )
         script_tag = f'<script type="application/json" id="mono-speaker-notes">{escaped_json}</script>'
-        return f"{text}\n{script_tag}"
+        return f"{text}\n{script_tag}\n<mono-presenter></mono-presenter>"
 
 
 class NotesExtension(Extension):

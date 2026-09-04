@@ -187,3 +187,115 @@ def test_presenter_dual_window_sync(tmp_path):
         assert main_index_back == 0
         
         browser.close()
+
+
+def test_presenter_panel_scroll_isolation(tmp_path):
+    from playwright.sync_api import sync_playwright
+
+    logger = logging.getLogger("test")
+    input_file = tmp_path / "long_pres.md"
+    output_file = tmp_path / "long_pres.html"
+
+    # 長文スクリプトを含むスライド
+    long_script = "\\n\\n".join([f"トークスクリプト段落{i}: 詳細な説明文がここに入ります。" for i in range(30)])
+
+    input_file.write_text(f"""# スライド1
+<!-- {long_script} -->
+スライド1本文
+
+---
+
+# スライド2
+<!-- 短いノート -->
+スライド2本文
+""", encoding="utf-8")
+
+    config = ConversionConfig(
+        input_file=input_file,
+        output_file=output_file,
+        css_files=None,
+        profile="presentation",
+        force=True
+    )
+    MarkdownToHTMLConverter(config, logger).convert()
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        context = browser.new_context()
+        page = context.new_page()
+        page.set_viewport_size({"width": 1200, "height": 800})
+        page.goto(f"file://{output_file.resolve()}#presenter")
+        page.wait_for_timeout(400)
+
+        # パネルのスクロール可能性を検証
+        metrics = page.evaluate('''() => {
+            const presenter = document.querySelector('mono-presenter');
+            const body = presenter.shadowRoot.querySelector('.panel-body');
+            return {
+                scrollHeight: body.scrollHeight,
+                clientHeight: body.clientHeight,
+                scrollTop: body.scrollTop,
+                windowY: window.scrollY
+            };
+        }''')
+        assert metrics["scrollHeight"] > metrics["clientHeight"]
+        assert metrics["scrollTop"] == 0
+        assert metrics["windowY"] == 0
+
+        # パネル中央の座標を特定
+        box = page.evaluate('''() => {
+            const presenter = document.querySelector('mono-presenter');
+            const panelBody = presenter.shadowRoot.querySelector('.panel-body');
+            const rect = panelBody.getBoundingClientRect();
+            return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
+        }''')
+
+        # パネル上でホイールスクロールを実行
+        page.mouse.move(box["x"], box["y"])
+        page.mouse.wheel(0, 200)
+        page.wait_for_timeout(300)
+
+        after_wheel = page.evaluate('''() => {
+            const presenter = document.querySelector('mono-presenter');
+            const body = presenter.shadowRoot.querySelector('.panel-body');
+            return {
+                scrollTop: body.scrollTop,
+                windowY: window.scrollY
+            };
+        }''')
+        # パネル本体のみがスクロールし、親ウィンドウは一切スクロールしていないことを検証
+        assert after_wheel["scrollTop"] > 0
+        assert after_wheel["windowY"] == 0
+
+        # 端まで過剰にスクロール（overscroll）しても親がスクロールしないことを検証
+        page.mouse.wheel(0, 5000)
+        page.wait_for_timeout(300)
+
+        overscroll_metrics = page.evaluate('''() => {
+            const presenter = document.querySelector('mono-presenter');
+            const body = presenter.shadowRoot.querySelector('.panel-body');
+            return {
+                scrollTop: body.scrollTop,
+                windowY: window.scrollY
+            };
+        }''')
+        assert overscroll_metrics["scrollTop"] >= metrics["scrollHeight"] - metrics["clientHeight"] - 2
+        assert overscroll_metrics["windowY"] == 0
+
+        # スライド切り替え時にスクロール位置が先頭にリセットされることを検証
+        page.keyboard.press("ArrowRight")
+        page.wait_for_timeout(400)
+
+        reset_metrics = page.evaluate('''() => {
+            const presenter = document.querySelector('mono-presenter');
+            const body = presenter.shadowRoot.querySelector('.panel-body');
+            return {
+                currentSlide: presenter.currentSlideIndex,
+                scrollTop: body.scrollTop
+            };
+        }''')
+        assert reset_metrics["currentSlide"] == 1
+        assert reset_metrics["scrollTop"] == 0
+
+        browser.close()
+
