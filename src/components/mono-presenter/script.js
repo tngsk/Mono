@@ -127,17 +127,6 @@ class MonoPresenter extends MonoBaseElement {
 
             if (data.type === 'navigate') {
                 this.navigateToSlide(data.index, false);
-            } else if (data.type === 'scroll-sync') {
-                // プレゼンター側からのスクロール位置同期を受信（投影画面側のみ適用）
-                if (!this.isPresenterMode && data.scrollY !== undefined) {
-                    this.isProgrammaticScroll = true;
-                    window.scrollTo({ top: data.scrollY, behavior: 'instant' });
-                    this.updateActiveSlideFromScroll();
-                    clearTimeout(this.navScrollTimeout);
-                    this.navScrollTimeout = setTimeout(() => {
-                        this.isProgrammaticScroll = false;
-                    }, 100);
-                }
             } else if (data.type === 'state-sync') {
                 if (this.isPresenterMode && data.currentIndex !== undefined) {
                     this.currentSlideIndex = data.currentIndex;
@@ -179,29 +168,7 @@ class MonoPresenter extends MonoBaseElement {
                 this.scrollTicking = false;
                 return;
             }
-            if (this.isPresenterMode) {
-                // プレゼンター画面から投影画面へ一方通行でスクロール座標を同期
-                const currentScrollY = window.scrollY;
-                if (this.channel) {
-                    try {
-                        this.channel.postMessage({
-                            type: 'scroll-sync',
-                            scrollY: currentScrollY
-                        });
-                    } catch (e) {}
-                }
-                if (window.opener && !window.opener.closed) {
-                    try {
-                        window.opener.postMessage({
-                            type: 'scroll-sync',
-                            scrollY: currentScrollY
-                        }, '*');
-                    } catch (e) {}
-                }
-                this.updateActiveSlideFromScroll();
-            } else {
-                this.updateActiveSlideFromScroll();
-            }
+            this.updateActiveSlideFromScroll();
             this.scrollTicking = false;
         });
     }
@@ -240,6 +207,17 @@ class MonoPresenter extends MonoBaseElement {
             this.currentSlideIndex = Math.min(bestIndex, this.slides.length - 1);
             if (this.isPresenterMode) {
                 this.updatePresenterPanel();
+                // スライド境界を跨いだ際、投影画面へスライド単位で同期通知
+                const payload = {
+                    type: 'navigate',
+                    index: this.currentSlideIndex
+                };
+                if (this.channel) {
+                    try { this.channel.postMessage(payload); } catch (e) {}
+                }
+                if (window.opener && !window.opener.closed) {
+                    try { window.opener.postMessage(payload, '*'); } catch (e) {}
+                }
             }
         }
     }

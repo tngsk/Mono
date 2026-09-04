@@ -155,17 +155,19 @@ def test_presenter_dual_window_sync(tmp_path):
         browser = p.chromium.launch(headless=True)
         context = browser.new_context()
         
-        # 投射画面（メイン）
+        # 投射画面（メイン: 大画面 1920x1080）
         main_page = context.new_page()
+        main_page.set_viewport_size({"width": 1920, "height": 1080})
         main_page.goto(f"file://{output_file.resolve()}")
         main_page.wait_for_timeout(300)
         
-        # プレゼンター画面（子）
+        # プレゼンター画面（子: ノートPC/ウィンドウ 1150x750）
         pres_page = context.new_page()
+        pres_page.set_viewport_size({"width": 1150, "height": 750})
         pres_page.goto(f"file://{output_file.resolve()}#presenter")
         pres_page.wait_for_timeout(300)
         
-        # プレゼンター側で次へ移動
+        # プレゼンター側で次へ移動（ArrowRight）
         pres_page.keyboard.press("ArrowRight")
         pres_page.wait_for_timeout(400)
         
@@ -177,11 +179,11 @@ def test_presenter_dual_window_sync(tmp_path):
         note = pres_page.evaluate("document.querySelector('mono-presenter').shadowRoot.getElementById('script-content').textContent")
         assert "ノートB" in note
         
-        # プレゼンター側での一方通行スクロール同期テスト
-        pres_page.evaluate("window.scrollTo(0, 400)")
+        # プレゼンター側で前へ移動（ArrowLeft）
+        pres_page.keyboard.press("ArrowLeft")
         pres_page.wait_for_timeout(400)
         
-        main_scroll = main_page.evaluate("window.scrollY")
-        assert abs(main_scroll - 400) <= 5
+        main_index_back = main_page.evaluate("document.querySelector('mono-presenter').currentSlideIndex")
+        assert main_index_back == 0
         
         browser.close()
