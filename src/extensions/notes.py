@@ -30,6 +30,9 @@ class NotesPreprocessor(Preprocessor):
         is_in_comment = False
         current_comment_buf = []
 
+        # ドキュメント全体に明示的なスライド区切り（---）が存在するかを判定
+        has_explicit_hr = any(bool(self.slide_break_hr.match(line.strip())) for line in lines)
+
         for line in lines:
             stripped = line.strip()
             
@@ -50,26 +53,20 @@ class NotesPreprocessor(Preprocessor):
                 slide_has_content = True
                 continue
 
-            # スライド境界（--- または H1/H2）の判定
+            # スライド境界（--- を最優先、存在しない場合のみ H1/H2 でフォールバック）
             is_hr = bool(self.slide_break_hr.match(stripped))
-            is_heading = bool(self.slide_break_heading.match(stripped))
+            is_heading = (not has_explicit_hr) and bool(self.slide_break_heading.match(stripped))
 
-            if is_hr:
+            if is_hr or is_heading:
                 if slide_has_content:
                     if current_notes:
                         notes_by_slide[str(current_slide_idx)] = "\n\n".join(current_notes)
                         current_notes = []
                     current_slide_idx += 1
                     slide_has_content = False
-                cleaned_lines.append(line)
-                continue
-            elif is_heading:
-                if slide_has_content:
-                    if current_notes:
-                        notes_by_slide[str(current_slide_idx)] = "\n\n".join(current_notes)
-                        current_notes = []
-                    current_slide_idx += 1
-                    slide_has_content = False
+                if is_hr:
+                    cleaned_lines.append(line)
+                    continue
 
             # コメントの抽出と行のクリーンアップ
             current_line_output = []

@@ -87,28 +87,26 @@ class MonoZoom extends MonoBaseElement {
         const elements = Array.from(document.body.children).filter(el => !ignoredTags.has(el.tagName));
         if (elements.length === 0) return;
 
+        const hasExplicitHr = elements.some(el => el.tagName === 'HR');
+
         this.virtualSlides = [];
         let currentSlide = [];
 
         elements.forEach(el => {
             const tag = el.tagName;
-            if (tag === 'HR') {
+            const isHr = (tag === 'HR');
+            const isHeading = (!hasExplicitHr) && (tag === 'H1' || tag === 'H2');
+
+            if (isHr || isHeading) {
                 if (currentSlide.length > 0) {
                     this.virtualSlides.push(currentSlide);
                     currentSlide = [];
                 }
-                currentSlide.push(el);
-                this.virtualSlides.push(currentSlide);
-                currentSlide = [];
-            } else if (tag === 'H1' || tag === 'H2') {
-                if (currentSlide.length > 0) {
-                    this.virtualSlides.push(currentSlide);
-                    currentSlide = [];
+                if (isHr) {
+                    return;
                 }
-                currentSlide.push(el);
-            } else {
-                currentSlide.push(el);
             }
+            currentSlide.push(el);
         });
 
         if (currentSlide.length > 0) {

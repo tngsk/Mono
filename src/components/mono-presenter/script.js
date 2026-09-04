@@ -47,14 +47,20 @@ class MonoPresenter extends MonoBaseElement {
         const elements = Array.from(document.body.children).filter(el => !ignoredTags.has(el.tagName));
         if (elements.length === 0) return;
 
+        const hasExplicitHr = elements.some(el => el.tagName === 'HR');
+
         this.slides = [];
         let currentElements = [];
         let currentTitle = "スライド 1";
+        let foundTitleForSlide = false;
         let slideIndex = 0;
 
         elements.forEach(el => {
             const tag = el.tagName;
-            if (tag === 'HR') {
+            const isHr = (tag === 'HR');
+            const isHeading = (!hasExplicitHr) && (tag === 'H1' || tag === 'H2');
+
+            if (isHr || isHeading) {
                 if (currentElements.length > 0) {
                     this.slides.push({
                         index: slideIndex,
@@ -65,23 +71,19 @@ class MonoPresenter extends MonoBaseElement {
                     slideIndex++;
                     currentElements = [];
                     currentTitle = `スライド ${slideIndex + 1}`;
+                    foundTitleForSlide = false;
                 }
-            } else if (tag === 'H1' || tag === 'H2') {
-                if (currentElements.length > 0) {
-                    this.slides.push({
-                        index: slideIndex,
-                        title: currentTitle,
-                        firstElement: currentElements[0],
-                        note: this.notes[slideIndex] || this.notes[String(slideIndex)] || ''
-                    });
-                    slideIndex++;
-                    currentElements = [];
+                if (isHr) {
+                    return;
                 }
-                currentTitle = el.textContent ? el.textContent.trim() : `スライド ${slideIndex + 1}`;
-                currentElements.push(el);
-            } else {
-                currentElements.push(el);
             }
+
+            if (!foundTitleForSlide && (tag === 'H1' || tag === 'H2' || tag === 'H3' || tag === 'H4')) {
+                currentTitle = el.textContent ? el.textContent.trim() : currentTitle;
+                foundTitleForSlide = true;
+            }
+
+            currentElements.push(el);
         });
 
         if (currentElements.length > 0) {
