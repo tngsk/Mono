@@ -3,7 +3,6 @@ class MonoBrush extends MonoBaseElement {
     super();
     this.isDrawingModeActive = false;
     this.isDrawing = false;
-    this.hue = 0;
     this.lastX = 0;
     this.lastY = 0;
     this.points = [];
@@ -116,9 +115,22 @@ class MonoBrush extends MonoBaseElement {
   }
 
   handleKeyDown(e) {
-    if (e.key === "CapsLock" || e.code === "CapsLock") {
+    const activeEl = document.activeElement;
+    const isEditable = activeEl && (
+      activeEl.tagName === "INPUT" ||
+      activeEl.tagName === "TEXTAREA" ||
+      activeEl.isContentEditable
+    );
+    if (isEditable) return;
+
+    if (e.key === "b" || e.key === "B") {
       this.isDrawingModeActive = !this.isDrawingModeActive;
       this.updateMode();
+      e.preventDefault();
+    } else if (e.key === "Escape" && this.isDrawingModeActive) {
+      this.isDrawingModeActive = false;
+      this.updateMode();
+      e.preventDefault();
     }
   }
 
@@ -193,13 +205,11 @@ class MonoBrush extends MonoBaseElement {
     }
     this.points = [];
 
-    this.ctx.strokeStyle = `hsl(${this.hue}, 100%, 60%)`;
+    this.ctx.strokeStyle = "rgba(244, 63, 94, 0.75)";
     this.ctx.lineWidth = 12;
     this.ctx.lineCap = "round";
     this.ctx.lineJoin = "round";
     this.ctx.stroke();
-
-    this.hue = (this.hue + 0.25) % 360; // Slowly cycle hue
   }
 
   handleTouchStart(e) {

@@ -10,8 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - 蛍光マーカー記法（`==テキスト=={color}`）および蛍光アンダーライン記法（`++テキスト++{color}`）の軽量インライン構文（5色対応: yellow, pink, green, cyan, orange）
 - 複数行改行に対応したグラデーション強調描画スタイル（`box-decoration-break: clone`）
+- プレゼンテーションモード（`-p presentation`）における手書き蛍光ブラシ機能（`mono-brush`）の標準統合
 
 ### Changed
+- 手書きブラシのトグル操作を `B` キー（および `Esc` で解除）へと刷新し、マーカー調の蛍光赤ピンク（`rgba(244, 63, 94, 0.75)`）による一定ストローク描画へ変更
 - プレゼンター機能（`mono-presenter`）のステータスを開発中（wip / experimental）へ変更
 
 ## [2.0.0] - 2026-09-03

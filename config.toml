@@ -21,8 +21,8 @@ description = "標準モード（Markdown内のタグを自動検出して必要
 components = []
 
 [profiles.presentation]
-description = "プレゼンテーションモード（自動ズーム、プレゼンタービューを常時有効化）"
-components = ["mono-zoom", "mono-presenter"]
+description = "プレゼンテーションモード（自動ズーム、プレゼンタービュー、手書きブラシを常時有効化）"
+components = ["mono-zoom", "mono-presenter", "mono-brush"]
 
 [profiles.interactive]
 description = "インタラクティブ講義モード（教育・セッション系コンポーネントパッケージを一括有効化）"
