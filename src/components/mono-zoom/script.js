@@ -123,28 +123,31 @@ class MonoZoom extends MonoBaseElement {
         const viewportHeight = window.innerHeight;
         const scrollY = window.scrollY;
 
-        // If at the very top of page, slide 0 is always active
         if (scrollY < 60) {
             this.activeSlideIndex = 0;
         } else {
-            // Find the slide closest to the upper-middle reading focal point (35% of viewport)
             const focalPoint = viewportHeight * 0.35;
-            let bestIndex = 0;
-            let minDistance = Infinity;
+            let activeIndex = 0;
 
-            this.virtualSlides.forEach((slide, idx) => {
-                const firstEl = slide[0];
-                if (!firstEl) return;
-                const rect = firstEl.getBoundingClientRect();
-                const dist = Math.abs(rect.top - focalPoint);
-                // Bias towards elements that have already scrolled slightly past the focal point or near it
-                if (rect.top <= focalPoint + 100 && dist < minDistance) {
-                    minDistance = dist;
-                    bestIndex = idx;
+            for (let i = 0; i < this.virtualSlides.length; i++) {
+                const firstEl = this.virtualSlides[i][0];
+                if (!firstEl) continue;
+                const top = firstEl.getBoundingClientRect().top;
+                const nextSlide = this.virtualSlides[i + 1];
+                const nextTop = (nextSlide && nextSlide[0])
+                    ? nextSlide[0].getBoundingClientRect().top
+                    : Infinity;
+
+                if (top <= focalPoint + 50 && focalPoint < nextTop + 50) {
+                    activeIndex = i;
+                    break;
                 }
-            });
+                if (i === this.virtualSlides.length - 1 && top <= focalPoint + 100) {
+                    activeIndex = i;
+                }
+            }
 
-            this.activeSlideIndex = bestIndex;
+            this.activeSlideIndex = activeIndex;
         }
 
         // Apply .mono-ambient-dimmed to non-active slides

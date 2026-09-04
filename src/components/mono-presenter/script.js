@@ -10,6 +10,8 @@ class MonoPresenter extends MonoBaseElement {
         this.boundHandleScroll = this.handleScroll.bind(this);
         this.boundHandleHashChange = this.handleHashChange.bind(this);
         this.scrollTicking = false;
+        this.isProgrammaticScroll = false;
+        this.navScrollTimeout = null;
     }
 
     connectedCallback() {
@@ -162,11 +164,13 @@ class MonoPresenter extends MonoBaseElement {
     }
 
     handleScroll() {
-        if (this.isPresenterMode) return;
+        if (this.isPresenterMode || this.isProgrammaticScroll) return;
         if (this.scrollTicking) return;
         this.scrollTicking = true;
         requestAnimationFrame(() => {
-            this.updateActiveSlideFromScroll();
+            if (!this.isProgrammaticScroll) {
+                this.updateActiveSlideFromScroll();
+            }
             this.scrollTicking = false;
         });
     }
@@ -178,20 +182,27 @@ class MonoPresenter extends MonoBaseElement {
         const focalPoint = viewportHeight * 0.35;
 
         let bestIndex = 0;
-        let minDistance = Infinity;
-
-        this.slides.forEach((slide, idx) => {
-            if (!slide.firstElement) return;
-            const rect = slide.firstElement.getBoundingClientRect();
-            const dist = Math.abs(rect.top - focalPoint);
-            if (rect.top <= focalPoint + 120 && dist < minDistance) {
-                minDistance = dist;
-                bestIndex = idx;
-            }
-        });
 
         if (scrollY < 60) {
             bestIndex = 0;
+        } else {
+            for (let i = 0; i < this.slides.length; i++) {
+                const slide = this.slides[i];
+                if (!slide.firstElement) continue;
+                const top = slide.firstElement.getBoundingClientRect().top;
+                const nextSlide = this.slides[i + 1];
+                const nextTop = (nextSlide && nextSlide.firstElement)
+                    ? nextSlide.firstElement.getBoundingClientRect().top
+                    : Infinity;
+
+                if (top <= focalPoint + 50 && focalPoint < nextTop + 50) {
+                    bestIndex = i;
+                    break;
+                }
+                if (i === this.slides.length - 1 && top <= focalPoint + 100) {
+                    bestIndex = i;
+                }
+            }
         }
 
         if (bestIndex !== this.currentSlideIndex) {
@@ -242,6 +253,13 @@ class MonoPresenter extends MonoBaseElement {
     navigateToSlide(targetIndex, broadcast = true) {
         if (targetIndex < 0 || targetIndex >= this.slides.length) return;
         this.currentSlideIndex = targetIndex;
+
+        // プログラマティックスクロールによる誤検知を抑制
+        this.isProgrammaticScroll = true;
+        clearTimeout(this.navScrollTimeout);
+        this.navScrollTimeout = setTimeout(() => {
+            this.isProgrammaticScroll = false;
+        }, 700);
 
         const targetSlide = this.slides[targetIndex];
         if (targetSlide && targetSlide.firstElement) {
