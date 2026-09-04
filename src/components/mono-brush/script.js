@@ -22,9 +22,9 @@ class MonoBrush extends MonoBaseElement {
   }
 
   setupElements() {
-    this.pointer = this.shadowRoot.getElementById("pointer");
     this.canvas = this.shadowRoot.getElementById("canvas");
     this.ctx = this.canvas.getContext("2d");
+    this.brushColor = "rgba(244, 63, 94, 0.75)";
   }
 
   setupEventListeners() {
@@ -93,10 +93,9 @@ class MonoBrush extends MonoBaseElement {
   updateMode() {
     const inDrawingMode = this.isDrawingModeActive;
 
-    // Pointer mode is disabled
-    this.pointer.classList.add("hidden");
-
     if (inDrawingMode) {
+      const style = getComputedStyle(this);
+      this.brushColor = style.getPropertyValue("--mono-brush-color").trim() || "rgba(244, 63, 94, 0.75)";
       this.canvas.classList.add("drawing-mode");
       this.canvas.classList.remove("hidden");
     } else {
@@ -136,10 +135,6 @@ class MonoBrush extends MonoBaseElement {
 
   handleKeyUp(e) {
     // No-op for now, as drawing mode is toggled on keydown
-  }
-
-  updatePointerPosition(x, y) {
-    // Pointer mode is disabled, so we don't need to update pointer position
   }
 
   getPointerPosition(clientX, clientY) {
@@ -205,7 +200,7 @@ class MonoBrush extends MonoBaseElement {
     }
     this.points = [];
 
-    this.ctx.strokeStyle = "rgba(244, 63, 94, 0.75)";
+    this.ctx.strokeStyle = this.brushColor || "rgba(244, 63, 94, 0.75)";
     this.ctx.lineWidth = 12;
     this.ctx.lineCap = "round";
     this.ctx.lineJoin = "round";

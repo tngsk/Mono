@@ -6,22 +6,7 @@
     height: 100vh;
     pointer-events: none;
     z-index: var(--z-index-modal, 1000);
-}
-
-#pointer {
-    position: absolute;
-    width: 25px;
-    height: 25px;
-    background-color: var(--color-error, rgba(255, 0, 0, 0.5));
-    border-radius: 50%;
-    transform: translate(-100%, -100%);
-    pointer-events: none;
-    transition: opacity 0.2s ease-out;
-    opacity: 1;
-}
-
-#pointer.hidden {
-    opacity: 0;
+    --mono-brush-color: var(--mono-marker-pink, rgba(244, 63, 94, 0.75));
 }
 
 #canvas {
@@ -46,7 +31,7 @@
 
 /* Print specific styles */
 @media print {
-    .brush-container {
+    :host {
         display: none !important;
     }
 }
