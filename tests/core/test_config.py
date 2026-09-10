@@ -161,6 +161,26 @@ class TestConversionConfig(unittest.TestCase):
                 profile="nonexistent_profile_xyz"
             )
 
+    def test_markdown_adjacent_config_and_direct_security_directives(self):
+        """Test that config.toml located in the input markdown directory is prioritized and direct -src keys are merged."""
+        import tempfile
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            md_file = temp_path / "sub" / "lecture.md"
+            md_file.parent.mkdir(parents=True, exist_ok=True)
+            md_file.write_text("# Test", encoding="utf-8")
+            
+            cfg_file = md_file.parent / "config.toml"
+            cfg_file.write_text(
+                '[security]\nimg-src = ["https://developer.mozilla.org"]\nconnect-src = "http://localhost:9000"\n',
+                encoding="utf-8"
+            )
+
+            config = ConversionConfig(input_file=md_file)
+            self.assertEqual(config.connect_src, "http://localhost:9000")
+            self.assertIn("img-src", config.csp_additions)
+            self.assertIn("https://developer.mozilla.org", config.csp_additions["img-src"])
+
 class TestConversionStats(unittest.TestCase):
     def test_default_initialization(self):
         """Test ConversionStats default values."""

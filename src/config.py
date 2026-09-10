@@ -71,10 +71,17 @@ class ConversionConfig:
     def __post_init__(self):
         self.csp_additions = {}
         self.profile_components = []
-        config_paths = [
+        config_paths = []
+        if self.input_file:
+            try:
+                input_dir = self.input_file.parent if isinstance(self.input_file, Path) else Path(self.input_file).parent
+                config_paths.append(input_dir / "config.toml")
+            except Exception:
+                pass
+        config_paths.extend([
             Path.cwd() / "config.toml",
             Path(__file__).resolve().parent.parent / "config.toml",
-        ]
+        ])
         config_path = next((p for p in config_paths if p.is_file()), None)
         if config_path:
             try:
@@ -82,7 +89,16 @@ class ConversionConfig:
                     config_data = tomllib.load(f)
                     security = config_data.get("security", {})
                     self.connect_src = security.get("connect-src", "")
-                    self.csp_additions = security.get("csp-additions", {})
+                    raw_csp = security.get("csp-additions", {})
+                    self.csp_additions = dict(raw_csp) if isinstance(raw_csp, dict) else {}
+
+                    # security直下のリスト形式ディレクティブ（img-src, connect-src等）もcsp-additionsに自動マージ
+                    for sec_key, sec_val in security.items():
+                        if sec_key.endswith("-src") and isinstance(sec_val, list):
+                            existing = self.csp_additions.setdefault(sec_key, [])
+                            for item in sec_val:
+                                if item not in existing:
+                                    existing.append(item)
                     
                     # Profiles resolving
                     profiles = config_data.get("profiles", {})
