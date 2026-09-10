@@ -4,20 +4,6 @@ Mermaidダイアグラム、数式レンダラー、改行禁止構文、およ�
 
 ---
 
-## Mermaid ダイアグラム（mono-mermaid）
-
-@[mermaid]
-flowchart LR
-    MD[Markdown Source] --> Parser[Python Parser]
-    Parser --> AST[Intermediate HTML]
-    AST --> SingleHTML[Single-file HTML]
-@[/mermaid]
-
-- 構文: `@[mermaid] ... @[/mermaid]`
-- 効果: テキスト定義からSVGベクター図をブラウザ上で動的描画。
-
----
-
 ## 数式レンダリング（Math Extension）
 
 インライン数式: $E = mc^2$ および $\nabla \cdot \mathbf{B} = 0$

@@ -144,21 +144,6 @@ class TestMarkdownProcessor(unittest.TestCase):
         result = self._get_parser("mono-group-assignment").process(md_content)
         self.assertEqual(result, expected_html)
 
-    def test_preprocess_hero(self):
-        md_content = (
-            "@[hero: Welcome!](image: \"bg.jpg\", mode: cover, bg-color: \"#000\", text-color: \"#fff\")\n"
-            "This is a subtext\n"
-            "@[/hero]"
-        )
-        expected_html = (
-            '<mono-hero markdown="1" image="bg.jpg" mode="cover" bg-color="#000" text-color="#fff">\n'
-            '<h1>Welcome!</h1>\n\n'
-            'This is a subtext\n'
-            '</mono-hero>'
-        )
-        result = self._get_parser("mono-hero").process(md_content)
-        self.assertEqual(result, expected_html)
-
     def test_preprocess_layout(self):
         md_content = (
             "::: hbox center gap-md\n"

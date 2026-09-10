@@ -820,6 +820,15 @@ h4.heading-marker, h5.heading-marker, h6.heading-marker {
         font-family: "PlemolJP Console", "PlemolJP Console NF", "PlemolJP", "PlemolJP35", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace !important;
         font-size: inherit !important;
     }
+
+    /* 印刷時の折りたたみ要素（details）常時展開: コンテンツ欠落を防止 */
+    details {
+        display: block !important;
+    }
+
+    details > * {
+        display: block !important;
+    }
 }
 
 /* Accessibility: 視覚運動軽減設定への配慮 */

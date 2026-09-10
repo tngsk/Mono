@@ -10,17 +10,12 @@ class MonoZoom extends MonoBaseElement {
             'ol:not(.no-zoom)',
             'blockquote:not(.no-zoom)',
             'table:not(.no-zoom)',
-            'mono-mermaid:not(.no-zoom)',
-            'mono-image:not(.no-zoom)',
             'mono-code-block:not(.no-zoom)',
             'img:not(.colab-badge):not(.no-zoom)',
             '.mono-math:not(.no-zoom)',
             'mono-score:not(.no-zoom)',
             'mono-section:not(.no-zoom)',
-            'mono-hero:not(.no-zoom)',
             '.column:not(.no-zoom)',
-            'mono-media-grid:not(.no-zoom)',
-            'mono-drawer:not(.no-zoom)',
             'mono-flipcard:not(.no-zoom)',
             '[data-zoomable]'
         ].join(', ');
