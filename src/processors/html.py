@@ -190,19 +190,22 @@ class HTMLDocumentBuilder:
             content_css_tag = f'{{CSS_BLOCK}}\n<style id="mono-components-content-css">\n{content_css}\n</style>'
             doc = doc.replace("{CSS_BLOCK}", content_css_tag)
 
-        if asset_store and not is_minimal:
-            safe_json = (
-                json.dumps(asset_store)
-                .replace("<", "\\u003c")
-                .replace(">", "\\u003e")
-                .replace("&", "\\u0026")
-            )
-            asset_template = f'<script type="application/json" id="mono-asset-store">{safe_json}</script>'
+        has_images = bool(re.search(r"<img\b", html_body)) or bool(asset_store)
+        if (has_images or asset_store) and not is_minimal:
+            asset_template = ""
+            if asset_store:
+                safe_json = (
+                    json.dumps(asset_store)
+                    .replace("<", "\\u003c")
+                    .replace(">", "\\u003e")
+                    .replace("&", "\\u0026")
+                )
+                asset_template = f'<script type="application/json" id="mono-asset-store">{safe_json}</script>\n'
             lazy_load_js = self._load_lazy_load_script()
             lazy_load_script = (
-                f"\n<script>\n{lazy_load_js}\n</script>\n" if lazy_load_js else ""
+                f"<script>\n{lazy_load_js}\n</script>\n" if lazy_load_js else ""
             )
-            html_body += f"\n{asset_template}\n{lazy_load_script}"
+            html_body += f"\n{asset_template}{lazy_load_script}"
 
         # 既存の {COPY_BUTTON_JS} プレースホルダーにまとめて追記する
         combined_js = f"{component_templates}\n{mono_components_js}" if not is_minimal else ""

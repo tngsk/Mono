@@ -203,3 +203,36 @@ def test_browser_fluid_scaling_monotonic(tmp_path):
         assert h1_sizes[i] < h1_sizes[i+1], f"h1 size did not increase from {viewports[i]} to {viewports[i+1]}"
         assert p_sizes[i] < p_sizes[i+1], f"p size did not increase from {viewports[i]} to {viewports[i+1]}"
 
+
+def test_browser_image_load_error_banner(tmp_path):
+    """画像の読み込み失敗時にエラーバナーがDOMに挿入され、console.errorが出力されることをテスト"""
+    md_file = tmp_path / "broken_image.md"
+    md_file.write_text("""# Image Error Test
+@[image: "https://example.invalid/non_existent.svg"]()
+""")
+    output_html_path = tmp_path / "broken_image.html"
+    config = ConversionConfig(input_file=Path(md_file), output_file=output_html_path, css_files=[])
+    logger = configure_logging(verbose=False)
+    converter = MarkdownToHTMLConverter(config, logger)
+    converter.convert()
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page()
+
+        console_errors = []
+        page.on("console", lambda msg: console_errors.append(msg.text) if msg.type == "error" else None)
+
+        page.goto(f"file://{output_html_path.absolute()}")
+        page.wait_for_selector(".mono-image-error", timeout=5000)
+
+        error_banner = page.locator(".mono-image-error")
+        assert error_banner.is_visible()
+        assert "画像読み込みエラー" in error_banner.text_content()
+        assert "https://example.invalid/non_existent.svg" in error_banner.text_content()
+
+        # console.error に Mono画像読み込みエラー が記録されていること
+        assert any("[Mono] 画像の読み込みに失敗しました" in err for err in console_errors)
+
+        browser.close()
+
