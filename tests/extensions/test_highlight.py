@@ -105,3 +105,14 @@ def test_converter_end_to_end(tmp_path):
     assert ".mono-marker" in html
     assert ".mono-underline" in html
     assert "--mono-marker-yellow" in html
+
+
+def test_html_attributes_not_corrupted():
+    """HTMLタグ属性値内の++や==がstash保護され誤置換されないことをテスト"""
+    md = markdown.Markdown(extensions=[HighlightExtension()])
+    raw = '<mono-link url="https://example.com" image="data:image/png;base64,abc++def++ghi==jkl=="></mono-link>'
+    html = md.convert(raw)
+    assert 'image="data:image/png;base64,abc++def++ghi==jkl=="' in html
+    assert "mono-marker" not in html
+    assert "mono-underline" not in html
+

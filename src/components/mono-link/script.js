@@ -62,6 +62,13 @@ class MonoLink extends MonoBaseElement {
             imageEl.style.backgroundImage = `url(${image})`;
             imageEl.style.display = 'block';
             placeholderEl.style.display = 'none';
+
+            const testImg = new Image();
+            testImg.onerror = () => {
+                imageEl.style.display = 'none';
+                placeholderEl.style.display = 'flex';
+            };
+            testImg.src = image;
         } else {
             imageEl.style.display = 'none';
             placeholderEl.style.display = 'flex';

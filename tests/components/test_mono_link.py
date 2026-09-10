@@ -197,3 +197,38 @@ def test_mono_link_placeholder_template_and_style():
     assert "display: flex;" in style_content
 
 
+def test_mono_link_base64_with_plus_and_equals(monkeypatch):
+    """Base64データ内に++や==が含まれる場合でもMarkdownプロセッサで属性が破壊されないことをテスト"""
+    from src.processors.markdown import MarkdownProcessor
+    from src.handlers.file import FileHandler
+    import logging
+
+    parser = Parser()
+    monkeypatch.setattr(
+        parser,
+        "fetch_og_data",
+        lambda u: {
+            "title": "Nginx Test",
+            "desc": "Test Desc",
+            "image": "data:image/png;base64,iVBORw0KGgoAAA++fake++data==end=="
+        }
+    )
+
+    logger = logging.getLogger("test")
+    file_handler = FileHandler(logger)
+    proc = MarkdownProcessor(logger, file_handler)
+    # Inject mocked parser
+    proc.parsers = [p if p.__class__.__name__ != "Parser" else parser for p in proc.parsers]
+
+    markdown_input = """# Link Test
+これは ==ハイライト== と ++アンダーライン++ です。
+@[link: "https://www.nginx.com/"]
+"""
+    html = proc.convert_markdown_to_html(markdown_input)
+    assert 'image="data:image/png;base64,iVBORw0KGgoAAA++fake++data==end=="' in html
+    assert '<mark class="mono-marker mono-marker-yellow">ハイライト</mark>' in html
+    assert '<span class="mono-underline mono-underline-yellow">アンダーライン</span>' in html
+    assert "mono-underline" not in html.split("<mono-link")[1]
+
+
+

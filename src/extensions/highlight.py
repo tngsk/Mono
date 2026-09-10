@@ -63,8 +63,10 @@ class HighlightExtension(Extension):
         # ++テキスト++ および ++テキスト++{color}
         UNDERLINE_PATTERN = r"\+\+(?!\s)(.+?)(?<!\s)\+\+(?:\{([a-zA-Z0-9_.:=\s\"'-]+)\})?"
 
-        md.inlinePatterns.register(MarkerInlineProcessor(MARKER_PATTERN, md), "mono_marker", 175)
-        md.inlinePatterns.register(UnderlineInlineProcessor(UNDERLINE_PATTERN, md), "mono_underline", 174)
+        # Python-Markdown標準のhtml保護プロセッサ（priority 90）より低い優先度に設定することで、
+        # HTMLタグ属性値（Base64やURLクエリ等）内部の記号に対する誤マッチを防止し、安全にstash保護させる
+        md.inlinePatterns.register(MarkerInlineProcessor(MARKER_PATTERN, md), "mono_marker", 85)
+        md.inlinePatterns.register(UnderlineInlineProcessor(UNDERLINE_PATTERN, md), "mono_underline", 84)
 
 
 def makeExtension(**kwargs):
