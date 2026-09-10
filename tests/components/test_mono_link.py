@@ -183,3 +183,17 @@ def test_ogp_cache_ttl_stale_fallback_on_network_error(tmp_path, monkeypatch):
     assert data["desc"] == "Stale Desc"
 
 
+def test_mono_link_placeholder_template_and_style():
+    from pathlib import Path
+    template_path = Path("src/components/mono-link/template.html")
+    style_path = Path("src/components/mono-link/style.css")
+
+    template_content = template_path.read_text(encoding="utf-8")
+    style_content = style_path.read_text(encoding="utf-8")
+
+    assert "mono-link-placeholder-icon" in template_content
+    assert "<svg" in template_content
+    assert ".mono-link-placeholder-icon" in style_content
+    assert "display: flex;" in style_content
+
+

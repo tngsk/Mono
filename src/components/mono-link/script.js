@@ -64,7 +64,7 @@ class MonoLink extends MonoBaseElement {
             placeholderEl.style.display = 'none';
         } else {
             imageEl.style.display = 'none';
-            placeholderEl.style.display = 'block';
+            placeholderEl.style.display = 'flex';
         }
 
         const faviconUrl = this.getFavicon(url);

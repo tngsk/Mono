@@ -37,7 +37,28 @@
 .mono-link-image-placeholder {
     width: 100%;
     height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-color: var(--color-base-200, #f3f4f6);
+    color: var(--color-base-content-muted, #9ca3af);
+}
+
+.mono-link-placeholder-icon {
+    width: 2rem;
+    height: 2rem;
+    stroke: currentColor;
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+    opacity: 0.6;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.mono-link-container:hover .mono-link-placeholder-icon {
+    opacity: 0.9;
+    transform: scale(1.05);
 }
 
 .mono-link-content {
@@ -122,6 +143,10 @@
 }
 .mono-link-style-small .mono-link-title {
     margin-bottom: 0.125rem;
+}
+.mono-link-style-small .mono-link-placeholder-icon {
+    width: 1.5rem;
+    height: 1.5rem;
 }
 
 /* 3. Card */
