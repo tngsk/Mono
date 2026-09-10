@@ -45,7 +45,6 @@ ALLOWED_COMPONENTS = [
     "mono-group-assignment",
     "mono-hero",
     "mono-icon",
-    "mono-image",
     "mono-layout",
     "mono-link",
     "mono-media-grid",
@@ -168,6 +167,7 @@ MARKDOWN_EXTENSIONS = [
     "src.extensions.notes",
     "src.extensions.highlight",
     "src.extensions.heading_marker",
+    "src.extensions.section_modifier",
 ]
 
 

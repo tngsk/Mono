@@ -138,7 +138,7 @@ class MarkdownProcessor:
 
             # Fast path: If the document doesn't contain any potential component markers,
             # we can safely skip running the 20+ regex component parsers over the entire document.
-            if "@[" in protected_content or ":::" in protected_content:
+            if "@[" in protected_content or "::" in protected_content:
                 for parser in self.parsers:
                     try:
                         protected_content = parser.process(protected_content)

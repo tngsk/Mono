@@ -39,22 +39,10 @@
     align-items: start;
 }
 
-/* 3要素比較モード（1:2:1 成果物フォーカス型・三者視点） */
+/* 3要素比較モード（1:1:1 等幅並列対比） */
 :host([mode="3"]) .compare-container {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr);
-}
-
-/* Mono Space直系の幾何補正（視線誘導：左上 → 中央成果物 → 右下） */
-:host([mode="3"]) ::slotted(:nth-child(1)) {
-    align-self: start;
-}
-
-:host([mode="3"]) ::slotted(:nth-child(2)) {
-    align-self: center;
-}
-
-:host([mode="3"]) ::slotted(:nth-child(3)) {
-    align-self: end;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
 }
 
 /* スロットアイテムの共通スタイリング */
@@ -85,11 +73,6 @@
         gap: 0 !important;
     }
 
-    :host([mode="3"]) ::slotted(:nth-child(1)),
-    :host([mode="3"]) ::slotted(:nth-child(2)),
-    :host([mode="3"]) ::slotted(:nth-child(3)) {
-        align-self: auto !important;
-    }
 }
 
 /* 印刷・PDF出力対応 */

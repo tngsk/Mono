@@ -22,12 +22,12 @@ def test_mono_media_grid_basic(parser):
     assert '</mono-media-grid>' in result
 
 def test_mono_media_grid_attributes(parser):
-    content = "@[media-grid: columns=3, gap=2rem, fit=contain]\ncontent\n@[/media-grid]"
+    content = "@[media-grid: columns: 3, gap: '2rem', fit: 'contain']\ncontent\n@[/media-grid]"
     result = parser.process(content)
     assert '<mono-media-grid markdown="1" columns="3" gap="2rem" fit="contain">' in result
 
 def test_mono_media_grid_with_class(parser):
-    content = "@[media-grid](class=\"my-gallery\")\ncontent\n@[/media-grid]"
+    content = "@[media-grid](class: \"my-gallery\")\ncontent\n@[/media-grid]"
     result = parser.process(content)
     assert '<mono-media-grid markdown="1" class="my-gallery">' in result
 

@@ -2,70 +2,142 @@ import re
 from src.processors.base_parser import BaseComponentParser
 
 class Parser(BaseComponentParser):
-    # OPTIONS: label: "text", class: "text"
     @property
     def block_level_tags(self) -> list[str]:
         return ["mono-layout"]
 
     def process(self, markdown_content: str) -> str:
-        # Pattern to match the innermost layout (hbox / vbox as primary, hstack / vstack / row / stack as aliases)
-        LAYOUT_PATTERN = r"(?s)@\[(hbox|vbox|h-box|v-box|layout-h|layout-v|hstack|vstack|row|stack)(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?(?:\s*\{([^}]*)\})?((?:(?!@\[(?:hbox|vbox|h-box|v-box|layout-h|layout-v|hstack|vstack|row|stack)).)*?)@\[(?:end|/(?:layout|hbox|vbox|h-box|v-box|layout-h|layout-v|hstack|vstack|row|stack))\]"
-        pattern = re.compile(LAYOUT_PATTERN, re.IGNORECASE)
+        LAYOUT_KEYWORDS = (
+            'hbox', 'vbox', 'h-box', 'v-box', 'layout-h', 'layout-v',
+            'hstack', 'vstack', 'row', 'stack'
+        )
+        if not any(k in markdown_content.lower() for k in LAYOUT_KEYWORDS):
+            return markdown_content
 
-        def replacer(match: re.Match) -> str:
-            raw_type = match.group(1).lower()
-            if raw_type in ('hbox', 'h-box', 'layout-h', 'row', 'hstack'):
-                type_name = 'hbox'
-            elif raw_type in ('vbox', 'v-box', 'layout-v', 'stack', 'vstack'):
-                type_name = 'vbox'
-            else:
-                type_name = 'hbox'
-            bracket_content = match.group(2)
-            args_str = match.group(3)
-            attr_str = match.group(4)
-            inner_content = match.group(5)
+        lines = markdown_content.split("\n")
+        n = len(lines)
+        output = []
+        stack = []
 
-            label, specific_args = self.parse_bracket_content(bracket_content)
-            common_args = self.parse_key_value_args(args_str)
-            attr_args = self.parse_attr_list(attr_str) if attr_str else {}
-            args = {**specific_args, **common_args, **attr_args}
+        kw_pattern = "|".join(LAYOUT_KEYWORDS)
+        start_re = re.compile(
+            rf'^[ \t]*(:{{3,}})[ \t]*({kw_pattern})(?:\s+(.*?))?[ \t]*$',
+            re.IGNORECASE
+        )
+        sep_re = re.compile(r'^[ \t]*:{3,}[ \t]*(?:column|item)?[ \t]*$', re.IGNORECASE)
+        end_re = re.compile(
+            r'^[ \t]*:{3,}[ \t]*(?:end|/(?:hbox|vbox|layout|hstack|vstack|row|stack))[ \t]*$',
+            re.IGNORECASE
+        )
 
-            classes = label.strip() if label else ""
-            if 'class' in args:
-                if classes and classes not in args['class']:
-                    classes = f"{classes} {args['class']}"
-                else:
-                    classes = args['class']
+        def render_layout(ctx):
+            items = []
+            for col_lines in ctx["columns"]:
+                col_text = "\n".join(col_lines).strip()
+                if col_text:
+                    items.append(f'<div class="column" markdown="1">\n{col_text}\n</div>')
+            inner = "\n".join(items)
 
-            attr = f' type="{type_name}"'
-            if classes:
-                attr += f' class="{classes}"'
+            attr = f' type="{ctx["type"]}"'
+            if 'class' in ctx['args'] and ctx['args']['class']:
+                attr += f' class="{self.escape_html(ctx["args"]["class"])}"'
 
-            args_for_common = {k: v for k, v in args.items() if k != 'class'}
+            args_for_common = {k: v for k, v in ctx['args'].items() if k != 'class'}
             common_attr = self.get_common_attributes(args_for_common)
             if common_attr:
                 attr += common_attr
 
-            # Split inner content by `:::` or `:::column`
-            parts = re.split(r'\n?\s*:::(?:column)?\s*\n?', inner_content)
+            return f'<mono-layout{attr} markdown="1">\n{inner}\n</mono-layout>'
 
-            items = []
-            for p in parts:
-                p = p.strip()
-                if p:
-                    items.append(f'<div class="column" markdown="1">\n{p}\n</div>')
+        for i, line in enumerate(lines):
+            m = start_re.match(line)
+            if m:
+                fence = m.group(1)
+                raw_type = m.group(2).lower()
+                if raw_type in ('hbox', 'h-box', 'layout-h', 'row', 'hstack'):
+                    type_name = 'hbox'
+                elif raw_type in ('vbox', 'v-box', 'layout-v', 'stack', 'vstack'):
+                    type_name = 'vbox'
+                else:
+                    type_name = 'hbox'
 
-            inner_html = "\n".join(items)
+                meta_str = (m.group(3) or "").strip()
+                args = {}
+                classes = []
 
-            return f'<mono-layout{attr} markdown="1">\n{inner_html}\n</mono-layout>'
+                if meta_str:
+                    if "{" in meta_str and "}" in meta_str:
+                        s = meta_str.find("{")
+                        e = meta_str.rfind("}")
+                        args.update(self.parse_attr_list(meta_str[s:e+1]))
+                        meta_str = (meta_str[:s] + meta_str[e+1:]).strip()
+                    if "(" in meta_str and ")" in meta_str:
+                        s = meta_str.find("(")
+                        e = meta_str.rfind(")")
+                        args.update(self.parse_key_value_args(meta_str[s+1:e]))
+                        meta_str = (meta_str[:s] + meta_str[e+1:]).strip()
+                    if "[" in meta_str and "]" in meta_str:
+                        s = meta_str.find("[")
+                        e = meta_str.rfind("]")
+                        l, s_args = self.parse_bracket_content(meta_str[s+1:e])
+                        if l:
+                            classes.append(l)
+                        args.update(s_args)
+                        meta_str = (meta_str[:s] + meta_str[e+1:]).strip()
+                    for token in meta_str.split():
+                        if token.startswith('.'):
+                            classes.append(token[1:])
+                        else:
+                            classes.append(token)
 
-        # Process from inside out with safety guard against infinite loops
-        prev_content = None
-        max_depth = 20
-        depth = 0
-        while prev_content != markdown_content and depth < max_depth:
-            prev_content = markdown_content
-            markdown_content = pattern.sub(replacer, markdown_content)
-            depth += 1
+                if classes:
+                    existing_cls = args.get('class', '')
+                    all_cls = " ".join([c for c in [existing_cls] + classes if c]).strip()
+                    if all_cls:
+                        args['class'] = all_cls
 
-        return markdown_content
+                stack.append({
+                    "fence": fence,
+                    "type": type_name,
+                    "args": args,
+                    "columns": [[]]
+                })
+                continue
+
+            if stack:
+                is_end = bool(end_re.match(line))
+                is_sep = bool(sep_re.match(line))
+
+                if is_end or is_sep:
+                    has_next_fence = False
+                    if not is_end:
+                        for peek_idx in range(i + 1, n):
+                            peek_line = lines[peek_idx]
+                            if sep_re.match(peek_line) or end_re.match(peek_line):
+                                has_next_fence = True
+                                break
+                    if not has_next_fence or is_end or len(stack) > 1:
+                        ctx = stack.pop()
+                        html_block = render_layout(ctx)
+                        if stack:
+                            stack[-1]["columns"][-1].append(html_block)
+                        else:
+                            output.append(html_block)
+                        continue
+                    else:
+                        stack[-1]["columns"].append([])
+                        continue
+
+                stack[-1]["columns"][-1].append(line)
+            else:
+                output.append(line)
+
+        while stack:
+            ctx = stack.pop()
+            html_block = render_layout(ctx)
+            if stack:
+                stack[-1]["columns"][-1].append(html_block)
+            else:
+                output.append(html_block)
+
+        return "\n".join(output)

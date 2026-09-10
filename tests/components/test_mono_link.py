@@ -11,8 +11,8 @@ Parser = mono_link_parser.Parser
 
 def test_link_parser():
     parser = Parser()
-    result = parser.process("@[link: \"https://example.com\"]")
-    assert "<mono-link url=\"https://example.com\"" in result
+    result = parser.process("::link https://example.com")
+    assert '<mono-link url="https://example.com"' in result
 
     # Test card style defaults
     assert 'card-style="full"' in result
@@ -20,40 +20,40 @@ def test_link_parser():
 
 def test_mono_link_no_options():
     parser = Parser()
-    markdown = '@[link]()'
+    markdown = '::link https://example.com'
     html = parser.process(markdown)
     assert isinstance(html, str)
+    assert '<mono-link' in html
 
 def test_mono_link_all_options():
     parser = Parser()
-    markdown = '@[link: "Label"](url: "test", style: "test")'
+    markdown = '::link https://example.com square\n::link-title Label'
     html = parser.process(markdown)
     assert isinstance(html, str)
     assert 'title="Label"' in html
+    assert 'card-style="square"' in html
 
 def test_mono_link_label_priority_over_ogp():
     parser = Parser()
     from unittest.mock import patch
     with patch.object(parser, 'fetch_og_data', return_value={"title": "OG Title", "desc": "OG Desc", "image": ""}):
-        # When explicit label is provided
-        markdown = '@[link: "My Custom Title"](url: "https://example.com")'
+        # When manual override title is provided
+        markdown = '::link https://example.com\n::link-title My Custom Title'
         html = parser.process(markdown)
         assert 'title="My Custom Title"' in html
 
-        # When no explicit label is provided
-        markdown_no_label = '@[link](url: "https://example.com")'
+        # When no manual override is provided
+        markdown_no_label = '::link https://example.com'
         html_no_label = parser.process(markdown_no_label)
         assert 'title="OG Title"' in html_no_label
 
-def test_mono_link_trailing_attributes():
+def test_mono_link_manual_overrides():
     parser = Parser()
-    markdown = '@[link: "Site"](url: "https://example.com"){.featured-card #link-site}'
+    markdown = '::link https://example.com\n::link-title Site\n::link-description Custom Desc\n::link-image custom.png'
     html = parser.process(markdown)
-    assert 'class="featured-card"' in html
-    assert 'id="link-site"' in html
     assert 'title="Site"' in html
-    assert '{' not in html
-    assert '}' not in html
+    assert 'desc="Custom Desc"' in html
+    assert 'image="custom.png"' in html
 
 
 def test_ogp_parser_and_cache(tmp_path, monkeypatch):
@@ -107,7 +107,7 @@ def test_ogp_security_and_fallback(monkeypatch):
     assert data == {"title": "", "desc": "", "image": ""}
 
     # クラッシュせずにパーサーが安全に完了すること
-    result = parser.process('@[link: "Huge"](url: "https://example.org/huge")')
+    result = parser.process('::link https://example.org/huge\n::link-title Huge')
     assert 'title="Huge"' in result
     assert '<mono-link' in result
 
@@ -217,18 +217,14 @@ def test_mono_link_base64_with_plus_and_equals(monkeypatch):
     logger = logging.getLogger("test")
     file_handler = FileHandler(logger)
     proc = MarkdownProcessor(logger, file_handler)
-    # Inject mocked parser
     proc.parsers = [p if p.__class__.__name__ != "Parser" else parser for p in proc.parsers]
 
     markdown_input = """# Link Test
 これは ==ハイライト== と ++アンダーライン++ です。
-@[link: "https://www.nginx.com/"]
+::link https://www.nginx.com/
 """
     html = proc.convert_markdown_to_html(markdown_input)
     assert 'image="data:image/png;base64,iVBORw0KGgoAAA++fake++data==end=="' in html
     assert '<mark class="mono-marker mono-marker-yellow">ハイライト</mark>' in html
     assert '<span class="mono-underline mono-underline-yellow">アンダーライン</span>' in html
     assert "mono-underline" not in html.split("<mono-link")[1]
-
-
-

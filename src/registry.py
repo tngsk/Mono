@@ -66,6 +66,8 @@ class ComponentRegistry:
         return [name for name, meta in self._components_meta.items() if meta.get("requires_icons", False)]
 
     def is_web_component(self, component_name: str) -> bool:
+        if component_name not in self._components_meta:
+            return False
         meta = self._components_meta.get(component_name, {})
         return meta.get("is_web_component", True)
 

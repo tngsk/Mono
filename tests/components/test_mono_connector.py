@@ -13,22 +13,9 @@ spec.loader.exec_module(mono_connector_parser)
 Parser = mono_connector_parser.Parser
 
 
-def test_connector_standard_syntax():
-    parser = Parser()
-    md = '@[connector: 次の処理へ](from: "#step-1", to: "#step-2", tone: "ai", from-anchor: "right", to-anchor: "left")'
-    result = parser.process(md)
-    assert '<mono-connector' in result
-    assert 'label="次の処理へ"' in result
-    assert 'from="#step-1"' in result
-    assert 'to="#step-2"' in result
-    assert 'tone="ai"' in result
-    assert 'from-anchor="right"' in result
-    assert 'to-anchor="left"' in result
-
-
 def test_connector_arrow_syntax():
     parser = Parser()
-    md = '@[connect: #source -> #target](tone: "warning", curve: "step")'
+    md = '::connect #source -> #target (tone: "warning", curve: "step")'
     result = parser.process(md)
     assert '<mono-connector' in result
     assert 'from="#source"' in result
@@ -39,7 +26,7 @@ def test_connector_arrow_syntax():
 
 def test_connector_arrow_syntax_with_pipe_label():
     parser = Parser()
-    md = '@[connect: #box-a -> #box-b | データ転送](dashed: "true", arrow: "both")'
+    md = '::connect #box-a -> #box-b | データ転送 (dashed: "true", arrow: "both")'
     result = parser.process(md)
     assert '<mono-connector' in result
     assert 'from="#box-a"' in result
@@ -49,15 +36,17 @@ def test_connector_arrow_syntax_with_pipe_label():
     assert 'arrow="both"' in result
 
 
-def test_connector_coordinate_syntax():
+def test_connector_attribute_syntax():
     parser = Parser()
-    md = '@[connector: 相対配置](from: "10%, 20%", to: "80%, 70%", bend: "60")'
+    md = '::connect #step-1 -> #step-2 | 次の処理へ (tone: "ai", from-anchor: "right", to-anchor: "left")'
     result = parser.process(md)
     assert '<mono-connector' in result
-    assert 'from="10%, 20%"' in result
-    assert 'to="80%, 70%"' in result
-    assert 'label="相対配置"' in result
-    assert 'bend="60"' in result
+    assert 'label="次の処理へ"' in result
+    assert 'from="#step-1"' in result
+    assert 'to="#step-2"' in result
+    assert 'tone="ai"' in result
+    assert 'from-anchor="right"' in result
+    assert 'to-anchor="left"' in result
 
 
 def test_connector_e2e_conversion(tmp_path):
@@ -67,7 +56,7 @@ def test_connector_e2e_conversion(tmp_path):
         "# 接続テスト\n\n"
         "<div id=\"node-1\">ノード1</div>\n\n"
         "<div id=\"node-2\">ノード2</div>\n\n"
-        "@[connect: #node-1 -> #node-2 | 連携](tone: \"ai\")\n",
+        "::connect #node-1 -> #node-2 | 連携 (tone: \"ai\")\n",
         encoding="utf-8"
     )
 

@@ -208,7 +208,7 @@ def test_browser_image_load_error_banner(tmp_path):
     """画像の読み込み失敗時にエラーバナーがDOMに挿入され、console.errorが出力されることをテスト"""
     md_file = tmp_path / "broken_image.md"
     md_file.write_text("""# Image Error Test
-@[image: "https://example.invalid/non_existent.svg"]()
+![Broken Image](https://example.invalid/non_existent.svg)
 """)
     output_html_path = tmp_path / "broken_image.html"
     config = ConversionConfig(input_file=Path(md_file), output_file=output_html_path, css_files=[])

@@ -38,15 +38,12 @@ class MetadataParser(HTMLParser):
             self.title += value
 
 class Parser(BaseComponentParser):
-    # OPTIONS: url: "url", style: "full|small|card"
-    PATTERN = r"@\[link(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?(?:\{([^}]*)\})?"
-    FAST_PATH_MARKERS = ("@[link",)
     DEFAULT_CACHE_TTL = 7 * 86400  # 7 days in seconds
     _memory_cache = {}
 
     @property
     def block_level_tags(self) -> list[str]:
-        return []
+        return ["mono-link"]
 
     def get_cache_ttl(self) -> float:
         """Get cache TTL in seconds from MONO_CACHE_TTL environment variable or default"""
@@ -183,45 +180,56 @@ class Parser(BaseComponentParser):
         return data
 
     def process(self, markdown_content: str) -> str:
-        if "@[link" not in markdown_content:
+        if "::link" not in markdown_content:
             return markdown_content
 
-        pattern = re.compile(self.PATTERN)
+        lines = markdown_content.split("\n")
+        output = []
+        i = 0
+        n = len(lines)
 
-        def replacer(match: re.Match) -> str:
-            bracket_content = match.group(1) or ""
-            args_str = match.group(2) or ""
-            trailing_str = match.group(3) or ""
+        link_re = re.compile(r'^[ \t]*::link\s+([^\s]+)(?:\s+(square|full|small|card))?[ \t]*$', re.IGNORECASE)
+        prop_re = re.compile(r'^[ \t]*::link-([a-z]+)\s+(.+?)[ \t]*$', re.IGNORECASE)
 
-            label, specific_args = self.parse_bracket_content(bracket_content)
-            common_args = self.parse_key_value_args(args_str)
-            args = {**specific_args, **common_args}
-            args = self.merge_trailing_attrs(args, trailing_str)
+        while i < n:
+            line = lines[i]
+            m = link_re.match(line)
+            if not m:
+                output.append(line)
+                i += 1
+                continue
 
-            # Support both `@[link: "url"]` and `@[link](url="url")`
-            url, text_label = self.resolve_url_and_label(label, args, ['url'], 'text')
-            url = url.strip('\'"')
-            # Default style is full
-            style = args.get('style', 'full')
+            url = m.group(1).strip('\'"')
+            style = m.group(2) or "full"
+            overrides = {}
+            i += 1
 
-            # Fetch metadata
+            while i < n:
+                next_line = lines[i]
+                pm = prop_re.match(next_line)
+                if pm:
+                    prop_name = pm.group(1).lower()
+                    prop_val = pm.group(2).strip()
+                    overrides[prop_name] = prop_val
+                    i += 1
+                else:
+                    break
+
             og_data = self.fetch_og_data(url)
 
-            # Determine title: explicit label/text > title arg > OGP title > url
-            title = text_label or args.get('title') or og_data['title'] or url
+            title = overrides.get("title") or og_data.get("title") or url
+            desc = overrides.get("description") or overrides.get("desc") or og_data.get("desc") or ""
+            img = overrides.get("image") or og_data.get("image") or ""
 
-            # We must escape HTML safely
             safe_url = self.escape_html(url)
             safe_title = self.escape_html(title)
-            safe_desc = self.escape_html(og_data['desc'])
-
-            # The base64 data shouldn't strictly need escaping but it's safe to do so
-            safe_img = self.escape_html(og_data['image'])
+            safe_desc = self.escape_html(desc)
+            safe_img = self.escape_html(img)
             safe_style = self.escape_html(style)
 
-            common_attrs = self.get_common_attributes(args)
+            output.append(
+                f'<mono-link url="{safe_url}" title="{safe_title}" desc="{safe_desc}" '
+                f'image="{safe_img}" card-style="{safe_style}"></mono-link>'
+            )
 
-            return (f'<mono-link url="{safe_url}" title="{safe_title}" desc="{safe_desc}" '
-                    f'image="{safe_img}" card-style="{safe_style}"{common_attrs}></mono-link>')
-
-        return pattern.sub(replacer, markdown_content)
+        return "\n".join(output)

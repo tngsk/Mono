@@ -161,16 +161,13 @@ class TestMarkdownProcessor(unittest.TestCase):
 
     def test_preprocess_layout(self):
         md_content = (
-            "@[hbox: center gap-md]\n"
-            ":::\n"
+            "::: hbox center gap-md\n"
             "A\n"
             ":::\n"
-            "@[vbox]\n"
-            ":::\n"
+            "::: vbox\n"
             "B\n"
             ":::\n"
-            "@[/vbox]\n"
-            "@[/hbox]"
+            ":::"
         )
         expected_html = (
             '<mono-layout type="hbox" class="center gap-md" markdown="1">\n'

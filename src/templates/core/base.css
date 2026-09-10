@@ -638,6 +638,25 @@ h4.heading-marker, h5.heading-marker, h6.heading-marker {
 .marker-cyan, .heading-marker-cyan       { --marker-current-color: var(--mono-marker-cyan); }
 .marker-orange, .heading-marker-orange   { --marker-current-color: var(--mono-marker-orange); }
 
+/* 付箋・ノートスタイル (::style note) */
+.mono-note-card {
+    background-color: var(--bg-card, rgba(0, 0, 0, 0.02));
+    border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+    border-left: 0.375rem solid var(--note-accent, var(--marker-space-normal));
+    border-radius: 0.5rem;
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+    box-sizing: border-box;
+}
+
+.mono-note-card[data-tone="primary"]   { --note-accent: var(--marker-space-ai); }
+.mono-note-card[data-tone="warning"]   { --note-accent: var(--marker-space-warning); }
+.mono-note-card[data-tone="neutral"]   { --note-accent: var(--marker-space-normal); }
+.mono-note-card[data-tone="info"]      { --note-accent: var(--mono-marker-cyan); }
+.mono-note-card[data-tone="success"]   { --note-accent: var(--mono-marker-green); }
+.mono-note-card[data-tone="error"]     { --note-accent: var(--mono-marker-pink); }
+
+
 /* Print specific global adjustments */
 @media print {
     :root {

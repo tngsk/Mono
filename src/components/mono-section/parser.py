@@ -1,71 +1,85 @@
 import re
-from src.processors.base_parser import BaseComponentParser
 import html
+from src.processors.base_parser import BaseComponentParser
 
 class Parser(BaseComponentParser):
-    # OPTIONS: title: "text", image: "url", mode: "light|dark", bg-color: "#HEX", text-color: "#HEX", height: "px|vh", width: "px|vw"
-    # Match @[section: title](key: value, ...) or @[section](key: value, ...)
-    START_PATTERN = r"@\[section(?:(?:\:\s*)?([^\]]*))\](?:\(((?:[^()]*|\([^()]*\))*)\))?"
-    END_PATTERN = r"@\[/section\]"
-
     @property
     def block_level_tags(self) -> list[str]:
         return ["mono-section"]
 
     def process(self, markdown_content: str) -> str:
-        # start tag
-        pattern = re.compile(self.START_PATTERN)
+        if "section" not in markdown_content:
+            return markdown_content
 
-        def start_replacer(match: re.Match) -> str:
-            bracket_content = match.group(1)
-            args_str = match.group(2)
-            title, specific_args = self.parse_bracket_content(bracket_content)
-            common_args = self.parse_key_value_args(args_str)
-            args = {**specific_args, **common_args}
+        pattern = re.compile(
+            r'(?sm)^[ \t]*(?P<fence>:{3,})[ \t]*section(?:\s+(?P<meta>[^\n{(]*))?(?:\((?P<args>[^)\n]*)\))?(?:\s*\{(?P<attrs>[^}\n]*)\})?\n'
+            r'(?P<inner>(?:(?!^[ \t]*(?P=fence)[ \t]*section).)*?)\n'
+            r'[ \t]*(?P=fence)(?:[ \t]*(?:end|/section)|[ \t]*)?(?=\n|$)'
+        )
+
+        def replacer(match: re.Match) -> str:
+            meta_str = (match.group('meta') or "").strip()
+            args_str = match.group('args') or ""
+            attr_str = match.group('attrs') or ""
+            inner_content = match.group('inner') or ""
+
+            args = {}
+            classes = []
+            title = ""
+
+            if meta_str:
+                if "[" in meta_str and "]" in meta_str:
+                    s = meta_str.find("[")
+                    e = meta_str.rfind("]")
+                    l, s_args = self.parse_bracket_content(meta_str[s+1:e])
+                    if l:
+                        title = l
+                    args.update(s_args)
+                    meta_str = (meta_str[:s] + meta_str[e+1:]).strip()
+                for token in meta_str.split():
+                    if token.startswith('.'):
+                        classes.append(token[1:])
+                    else:
+                        classes.append(token)
+
+            if args_str:
+                args.update(self.parse_key_value_args(args_str))
+            if attr_str:
+                args.update(self.parse_attr_list(attr_str))
+
+            if classes:
+                existing_cls = args.get('class', '')
+                all_cls = " ".join([c for c in [existing_cls] + classes if c]).strip()
+                if all_cls:
+                    args['class'] = all_cls
 
             if 'title' in args:
                 title = args['title']
 
             attrs = ['markdown="1"']
 
-            if 'image' in args:
-                img_val = args['image'].strip("'\"")
-                attrs.append(f'image="{html.escape(img_val)}"')
-
-            if 'mode' in args:
-                mode_val = args['mode'].strip("'\"")
-                attrs.append(f'mode="{html.escape(mode_val)}"')
-
-            if 'bg-color' in args:
-                bg_val = args['bg-color'].strip("'\"")
-                attrs.append(f'bg-color="{html.escape(bg_val)}"')
-
-            if 'text-color' in args:
-                text_val = args['text-color'].strip("'\"")
-                attrs.append(f'text-color="{html.escape(text_val)}"')
-
-            if 'height' in args:
-                height_val = args['height'].strip("'\"")
-                attrs.append(f'height="{html.escape(height_val)}"')
-
-            if 'width' in args:
-                width_val = args['width'].strip("'\"")
-                attrs.append(f'width="{html.escape(width_val)}"')
+            for prop in ('image', 'mode', 'bg-color', 'text-color', 'height', 'width'):
+                if prop in args:
+                    val = str(args[prop]).strip("'\"")
+                    attrs.append(f'{prop}="{html.escape(val)}"')
 
             attrs_str = " ".join(attrs)
+            common_attrs = self.get_common_attributes(args)
 
-            result = f'<mono-section {attrs_str}{self.get_common_attributes(args)}>'
-
+            result = f'<mono-section {attrs_str}{common_attrs}>\n'
             if title and title.strip():
                 safe_title = html.escape(title.strip())
-                result += f'\n<h2>{safe_title}</h2>\n'
+                result += f'<h2>{safe_title}</h2>\n'
 
+            result += inner_content.strip() + "\n</mono-section>"
             return result
 
-        result = pattern.sub(start_replacer, markdown_content)
+        prev_content = None
+        max_depth = 20
+        depth = 0
+        while prev_content != markdown_content and depth < max_depth:
+            prev_content = markdown_content
+            markdown_content = pattern.sub(replacer, markdown_content)
+            depth += 1
 
-        # end tag
-        end_pattern = re.compile(self.END_PATTERN)
-        result = end_pattern.sub('</mono-section>', result)
-
-        return result
+        return markdown_content
